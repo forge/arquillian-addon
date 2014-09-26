@@ -1,7 +1,6 @@
-
-
 Setting up an Arquillian profile
-==============
+================================
+
 Arquillian supports testing in multiple containers. This is done by using a Maven profile for each container. This makes it possible to have multiple containers configured side-by-side too.
 To add a new profile you use the arquillian setup command:
 
@@ -16,10 +15,11 @@ You can also type --<TAB> to auto-complete with the desired options
 
 Generating tests
 ================
+
 Writing Arquillian tests is trivial, and is documented well: https://docs.jboss.org/author/display/ARQ/Reference+Guide
 
 Forge can help you get started however. 
 	
-	arquillian-create-test --targets demo.CoolBean
+	arquillian-create-test --targets demo.CoolBean --archiveType JAR
 	
 Of course you can use the TAB key to navigate to the class that you want to test.
