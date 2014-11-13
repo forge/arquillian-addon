@@ -15,8 +15,8 @@
       <version.junit>4.11</version.junit>
       <version.jackson>1.9.1</version.jackson>
       <version.velocity>1.7</version.velocity>
-      <furnace.version>2.10.1.Final</furnace.version>
-      <version.arquillian_core>1.1.4.Final</version.arquillian_core>
+      <furnace.version>2.12.2.Final</furnace.version>
+      <version.arquillian_core>1.1.5.Final</version.arquillian_core>
    </properties>
    <dependencyManagement>
       <dependencies>
