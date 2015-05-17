@@ -20,6 +20,7 @@ import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.resource.visit.VisitContext;
+import org.jboss.forge.addon.text.Inflector;
 import org.jboss.forge.addon.ui.command.UICommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
@@ -70,6 +71,9 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
    @Inject
    @WithAttributes(shortName = 'a', label = "Archive Type", defaultValue = "JAR")
    private UISelectOne<ArchiveType> archiveType;
+
+   @Inject
+   private Inflector inflector;
 
    @Override
    public UICommandMetadata getMetadata(UIContext context)
@@ -180,7 +184,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
       VelocityContext context = new VelocityContext();
       context.put("package", javaSource.getPackage());
       context.put("ClassToTest", javaSource.getName());
-      context.put("classToTest", javaSource.getName().toLowerCase());
+      context.put("classToTest", inflector.lowerCamelCase(javaSource.getName()));
       context.put("packageImport", javaSource.getPackage());
       context.put("enableJPA", enableJPA);
       context.put("archiveType", type);
