@@ -3,6 +3,7 @@ package org.jboss.forge.arquillian.container;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,7 +36,7 @@ public class ProfileManager
       {
          profiles.add(profile.getId());
       }
-
+      Collections.sort(profiles);
       return profiles;
    }
 
