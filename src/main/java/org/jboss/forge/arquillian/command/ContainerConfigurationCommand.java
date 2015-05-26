@@ -5,7 +5,6 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import org.apache.maven.model.Profile;
 import org.jboss.forge.addon.convert.Converter;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.ProjectFactory;
@@ -40,7 +39,7 @@ public class ContainerConfigurationCommand extends AbstractProjectCommand implem
 
    @Inject
    @WithAttributes(shortName = 'c', label = "Container", type = InputType.DROPDOWN)
-   private UISelectOne<Profile> container;
+   private UISelectOne<String> container;
 
    @Inject
    @WithAttributes(shortName = 'o', label = "Container Configuration Option", type = InputType.DROPDOWN, required = true)
@@ -66,37 +65,25 @@ public class ContainerConfigurationCommand extends AbstractProjectCommand implem
                .add(containerOption)
                .add(containerValue);
 
-      container.setValueChoices(new Callable<Iterable<Profile>>()
+      container.setValueChoices(new Callable<Iterable<String>>()
       {
          @Override
-         public Iterable<Profile> call() throws Exception
+         public Iterable<String> call() throws Exception
          {
             return profileManager.getArquillianProfiles(getSelectedProject(builder.getUIContext()));
          }
       });
-      container.setDefaultValue(new Callable<Profile>()
+      container.setDefaultValue(new Callable<String>()
       {
          @Override
-         public Profile call() throws Exception
+         public String call() throws Exception
          {
-            Iterable<Profile> profiles = container.getValueChoices();
+            Iterable<String> profiles = container.getValueChoices();
             if (profiles != null && profiles.iterator().hasNext())
             {
                return profiles.iterator().next();
             }
             return null;
-         }
-      });
-      container.setItemLabelConverter(new Converter<Profile, String>()
-      {
-         @Override
-         public String convert(Profile source)
-         {
-            if (source == null)
-            {
-               return null;
-            }
-            return source.getId();
          }
       });
       containerOption.setEnabled(new Callable<Boolean>()
@@ -175,7 +162,7 @@ public class ContainerConfigurationCommand extends AbstractProjectCommand implem
       ArquillianFacet arquillian = getSelectedProject(context).getFacet(ArquillianFacet.class);
       ArquillianConfig config = arquillian.getConfig();
       config.addContainerProperty(
-               container.getValue().getId(),
+               container.getValue(),
                containerOption.getValue().getName(),
                containerValue.getValue());
       arquillian.setConfig(config);
