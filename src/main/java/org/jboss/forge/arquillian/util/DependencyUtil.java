@@ -40,25 +40,33 @@ public final class DependencyUtil
    {
    }
 
-   public static List<String> toVersionString(List<Coordinate> dependencies) {
+   public static List<String> toVersionString(List<Coordinate> dependencies)
+   {
       List<String> versions = new ArrayList<String>();
-      for(Coordinate cor : dependencies) {
+      for (Coordinate cor : dependencies)
+      {
          versions.add(cor.getVersion());
       }
       return versions;
    }
 
-   public static String getLatestNonSnapshotVersionCoordinate(List<Coordinate> dependencies) {
+   public static String getLatestNonSnapshotVersionCoordinate(
+            List<Coordinate> dependencies)
+   {
       return getLatestNonSnapshotVersion(toVersionString(dependencies));
    }
 
-   public static String getLatestNonSnapshotVersion(List<String> dependencies) {
-      if (dependencies == null) {
+   public static String getLatestNonSnapshotVersion(List<String> dependencies)
+   {
+      if (dependencies == null || dependencies.isEmpty())
+      {
          return null;
       }
-      for (int i = dependencies.size() - 1; i >= 0; i--) {
+      for (int i = dependencies.size() - 1; i >= 0; i--)
+      {
          String dep = dependencies.get(i);
-         if (!dep.endsWith("SNAPSHOT")) {
+         if (!dep.endsWith("SNAPSHOT"))
+         {
             return dep;
          }
       }
