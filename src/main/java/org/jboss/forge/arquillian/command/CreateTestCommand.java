@@ -26,7 +26,6 @@ import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
 import org.jboss.forge.addon.ui.context.UISelection;
-import org.jboss.forge.addon.ui.hints.InputType;
 import org.jboss.forge.addon.ui.input.UIInput;
 import org.jboss.forge.addon.ui.input.UISelectMany;
 import org.jboss.forge.addon.ui.input.UISelectOne;
@@ -61,7 +60,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
    private ProjectFactory projectFactory;
 
    @Inject
-   @WithAttributes(shortName = 't', label = "Targets", required = true, type = InputType.JAVA_CLASS_PICKER)
+   @WithAttributes(shortName = 't', label = "Targets", required = true)
    private UISelectMany<JavaClassSource> targets;
 
    @Inject
