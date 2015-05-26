@@ -16,7 +16,7 @@ public class ${ClassToTest}Test extends Arquillian {
     @Inject
     private ${ClassToTest} ${classToTest};
 
-    @Deployment 
+    @Deployment(testable = ${testable?c})
     public static ${archiveType.simpleClassName} createDeployment() {
         return ShrinkWrap.create(${archiveType.simpleClassName}.class)
                 .addClass(${ClassToTest}.class)

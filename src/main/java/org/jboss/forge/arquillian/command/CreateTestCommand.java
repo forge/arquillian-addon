@@ -1,12 +1,5 @@
 package org.jboss.forge.arquillian.command;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-
-import javax.inject.Inject;
-
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.parser.java.resources.JavaResource;
@@ -14,9 +7,7 @@ import org.jboss.forge.addon.parser.java.resources.JavaResourceVisitor;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
-import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
-import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.addon.resource.visit.VisitContext;
@@ -44,6 +35,16 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaSource;
+
+import javax.inject.Inject;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @FacetConstraint(ArquillianFacet.class)
 public class CreateTestCommand extends AbstractProjectCommand implements UICommand {
@@ -77,6 +78,10 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
    private UISelectOne<ArchiveType> archiveType;
 
    @Inject
+   @WithAttributes(label = "Deployment testable", defaultValue = "true", description = "Defines if this deployment should be wrapped up based on the protocol so the testcase can be executed incontainer.")
+   private UIInput<Boolean> testable;
+
+   @Inject
    private Inflector inflector;
 
    @Override
@@ -93,7 +98,8 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
    {
       builder
               .add(targets).add(enableJPA).add(archiveType)
-              .add(named).add(targetPackage);
+              .add(named).add(targetPackage)
+              .add(testable);
 
       Project project = getSelectedProject(builder);
       final List<JavaClassSource> sources = new ArrayList<>();
@@ -238,6 +244,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
       context.put("packageImport", javaSource.getPackage());
       context.put("enableJPA", enableJPA);
       context.put("archiveType", type);
+      context.put("testable", testable.getValue());
       return context;
    }
 
