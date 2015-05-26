@@ -15,7 +15,7 @@
       <version.junit>4.11</version.junit>
       <version.jackson>1.9.1</version.jackson>
       <version.velocity>1.7</version.velocity>
-      <furnace.version>2.16.1.Final</furnace.version>
+      <version.forge>2.16.1.Final</version.forge>
       <version.arquillian_core>1.1.7.Final</version.arquillian_core>
    </properties>
    <dependencyManagement>
@@ -30,7 +30,7 @@
          <dependency>
             <groupId>org.jboss.forge</groupId>
             <artifactId>forge-bom</artifactId>
-            <version>${furnace.version}</version>
+            <version>${version.forge}</version>
             <type>pom</type>
             <scope>import</scope>
          </dependency>
