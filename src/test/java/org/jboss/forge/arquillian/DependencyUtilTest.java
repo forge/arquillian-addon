@@ -24,6 +24,7 @@
 package org.jboss.forge.arquillian;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jboss.forge.addon.dependencies.Coordinate;
@@ -63,5 +64,13 @@ public class DependencyUtilTest
       String dep = DependencyUtil.getLatestNonSnapshotVersion(DependencyUtil.toVersionString(deps));
 
       Assert.assertEquals("2.0-SNAPSHOT", dep);
+   }
+
+   @Test
+   public void shouldReturnNullIfEmpty()
+   {
+      String dep = DependencyUtil.getLatestNonSnapshotVersion(Collections.<String> emptyList());
+
+      Assert.assertNull(dep);
    }
 }
