@@ -1,3 +1,8 @@
+Arquillian Forge 2 Addon
+========================
+
+image:https://travis-ci.org/forge/addon-arquillian.svg?branch=master["Build Status", link="https://travis-ci.org/forge/addon-arquillian"]
+
 Setting up an Arquillian profile
 ================================
 
