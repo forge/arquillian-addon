@@ -16,16 +16,18 @@ import org.jboss.forge.roaster.model.util.Types;
  */
 public enum ArchiveType
 {
-   JAR("org.jboss.shrinkwrap.api.spec.JavaArchive"),
-   WAR("org.jboss.shrinkwrap.api.spec.WebArchive");
+   JAR("org.jboss.shrinkwrap.api.spec.JavaArchive","addAsManifestResource"),
+   WAR("org.jboss.shrinkwrap.api.spec.WebArchive","addAsWebInfResource");
 
    private final String className;
    private final String simpleClassName;
+   private final String beansXmlLocationAdder;
 
-   private ArchiveType(String className)
+   private ArchiveType(String className,String beansXmlLocationAdder)
    {
       this.className = className;
       this.simpleClassName = Types.toSimpleName(className);
+      this.beansXmlLocationAdder = beansXmlLocationAdder;
    }
 
    public String getClassName()
@@ -37,4 +39,13 @@ public enum ArchiveType
    {
       return simpleClassName;
    }
+
+   public String getBeansXmlLocationAdder()
+   {
+      return beansXmlLocationAdder;
+   }
+
+
+
+
 }

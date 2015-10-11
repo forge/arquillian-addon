@@ -26,7 +26,7 @@ public class ${ClassToTest}Test {
                 #if($enableJPA)
                 .addAsManifestResource("META-INF/persistence.xml", "persistence.xml")
                 #end
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+                .${archiveType.beansXmlLocationAdder}(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Test
