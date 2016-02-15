@@ -45,8 +45,9 @@ public class JUnitFacet extends TestFrameworkFacet
    public DependencyBuilder createArquillianDependency()
    {
       return DependencyBuilder.create()
-                              .setGroupId("org.jboss.arquillian.junit")
-                              .setArtifactId("arquillian-junit-container")
-                              .setScopeType("test");
+                              .setGroupId("org.arquillian.universe")
+                              .setArtifactId("arquillian-junit")
+                              .setScopeType("test")
+                              .setPackaging("pom");
    }
 }

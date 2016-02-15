@@ -46,8 +46,9 @@ public class TestNGFacet extends TestFrameworkFacet
    public DependencyBuilder createArquillianDependency()
    {
       return DependencyBuilder.create()
-            .setGroupId("org.jboss.arquillian.testng")
-            .setArtifactId("arquillian-testng-container")
-            .setScopeType("test");
+            .setGroupId("org.arquillian.universe")
+            .setArtifactId("arquillian-testng")
+            .setScopeType("test")
+            .setPackaging("pom");
    }
 }

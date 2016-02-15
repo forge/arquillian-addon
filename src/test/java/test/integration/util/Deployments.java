@@ -6,7 +6,7 @@
  */
 package test.integration.util;
 
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 
@@ -16,10 +16,10 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 public class Deployments
 {
 
-   public static ForgeArchive basicPluginInfrastructure()
+   public static AddonArchive basicPluginInfrastructure()
    {
-      ForgeArchive archive = ShrinkWrap
-            .create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap
+            .create(AddonArchive.class)
             .addBeansXML()
             .addAsAddonDependencies(
                      AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
