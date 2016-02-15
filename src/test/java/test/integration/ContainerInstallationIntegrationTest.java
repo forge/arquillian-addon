@@ -28,10 +28,10 @@ import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.ui.controller.WizardCommandController;
 import org.jboss.forge.addon.ui.test.UITestHarness;
+import org.jboss.forge.arquillian.AddonDependencies;
 import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.arquillian.command.SetupWizard;
 import org.jboss.forge.arquillian.testframework.junit.JUnitFacet;
 import org.jboss.forge.parser.xml.Node;
@@ -50,13 +50,13 @@ import test.integration.util.Deployments;
 public class ContainerInstallationIntegrationTest 
 {
    @Deployment
-   @Dependencies({
+   @AddonDependencies({
             @AddonDependency(name = "org.arquillian.forge:arquillian-addon"),
             @AddonDependency(name = "org.jboss.forge.addon:projects"),
             @AddonDependency(name = "org.jboss.forge.addon:maven"),
             @AddonDependency(name = "org.jboss.forge.addon:ui-test-harness")
    })
-   public static ForgeArchive getDeployment() {
+   public static AddonArchive getDeployment() {
       return Deployments.basicPluginInfrastructure();
    }
    

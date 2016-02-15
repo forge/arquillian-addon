@@ -1,6 +1,7 @@
 package org.jboss.forge.arquillian.api;
 
 import org.jboss.forge.addon.dependencies.Coordinate;
+import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.facets.constraints.FacetConstraints;
@@ -20,13 +21,13 @@ public class ArquillianFacet extends AbstractVersionedFacet {
 
    public static final String ARQ_FILENAME_XML = "arquillian.xml";
 
-   public static final String ARQ_CORE_VERSION_PROP_NAME = "version.arquillian_core";
+   public static final String ARQ_CORE_VERSION_PROP_NAME = "version.arquillian_universe";
    public static final String ARQ_CORE_VERSION_PROP = "${" + ARQ_CORE_VERSION_PROP_NAME + "}";
 
 
    private DependencyBuilder createBOM() {
-      return DependencyBuilder.create().setGroupId("org.jboss.arquillian")
-            .setArtifactId("arquillian-bom").setPackaging("pom").setScopeType("import");
+      return DependencyBuilder.create().setGroupId("org.arquillian")
+            .setArtifactId("arquillian-universe").setPackaging("pom").setScopeType("import");
    }
 
    @Override
@@ -62,6 +63,16 @@ public class ArquillianFacet extends AbstractVersionedFacet {
 
    public void setConfig(ArquillianConfig xml) {
       getArquillianXMLResource().setContents(xml.toString());
+   }
+
+   public Dependency getInstalledBOM() {
+       if(!isBOMInstalled()) {
+           throw new IllegalStateException("No BOM installed");
+       }
+
+       DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
+       // need to set version after resolve is done, else nothing will resolve.
+       return dependencyFacet.getDirectManagedDependency(createBOM());
    }
 
    private FileResource<?> getArquillianXMLResource() {

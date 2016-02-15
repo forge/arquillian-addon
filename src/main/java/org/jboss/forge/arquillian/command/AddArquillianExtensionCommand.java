@@ -1,9 +1,11 @@
+
 package org.jboss.forge.arquillian.command;
 
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
+import org.jboss.forge.addon.convert.Converter;
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
@@ -19,9 +21,12 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
+import org.jboss.forge.arquillian.api.ArquillianExtensionFacet;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
+import org.jboss.forge.arquillian.api.Extension;
+import org.jboss.forge.arquillian.extension.ExtensionResolver;
 
-public class AddArquillianCommand  extends AbstractProjectCommand implements UICommand {
+public class AddArquillianExtensionCommand  extends AbstractProjectCommand implements UICommand {
 
    @Inject
    private ProjectFactory projectFactory;
@@ -30,43 +35,47 @@ public class AddArquillianCommand  extends AbstractProjectCommand implements UIC
    private FacetFactory facetFactory;
 
    @Inject
-   private ArquillianFacet facet;
-
+   private ArquillianExtensionFacet facet;
+   
    @Inject
-   @WithAttributes(shortName = 'v', label = "Arquillian Universe version", type = InputType.DROPDOWN)
-   private UISelectOne<String> arquillianVersion;
+   private ExtensionResolver resolver;
+   
+   @Inject
+   @WithAttributes(shortName = 'e', label = "Arquillian Extension", type = InputType.DROPDOWN)
+   private UISelectOne<Extension> arquillianExtension;
 
    @Override
    public UICommandMetadata getMetadata(UIContext context) {
       return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Arquillian"))
-            .name("Arquillian: Add")
+            .name("Arquillian: Add Extension")
             .description("This addon will help you setup the base Arquillian");
    }
 
    @Override
    public void initializeUI(UIBuilder builder) throws Exception {
-      builder.add(arquillianVersion);
+      builder.add(arquillianExtension);
       
-      arquillianVersion.setDefaultValue(new Callable<String>() {
+      arquillianExtension.setValueChoices(new Callable<Iterable<Extension>>() {
          @Override
-         public String call() throws Exception {
-            return facet.getDefaultVersion();
+         public Iterable<Extension> call() throws Exception {
+            return resolver.getAvailableExtensions(getSelectedProject(builder.getUIContext()));
          }
       });
-      arquillianVersion.setValueChoices(new Callable<Iterable<String>>() {
-         @Override
-         public Iterable<String> call() throws Exception {
-            return facet.getAvailableVersions();
-         }
-      });
+      arquillianExtension.setItemLabelConverter(new Converter<Extension, String>() {
+        @Override
+        public String convert(Extension source) {
+            return source.getName();
+        }
+    });
    }
 
    @Override
    public Result execute(UIExecutionContext context) throws Exception {
-      facet.setVersion(arquillianVersion.getValue());
       facetFactory.install(getSelectedProject(context), facet);
-      return Results.success("Installed Arquillian " + arquillianVersion.getValue());
+      facet.install(arquillianExtension.getValue());
+      
+      return Results.success("Installed Arquillian Extension " + arquillianExtension.getValue());
    }
 
    @Override
@@ -78,11 +87,11 @@ public class AddArquillianCommand  extends AbstractProjectCommand implements UIC
    public boolean isEnabled(UIContext context) {
       Boolean parent = super.isEnabled(context);
       if(parent) {
-         return !getSelectedProject(context).hasFacet(ArquillianFacet.class);
+         return getSelectedProject(context).hasFacet(ArquillianFacet.class);
       }
       return parent;
    }
-
+   
    @Override
    protected ProjectFactory getProjectFactory() {
       return projectFactory;
