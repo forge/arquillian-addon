@@ -23,7 +23,7 @@ public enum ArchiveType
    private final String simpleClassName;
    private final String beansXmlLocationAdder;
 
-   private ArchiveType(String className,String beansXmlLocationAdder)
+   ArchiveType(String className, String beansXmlLocationAdder)
    {
       this.className = className;
       this.simpleClassName = Types.toSimpleName(className);

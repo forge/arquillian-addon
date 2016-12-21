@@ -65,94 +65,48 @@ public class ContainerConfigurationCommand extends AbstractProjectCommand implem
                .add(containerOption)
                .add(containerValue);
 
-      container.setValueChoices(new Callable<Iterable<String>>()
-      {
-         @Override
-         public Iterable<String> call() throws Exception
+      container.setValueChoices(() -> profileManager.getArquillianProfiles(getSelectedProject(builder.getUIContext())));
+      container.setDefaultValue(() -> {
+         Iterable<String> profiles = container.getValueChoices();
+         if (profiles != null && profiles.iterator().hasNext())
          {
-            return profileManager.getArquillianProfiles(getSelectedProject(builder.getUIContext()));
+            return profiles.iterator().next();
          }
+         return null;
       });
-      container.setDefaultValue(new Callable<String>()
-      {
-         @Override
-         public String call() throws Exception
+      containerOption.setEnabled(() -> container.hasValue());
+      containerOption.setItemLabelConverter(source -> {
+         if (source == null)
          {
-            Iterable<String> profiles = container.getValueChoices();
-            if (profiles != null && profiles.iterator().hasNext())
-            {
-               return profiles.iterator().next();
-            }
             return null;
          }
+         return source.getName();
       });
-      containerOption.setEnabled(new Callable<Boolean>()
-      {
-         @Override
-         public Boolean call() throws Exception
+      containerOption.setValueChoices(() -> {
+         if (containerOption.isEnabled())
          {
-            return container.hasValue();
-         }
-      });
-      containerOption.setItemLabelConverter(new Converter<Configuration, String>()
-      {
-         @Override
-         public String convert(Configuration source)
-         {
-            if (source == null)
+            Iterable<Configuration> config = profileManager.getContainer(container.getValue()).getConfigurations();
+            if (config != null)
             {
-               return null;
+               return config;
             }
-            return source.getName();
          }
+         return Collections.emptyList();
       });
-      containerOption.setValueChoices(new Callable<Iterable<Configuration>>()
-      {
-         @Override
-         public Iterable<Configuration> call() throws Exception
+      containerValue.setEnabled(() -> containerOption.hasValue());
+      containerValue.setDefaultValue(() -> {
+         if (containerValue.isEnabled())
          {
-            if (containerOption.isEnabled())
-            {
-               Iterable<Configuration> config = profileManager.getContainer(container.getValue()).getConfigurations();
-               if (config != null)
-               {
-                  return config;
-               }
-            }
-            return Collections.emptyList();
+            return containerOption.getValue().getDefault();
          }
+         return null;
       });
-      containerValue.setEnabled(new Callable<Boolean>()
-      {
-         @Override
-         public Boolean call() throws Exception
+      containerValue.setRequired(() -> {
+         if (containerValue.isEnabled())
          {
-            return containerOption.hasValue();
+            return containerOption.getValue().getDefault() != null;
          }
-      });
-      containerValue.setDefaultValue(new Callable<String>()
-      {
-         @Override
-         public String call() throws Exception
-         {
-            if (containerValue.isEnabled())
-            {
-               return containerOption.getValue().getDefault();
-            }
-            return null;
-         }
-      });
-      containerValue.setRequired(new Callable<Boolean>()
-      {
-         @Override
-         public Boolean call() throws Exception
-         {
-            if (containerValue.isEnabled())
-            {
-               return containerOption.getValue().getDefault() != null;
-            }
-            return true;
-         }
+         return true;
       });
    }
 

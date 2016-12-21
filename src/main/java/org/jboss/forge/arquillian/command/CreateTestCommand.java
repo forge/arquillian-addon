@@ -2,10 +2,7 @@ package org.jboss.forge.arquillian.command;
 
 import java.io.FileNotFoundException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -110,14 +107,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
             }
          }
       });
-      targets.setItemLabelConverter(new Converter<JavaClassSource, String>()
-      {
-         @Override
-         public String convert(JavaClassSource source)
-         {
-            return source == null ? null : source.getQualifiedName();
-         }
-      });
+      targets.setItemLabelConverter(source -> source == null ? null : source.getQualifiedName());
 
       targets.setValueChoices(sources);
 
@@ -128,7 +118,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
          JavaType<?> javaType = javaResource.getJavaType();
          if (javaType.isClass())
          {
-            targets.setDefaultValue(Arrays.asList((JavaClassSource) javaType));
+            targets.setDefaultValue(Collections.singletonList((JavaClassSource) javaType));
          }
       }
    }

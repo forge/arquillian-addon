@@ -124,13 +124,9 @@ public class ProfileManager
                            "    </systemPropertyVariables>\n" +
                            "</configuration>"));
       }
-      catch (XmlPullParserException e)
+      catch (XmlPullParserException | IOException e)
       {
          throw new IllegalStateException(e);
-      }
-      catch (IOException e)
-      {
-         throw new java.lang.IllegalStateException(e);
       }
    }
 }

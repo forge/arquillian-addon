@@ -56,7 +56,7 @@ public class ExtensionResolver {
     private Collection<Extension> resolveInstalledExtensions(Project project, Collection<Extension> availableExtensions) {
         DependencyFacet dependencies = project.getFacet(DependencyFacet.class);
         
-        List<Extension> installedExtensions = new ArrayList<Extension>();
+        List<Extension> installedExtensions = new ArrayList<>();
         for(Dependency installed : dependencies.getDependencies()) {
             for(Extension available : availableExtensions) {
                 if(available.isDependency(installed)) {
@@ -69,7 +69,7 @@ public class ExtensionResolver {
     }
     
     private Collection<Extension> resolveInstallableExtensions(Collection<Extension> installedExtensions, Collection<Extension> availableExtensions) {
-        List<Extension> installable = new ArrayList<Extension>();
+        List<Extension> installable = new ArrayList<>();
         
         for(Extension available : availableExtensions) {
             boolean found = false;
@@ -103,7 +103,7 @@ public class ExtensionResolver {
         MavenModelResource universePom = (MavenModelResource)thisPom.createFrom(new File(universeDep.getArtifact().getFullyQualifiedName()));
         Model universe = universePom.getCurrentModel();
 
-        List<Extension> extensions = new ArrayList<Extension>();
+        List<Extension> extensions = new ArrayList<>();
         
         for(org.apache.maven.model.Dependency modules: universe.getDependencyManagement().getDependencies()) {
             extensions.add(new Extension(

@@ -83,20 +83,10 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
                .getCoordinate());
 
          dependencyVersion.setEnabled(true);
-         dependencyVersion.setValueChoices(new Callable<Iterable<String>>() {
-            @Override
-            public Iterable<String> call() throws Exception {
-               return DependencyUtil.toVersionString(
-                     resolver.resolveVersions(dependencyCoordinate));
-            }
-         });
-         dependencyVersion.setDefaultValue(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-               return DependencyUtil.getLatestNonSnapshotVersionCoordinate(
-                     resolver.resolveVersions(dependencyCoordinate));
-            }
-         });
+         dependencyVersion.setValueChoices(() -> DependencyUtil.toVersionString(
+               resolver.resolveVersions(dependencyCoordinate)));
+         dependencyVersion.setDefaultValue(() -> DependencyUtil.getLatestNonSnapshotVersionCoordinate(
+               resolver.resolveVersions(dependencyCoordinate)));
 
       }
    }

@@ -48,18 +48,8 @@ public class AddArquillianCommand  extends AbstractProjectCommand implements UIC
    public void initializeUI(UIBuilder builder) throws Exception {
       builder.add(arquillianVersion);
       
-      arquillianVersion.setDefaultValue(new Callable<String>() {
-         @Override
-         public String call() throws Exception {
-            return facet.getDefaultVersion();
-         }
-      });
-      arquillianVersion.setValueChoices(new Callable<Iterable<String>>() {
-         @Override
-         public Iterable<String> call() throws Exception {
-            return facet.getAvailableVersions();
-         }
-      });
+      arquillianVersion.setDefaultValue(() -> facet.getDefaultVersion());
+      arquillianVersion.setValueChoices(() -> facet.getAvailableVersions());
    }
 
    @Override
