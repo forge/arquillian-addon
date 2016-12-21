@@ -4,8 +4,8 @@ import org.jboss.forge.addon.dependencies.Dependency;
 
 public class Extension {
 
-    private String name;
-    private Dependency dependency;
+    private final String name;
+    private final Dependency dependency;
     
     public Extension(Dependency dependency) {
         this(dependency.getCoordinate().getArtifactId(), dependency);

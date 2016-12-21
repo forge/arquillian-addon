@@ -1,11 +1,6 @@
 
 package org.jboss.forge.arquillian.command;
 
-import java.util.concurrent.Callable;
-
-import javax.inject.Inject;
-
-import org.jboss.forge.addon.convert.Converter;
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
@@ -25,6 +20,8 @@ import org.jboss.forge.arquillian.api.ArquillianExtensionFacet;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.arquillian.api.Extension;
 import org.jboss.forge.arquillian.extension.ExtensionResolver;
+
+import javax.inject.Inject;
 
 public class AddArquillianExtensionCommand  extends AbstractProjectCommand implements UICommand {
 
@@ -56,18 +53,8 @@ public class AddArquillianExtensionCommand  extends AbstractProjectCommand imple
    public void initializeUI(UIBuilder builder) throws Exception {
       builder.add(arquillianExtension);
       
-      arquillianExtension.setValueChoices(new Callable<Iterable<Extension>>() {
-         @Override
-         public Iterable<Extension> call() throws Exception {
-            return resolver.getAvailableExtensions(getSelectedProject(builder.getUIContext()));
-         }
-      });
-      arquillianExtension.setItemLabelConverter(new Converter<Extension, String>() {
-        @Override
-        public String convert(Extension source) {
-            return source.getName();
-        }
-    });
+      arquillianExtension.setValueChoices(() -> resolver.getAvailableExtensions(getSelectedProject(builder.getUIContext())));
+      arquillianExtension.setItemLabelConverter(Extension::getName);
    }
 
    @Override

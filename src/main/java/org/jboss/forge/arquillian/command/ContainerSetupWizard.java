@@ -87,67 +87,38 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
       containerAdapterType.setValueChoices(Arrays.asList(ContainerType.values()));
       containerAdapterType.setEnabled(true);
       containerAdapter.setEnabled(true);
-      containerAdapter.setValueChoices(new Callable<Iterable<Container>>()
-      {
-         @Override
-         public Iterable<Container> call() throws Exception
+      containerAdapter.setValueChoices(() -> containerResolver.getContainers(containerAdapterType.getValue()));
+      containerAdapter.setItemLabelConverter(source -> {
+         if (source == null)
          {
-            return containerResolver.getContainers(containerAdapterType.getValue());
-         }
-      });
-      containerAdapter.setItemLabelConverter(new Converter<Container, String>()
-      {
-         @Override
-         public String convert(Container source)
-         {
-            if (source == null)
-            {
-               return null;
-            }
-            if (builder.getUIContext().getProvider().isGUI())
-            {
-               return source.getName();
-            }
-            return source.getId();
-         }
-      });
-      containerAdapterVersion.setEnabled(new Callable<Boolean>()
-      {
-         @Override
-         public Boolean call() throws Exception
-         {
-            return containerAdapter.hasValue();
-         }
-      });
-      containerAdapterVersion.setValueChoices(new Callable<Iterable<String>>()
-      {
-         @Override
-         public Iterable<String> call() throws Exception
-         {
-            if (containerAdapterVersion.isEnabled())
-            {
-               return DependencyUtil.toVersionString(
-                        resolver.resolveVersions(
-                                 DependencyQueryBuilder.create(
-                                          containerAdapter.getValue().asDependency().getCoordinate())));
-            }
-            return Collections.emptyList();
-         }
-      });
-      containerAdapterVersion.setDefaultValue(new Callable<String>()
-      {
-         @Override
-         public String call() throws Exception
-         {
-            if (containerAdapter.hasValue())
-            {
-               return DependencyUtil.getLatestNonSnapshotVersionCoordinate(
-                        resolver.resolveVersions(
-                                 DependencyQueryBuilder.create(
-                                          containerAdapter.getValue().asDependency().getCoordinate())));
-            }
             return null;
          }
+         if (builder.getUIContext().getProvider().isGUI())
+         {
+            return source.getName();
+         }
+         return source.getId();
+      });
+      containerAdapterVersion.setEnabled(() -> containerAdapter.hasValue());
+      containerAdapterVersion.setValueChoices(() -> {
+         if (containerAdapterVersion.isEnabled())
+         {
+            return DependencyUtil.toVersionString(
+                     resolver.resolveVersions(
+                              DependencyQueryBuilder.create(
+                                       containerAdapter.getValue().asDependency().getCoordinate())));
+         }
+         return Collections.emptyList();
+      });
+      containerAdapterVersion.setDefaultValue(() -> {
+         if (containerAdapter.hasValue())
+         {
+            return DependencyUtil.getLatestNonSnapshotVersionCoordinate(
+                     resolver.resolveVersions(
+                              DependencyQueryBuilder.create(
+                                       containerAdapter.getValue().asDependency().getCoordinate())));
+         }
+         return null;
       });
    }
 

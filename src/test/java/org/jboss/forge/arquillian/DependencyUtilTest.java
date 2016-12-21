@@ -23,15 +23,15 @@
  */
 package org.jboss.forge.arquillian;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.arquillian.util.DependencyUtil;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * DependencyUtilTestCase
@@ -45,7 +45,7 @@ public class DependencyUtilTest
    @Test
    public void shouldGetLastNonSnapshotVersion()
    {
-      List<Coordinate> deps = new ArrayList<Coordinate>();
+      List<Coordinate> deps = new ArrayList<>();
       deps.add(DependencyBuilder.create().setVersion("1.0").getCoordinate());
       deps.add(DependencyBuilder.create().setVersion("1.0-SNAPSHOT").getCoordinate());
 
@@ -57,7 +57,7 @@ public class DependencyUtilTest
    @Test
    public void shouldReturnLatestIfAllSnapshots()
    {
-      List<Coordinate> deps = new ArrayList<Coordinate>();
+      List<Coordinate> deps = new ArrayList<>();
       deps.add(DependencyBuilder.create().setVersion("1.0-SNAPSHOT").getCoordinate());
       deps.add(DependencyBuilder.create().setVersion("2.0-SNAPSHOT").getCoordinate());
 
@@ -69,7 +69,7 @@ public class DependencyUtilTest
    @Test
    public void shouldReturnNullIfEmpty()
    {
-      String dep = DependencyUtil.getLatestNonSnapshotVersion(Collections.<String> emptyList());
+      String dep = DependencyUtil.getLatestNonSnapshotVersion(Collections.emptyList());
 
       Assert.assertNull(dep);
    }
