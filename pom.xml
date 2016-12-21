@@ -13,7 +13,7 @@
   <name>Arquillian Forge Addon</name>
   <properties>
     <version.arquillian_core>1.1.11.Final</version.arquillian_core>
-    <version.forge>3.0.0.Beta4</version.forge>
+    <version.forge>3.4.0.Final</version.forge>
     <version.jackson>1.9.1</version.jackson>
     <version.junit>4.12</version.junit>
     <version.velocity>1.7</version.velocity>
