@@ -6,163 +6,95 @@
  */
 package test.integration;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.apache.maven.model.Model;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Profile;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.maven.projects.MavenFacet;
-import org.jboss.forge.addon.parser.xml.resources.XMLResource;
+import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.projects.Project;
+import org.jboss.forge.addon.projects.ProjectFacet;
 import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.ui.controller.WizardCommandController;
+import org.jboss.forge.addon.shell.test.ShellTest;
+import org.jboss.forge.addon.ui.result.Failed;
+import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.test.UITestHarness;
-import org.jboss.forge.arquillian.AddonDependencies;
-import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.arquillian.archive.AddonArchive;
-import org.jboss.forge.arquillian.command.SetupWizard;
-import org.jboss.forge.arquillian.testframework.junit.JUnitFacet;
-import org.jboss.forge.parser.xml.Node;
-import org.junit.Assert;
+import org.jboss.forge.furnace.Furnace;
+import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import test.integration.util.DependencyMatcher;
-import test.integration.util.Deployments;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @Author Paul Bakker - paul.bakker.nl@gmail.com
  */
-@RunWith(Arquillian.class) @Ignore
+@RunWith(Arquillian.class)
 public class ContainerInstallationIntegrationTest 
 {
-   @Deployment
-   @AddonDependencies({
-            @AddonDependency(name = "org.arquillian.forge:arquillian-addon"),
-            @AddonDependency(name = "org.jboss.forge.addon:projects"),
-            @AddonDependency(name = "org.jboss.forge.addon:maven"),
-            @AddonDependency(name = "org.jboss.forge.addon:ui-test-harness")
-   })
-   public static AddonArchive getDeployment() {
-      return Deployments.basicPluginInfrastructure();
+   private ProjectFactory projectFactory;
+   private UITestHarness uiTestHarness;
+   private ShellTest shellTest;
+   private FacetFactory facetFactory;
+
+   private Project project;
+
+   @Before
+   public void setUp() throws Exception {
+      AddonRegistry addonRegistry = Furnace.instance(getClass().getClassLoader()).getAddonRegistry();
+      projectFactory = addonRegistry.getServices(ProjectFactory.class).get();
+      uiTestHarness = addonRegistry.getServices(UITestHarness.class).get();
+      shellTest = addonRegistry.getServices(ShellTest.class).get();
+      facetFactory = addonRegistry.getServices(FacetFactory.class).get();
+      final List<Class<? extends ProjectFacet>> facetTypes = Arrays.asList(ArquillianFacet.class, JavaSourceFacet.class);
+      project = projectFactory.createTempProject(facetTypes);
+
    }
-   
-   @Inject
-   private UITestHarness testHarness;
 
-   @Inject
-   private ProjectFactory factory;
-
-
-   private Project installContainer(final String container, final List<DependencyMatcher> dependencies) throws Exception
-   {
-      Project project = factory.createTempProject();
-      MavenFacet metadataFacet = project.getFacet(MavenFacet.class);
-      List<Profile> profiles = metadataFacet.getModel().getProfiles();
-      assertThat(profiles.size(), is(0));
-
-      WizardCommandController setup = testHarness.createWizardController(SetupWizard.class, project.getRootDirectory());
-      setup.initialize();
-      setup.setValueFor("arquillianVersion", "1.1.3.Final");
-      setup.execute();
-      
-      assertTrue(project.hasFacet(ArquillianFacet.class));
-      
-      Assert.assertTrue(setup.canMoveToNextStep());
-      
-      WizardCommandController testFramework = setup.next();
-      testFramework.initialize();
-      testFramework.setValueFor("testFramework", "junit");
-      testFramework.setValueFor("testFrameworkVersion", "4.11");
-      testFramework.execute();
-     
-      Assert.assertTrue(setup.canMoveToNextStep());
-
-      JUnitFacet junitFacet = new JUnitFacet();
-      Model pom = metadataFacet.getModel();
-      DependencyMatcher arqBom = new DependencyMatcher("arquillian-bom");
-
-      assertThat("Verify arquillian:bom was added to DependencyManagement ",
-            pom.getDependencyManagement().getDependencies(), hasItem(arqBom));
-
-      assertNotNull("Verify that the plugin use a version property for arquillian core",
-            pom.getProperties().get(ArquillianFacet.ARQ_CORE_VERSION_PROP_NAME));
-
-      assertNotNull("Verify that the plugin use a version property for junit",
-            pom.getProperties().get(junitFacet.getVersionPropertyName()));
-
-      assertThat("Verify that junit arquillian integration was added",
-            pom.getDependencies(), hasItem(
-                  new DependencyMatcher(junitFacet.createArquillianDependency().getCoordinate().getArtifactId())));
-
-      assertThat("Verify that junit was added",
-            pom.getDependencies(), hasItem(
-                  new DependencyMatcher(junitFacet.createFrameworkDependency().getCoordinate().getArtifactId())));
-      
-      WizardCommandController containerCommand = setup.next();
-      containerCommand.initialize();
-      containerCommand.setValueFor("containerAdapter", container);
-      containerCommand.execute();
-      Assert.assertFalse(setup.canMoveToNextStep());
-
-      XMLResource arquillianXml = project.getRootDirectory().getChildOfType(XMLResource.class, "src/test/resources/arquillian.xml");
-
-      assertThat(arquillianXml, is(notNullValue()));
-      assertThat(arquillianXml.exists(), is(true));
-
-      Node arquillianXmlRoot = arquillianXml.getXmlSource();
-      assertThat(arquillianXmlRoot.getSingle("container@qualifier=" + container), is(notNullValue()));
-
-      assertThat(metadataFacet.getModel().getProfiles().size(), is(1));
-      Profile profile = metadataFacet.getModel().getProfiles().get(0);
-      
-      for (DependencyMatcher dependency : dependencies)
-      {
-         assertThat(profile.getDependencies(), hasItem(dependency));
+   @After
+   public void tearDown() throws Exception {
+      if (shellTest != null) {
+         shellTest.close();
       }
-
-      return project;
    }
 
    @Test
    public void installOpenEJBContainer() throws Exception
    {
       installContainer("openejb-embedded-3.1",
-            Arrays.asList(
-                  new DependencyMatcher("arquillian-openejb-embedded-3.1"),
-                  new DependencyMatcher("openejb-core")));
+              Arrays.asList(
+                      new DependencyMatcher("arquillian-openejb-embedded-3.1"),
+                      new DependencyMatcher("openejb-core")));
    }
 
    @Test
    public void installOpenWebBeansContainer() throws Exception
    {
       installContainer("openwebbeans-embedded-1",
-            Arrays.asList(
-                  new DependencyMatcher("arquillian-openwebbeans-embedded-1"),
-                  new DependencyMatcher("openwebbeans-impl")));
+              Arrays.asList(
+                      new DependencyMatcher("arquillian-openwebbeans-embedded-1"),
+                      new DependencyMatcher("openwebbeans-impl")));
    }
 
    @Test
    public void installGlassfishEmbeddedContainer() throws Exception
    {
       installContainer("glassfish-embedded-3.1",
-            Arrays.asList(
-                  new DependencyMatcher("arquillian-glassfish-embedded-3.1"),
-                  new DependencyMatcher("glassfish-embedded-all")));
+              Arrays.asList(
+                      new DependencyMatcher("arquillian-glassfish-embedded-3.1"),
+                      new DependencyMatcher("glassfish-embedded-all")));
    }
 
    @Test
@@ -245,50 +177,50 @@ public class ContainerInstallationIntegrationTest
                       new DependencyMatcher("jboss-as-arquillian-container-remote")));
    }
 
-    @Test
-    public void installWildFlyManagedContainer() throws Exception
-    {
-        installContainer("wildfly-managed",
-                Collections.singletonList(
-                        new DependencyMatcher("wildfly-arquillian-container-managed")));
-    }
+   @Test
+   public void installWildFlyManagedContainer() throws Exception
+   {
+      installContainer("wildfly-managed",
+              Collections.singletonList(
+                      new DependencyMatcher("wildfly-arquillian-container-managed")));
+   }
 
-    @Test
-    public void installWildFlyRemoteContainer() throws Exception
-    {
-        installContainer("wildfly-remote",
-                Collections.singletonList(
-                        new DependencyMatcher("wildfly-arquillian-container-remote")));
-    }
+   @Test
+   public void installWildFlyRemoteContainer() throws Exception
+   {
+      installContainer("wildfly-remote",
+              Collections.singletonList(
+                      new DependencyMatcher("wildfly-arquillian-container-remote")));
+   }
 
    @Test
    public void installJetty6EmbeddedContainer() throws Exception
    {
       installContainer("jetty-embedded-6.1",
-            Arrays.asList(
-                  new DependencyMatcher("arquillian-jetty-embedded-6.1"),
-                  new DependencyMatcher("jetty")));
+              Arrays.asList(
+                      new DependencyMatcher("arquillian-jetty-embedded-6.1"),
+                      new DependencyMatcher("jetty")));
    }
 
    @Test
    public void installJetty7EmbeddedContainer() throws Exception
    {
       installContainer("jetty-embedded-7",
-            Arrays.asList(
-                  new DependencyMatcher("arquillian-jetty-embedded-7"),
-                  new DependencyMatcher("jetty-webapp")));
+              Arrays.asList(
+                      new DependencyMatcher("arquillian-jetty-embedded-7"),
+                      new DependencyMatcher("jetty-webapp")));
    }
 
    @Test
    public void installTomcat6EmbeddedContainer() throws Exception
    {
       installContainer("tomcat-embedded-6",
-            Arrays.asList(
-                  new DependencyMatcher("arquillian-tomcat-embedded-6"),
-                  new DependencyMatcher("catalina"),
-                  new DependencyMatcher("catalina"),
-                  new DependencyMatcher("coyote"),
-                  new DependencyMatcher("jasper")));
+              Arrays.asList(
+                      new DependencyMatcher("arquillian-tomcat-embedded-6"),
+                      new DependencyMatcher("catalina"),
+                      new DependencyMatcher("catalina"),
+                      new DependencyMatcher("coyote"),
+                      new DependencyMatcher("jasper")));
    }
 
    @Test
@@ -357,52 +289,44 @@ public class ContainerInstallationIntegrationTest
               Collections.singletonList(
                       new DependencyMatcher("arquillian-wls-remote-10.3")));
    }
-/*
-   @Test
-   public void installMultipleTimesShouldOverwriteProfile() throws Exception
-   {
-      Project project = initializeJavaProject();
 
-      MavenCoreFacet coreFacet = project.getFacet(MavenCoreFacet.class);
+   private void installContainer(final String container, final List<DependencyMatcher> dependencyMatchers) throws Exception {
 
-      List<Profile> profiles = coreFacet.getPOM().getProfiles();
-      assertThat(profiles.size(), is(0));
+      shellTest.getShell().setCurrentResource(project.getRoot());
 
-      queueInputLines("JBOSS_AS_REMOTE_7", "19", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
-      getShell().execute("arquillian setup");
+      final Result resultArquillianSetup = shellTest.execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 5, TimeUnit.SECONDS);
+      assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
-      queueInputLines("JBOSS_AS_REMOTE_7", "19", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
-      getShell().execute("arquillian setup");
+      MavenFacet mavenFacet = project.getFacet(MavenFacet.class);
+      final Profile profile = mavenFacet.getModel().getProfiles().get(0);
 
-      assertThat(coreFacet.getPOM().getProfiles().size(), is(1));
-   }
-
-   @Test
-   public void installContainerWithDownload() throws Exception
-   {
-      Project project = initializeJavaProject();
-
-      MavenCoreFacet coreFacet = project.getFacet(MavenCoreFacet.class);
-
-      List<Profile> profiles = coreFacet.getPOM().getProfiles();
-      assertThat(profiles.size(), is(0));
-
-      // answer y to download server
-      queueInputLines("JBOSS_AS_MANAGED_4.2", "", "", "", "", "", "", "y", "");
-      getShell().execute("arquillian setup");
-
-      assertThat(coreFacet.getPOM().getProfiles().size(), is(1));
-      Profile profile = coreFacet.getPOM().getProfiles().get(0);
-
-      assertThat(profile.getDependencies(), hasItems(
-            new DependencyMatcher("arquillian-jbossas-managed-4.2"),
-            new DependencyMatcher("jboss-server-manager"),
-            new DependencyMatcher("dom4j"),
-            new DependencyMatcher("jbossall-client")));
-
-      assertThat(profile.getBuild().getPlugins().size(), is(2));
-      assertThat(profile.getBuild().getPlugins().get(1).getArtifactId(), is("maven-dependency-plugin"));
+      for (DependencyMatcher dependency : dependencyMatchers)
+      {
+         assertThat(profile.getDependencies(), hasItem(dependency));
+      }
 
    }
-*/
+
+
+   public static class DependencyMatcher extends BaseMatcher<Dependency>
+   {
+      private final String artifactId;
+
+      public DependencyMatcher(final String artifactId)
+      {
+         this.artifactId = artifactId;
+      }
+
+      @Override
+      public boolean matches(final Object o)
+      {
+         Dependency d = (Dependency) o;
+         return d.getArtifactId().equals(artifactId);
+      }
+
+      @Override
+      public void describeTo(final Description description)
+      {
+      }
+   }
 }

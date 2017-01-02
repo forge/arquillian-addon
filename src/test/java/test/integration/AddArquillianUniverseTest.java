@@ -37,8 +37,6 @@ public class AddArquillianUniverseTest {
         }
         project = factory.findProject(project.getRoot());
         
-        System.out.println(project.getFacet(MavenFacet.class).getModelResource().getContents());
-        
         Assert.assertTrue(project.hasFacet(ArquillianFacet.class));
         
     }

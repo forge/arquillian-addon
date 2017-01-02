@@ -51,8 +51,6 @@ public class AddArquillianExtensionTest {
             Assert.assertFalse(result instanceof Failed);
         }
 
-        System.out.println(project.getFacet(MavenFacet.class).getModelResource().getContents());
-        
         Assert.assertTrue(project.hasFacet(ArquillianFacet.class));
         Assert.assertTrue(project.hasFacet(ArquillianExtensionFacet.class));
     }

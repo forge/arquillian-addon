@@ -114,6 +114,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.jboss.forge.addon</groupId>
+      <artifactId>shell-test-harness</artifactId>
+      <classifier>forge-addon</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${version.junit}</version>
