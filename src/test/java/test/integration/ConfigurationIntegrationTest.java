@@ -1,19 +1,13 @@
 package test.integration;
 
-import org.apache.maven.model.Profile;
-import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.FacetFactory;
-import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFacet;
 import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.addon.resource.ResourceFacet;
 import org.jboss.forge.addon.shell.test.ShellTest;
 import org.jboss.forge.addon.ui.result.Failed;
 import org.jboss.forge.addon.ui.result.Result;
@@ -21,9 +15,7 @@ import org.jboss.forge.addon.ui.test.UITestHarness;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.addons.AddonRegistry;
-import org.jboss.forge.roaster.model.source.JavaSource;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +62,7 @@ public class ConfigurationIntegrationTest {
 
       shellTest.getShell().setCurrentResource(project.getRoot());
 
-      final Result resultArquillianSetup = shellTest.execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit", 15, TimeUnit.SECONDS);
+      final Result resultArquillianSetup = shellTest.execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit", 30, TimeUnit.SECONDS);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
       Result resultConfigureContainer = shellTest.execute("arquillian-container-configuration --container arquillian-wildfly-remote --container-option managementPort --container-value 8081", 15, TimeUnit.SECONDS);
@@ -91,7 +83,7 @@ public class ConfigurationIntegrationTest {
    {
       shellTest.getShell().setCurrentResource(project.getRoot());
 
-      final Result resultArquillianSetup = shellTest.execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit", 15, TimeUnit.SECONDS);
+      final Result resultArquillianSetup = shellTest.execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit", 30, TimeUnit.SECONDS);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
       final Result resultConfigureContainer = shellTest.execute("arquillian-container-configuration --container arquillian-wildfly-remote --container-option managementPort --container-value 8081", 15, TimeUnit.SECONDS);
@@ -109,7 +101,7 @@ public class ConfigurationIntegrationTest {
 
       shellTest.getShell().setCurrentResource(project.getRoot());
 
-      final Result resultArquillianSetup = shellTest.execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit", 15, TimeUnit.SECONDS);
+      final Result resultArquillianSetup = shellTest.execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit", 30, TimeUnit.SECONDS);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
       final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);

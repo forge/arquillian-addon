@@ -81,13 +81,13 @@ public class TestNGTestGenerationIntegrationTest
 
       shellTest.getShell().setCurrentResource(project.getRoot());
 
-      final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 15, TimeUnit.SECONDS);
+      final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 30, TimeUnit.SECONDS);
       assertThat(resultNewJavaClass, is(not(instanceOf(Failed.class))));
 
       final Result resultArquillianSetup = shellTest.execute(arquillianSetupCommand, 5, TimeUnit.SECONDS);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
-      final Result createTestResult = shellTest.execute("arquillian-create-test --class org.superbiz.Bean", 15, TimeUnit.SECONDS);
+      final Result createTestResult = shellTest.execute("arquillian-create-test --class org.superbiz.Bean", 30, TimeUnit.SECONDS);
       assertThat(createTestResult, is(not(instanceOf(Failed.class))));
 
       final DependencyBuilder junitDependency = DependencyBuilder.create("org.testng:testng");
