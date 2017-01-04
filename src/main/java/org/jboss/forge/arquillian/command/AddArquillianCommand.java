@@ -1,7 +1,5 @@
 package org.jboss.forge.arquillian.command;
 
-import java.util.concurrent.Callable;
-
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.facets.FacetFactory;
