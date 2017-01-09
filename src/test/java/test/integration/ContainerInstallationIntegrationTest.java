@@ -294,7 +294,7 @@ public class ContainerInstallationIntegrationTest
 
       shellTest.getShell().setCurrentResource(project.getRoot());
 
-      final Result resultArquillianSetup = shellTest.execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 5, TimeUnit.SECONDS);
+      final Result resultArquillianSetup = shellTest.execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 30, TimeUnit.SECONDS);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
       MavenFacet mavenFacet = project.getFacet(MavenFacet.class);

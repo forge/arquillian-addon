@@ -41,7 +41,7 @@ import static org.junit.Assert.assertThat;
  * @author <a href="mailto:bartosz.majsak@gmail.com">Bartosz Majsak</a>
  */
 @RunWith(Arquillian.class)
-public class TestNGTestGenerationIntegrationTest 
+public class TestNGTestGenerationIntegrationTest
 {
    private ProjectFactory projectFactory;
    private UITestHarness uiTestHarness;
@@ -81,13 +81,13 @@ public class TestNGTestGenerationIntegrationTest
 
       shellTest.getShell().setCurrentResource(project.getRoot());
 
-      final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 5, TimeUnit.SECONDS);
+      final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 2, TimeUnit.MINUTES);
       assertThat(resultNewJavaClass, is(not(instanceOf(Failed.class))));
 
       final Result resultArquillianSetup = shellTest.execute(arquillianSetupCommand, 5, TimeUnit.SECONDS);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
-      final Result createTestResult = shellTest.execute("arquillian-create-test --class org.superbiz.Bean", 5, TimeUnit.SECONDS);
+      final Result createTestResult = shellTest.execute("arquillian-create-test --class org.superbiz.Bean", 2, TimeUnit.MINUTES);
       assertThat(createTestResult, is(not(instanceOf(Failed.class))));
 
       final DependencyBuilder junitDependency = DependencyBuilder.create("org.testng:testng");
@@ -107,4 +107,5 @@ public class TestNGTestGenerationIntegrationTest
 
       assertThat(testClass.hasImport("org.jboss.arquillian.testng.Arquillian"), is(true));
    }
+
 }
