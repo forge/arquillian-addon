@@ -41,7 +41,7 @@ import static org.junit.Assert.assertThat;
  * @author <a href="mailto:bartosz.majsak@gmail.com">Bartosz Majsak</a>
  */
 @RunWith(Arquillian.class)
-public class TestNGTestGenerationIntegrationTest 
+public class TestNGTestGenerationIntegrationTest
 {
    private ProjectFactory projectFactory;
    private UITestHarness uiTestHarness;
@@ -107,4 +107,5 @@ public class TestNGTestGenerationIntegrationTest
 
       assertThat(testClass.hasImport("org.jboss.arquillian.testng.Arquillian"), is(true));
    }
+
 }

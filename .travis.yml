@@ -3,5 +3,8 @@ language: java
 jdk:
   - oraclejdk8
 
+script:
+  - mvn clean test -P ci
+
 notifications:
   irc: chat.freenode.net#forge
