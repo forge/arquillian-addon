@@ -156,6 +156,7 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <excludes>
+                <!-- FIXME: This test constantly fails on travis - needs further investigation -->
                 <exclude>**/TestNGTestGenerationIntegrationTest.java</exclude>
               </excludes>
             </configuration>
