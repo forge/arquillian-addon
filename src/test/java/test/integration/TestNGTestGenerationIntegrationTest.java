@@ -84,7 +84,7 @@ public class TestNGTestGenerationIntegrationTest
       final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 2, TimeUnit.MINUTES);
       assertThat(resultNewJavaClass, is(not(instanceOf(Failed.class))));
 
-      final Result resultArquillianSetup = shellTest.execute(arquillianSetupCommand, 5, TimeUnit.SECONDS);
+      final Result resultArquillianSetup = shellTest.execute(arquillianSetupCommand, 30, TimeUnit.SECONDS);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
       final Result createTestResult = shellTest.execute("arquillian-create-test --class org.superbiz.Bean", 2, TimeUnit.MINUTES);
