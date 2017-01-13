@@ -21,9 +21,14 @@ public class TestNGFacet extends TestFrameworkFacet
    }
 
    @Override
-   public String getTemplateName()
+   public String getTemplateLocation()
    {
-      return "TestNGTest.vtl";
+      return "/TestNGTest.ftl";
+   }
+
+   @Override
+   public String getTemplateStandaloneLocation() {
+      return "/TestNGStandaloneTest.ftl";
    }
 
    @Override
@@ -50,5 +55,15 @@ public class TestNGFacet extends TestFrameworkFacet
             .setArtifactId("arquillian-testng")
             .setScopeType("test")
             .setPackaging("pom");
+   }
+
+   @Override
+   public DependencyBuilder createArquillianStandaloneDependency()
+   {
+      return DependencyBuilder.create()
+              .setGroupId("org.arquillian.universe")
+              .setArtifactId("arquillian-testng-standalone")
+              .setScopeType("test")
+              .setPackaging("pom");
    }
 }

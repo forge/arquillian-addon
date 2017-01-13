@@ -1,28 +1,31 @@
-package $package;
+package ${package};
 
 import ${packageImport}.${ClassToTest};
 import javax.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.testng.annotations.Test;
-import org.testng.Assert;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import ${archiveType.className};
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.arquillian.testng.Arquillian;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.*;
 
-
-public class ${ClassToTest}Test extends Arquillian {
+@RunWith(Arquillian.class)
+public class ${ClassToTest}Test {
 
     @Inject
     private ${ClassToTest} ${classToTest};
 
-    @Deployment 
+    @Deployment
     public static ${archiveType.simpleClassName} createDeployment() {
         return ShrinkWrap.create(${archiveType.simpleClassName}.class)
                 .addClass(${ClassToTest}.class)
-                #if($enableJPA)
+                <#if enableJPA>
                 .addAsManifestResource("META-INF/persistence.xml", "persistence.xml")
-                #end
+                </#if>
                 .${archiveType.beansXmlLocationAdder}(EmptyAsset.INSTANCE, "beans.xml");
     }
 

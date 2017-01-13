@@ -23,7 +23,11 @@ import org.jboss.forge.addon.projects.facets.MetadataFacet;
 })
 public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
 
-   public abstract String getTemplateName();
+   private boolean standalone = false;
+
+   public abstract String getTemplateLocation();
+
+   public abstract String getTemplateStandaloneLocation();
 
    public abstract String getFrameworkName();
 
@@ -32,6 +36,12 @@ public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
    public abstract DependencyBuilder createFrameworkDependency();
 
    public abstract DependencyBuilder createArquillianDependency();
+
+   public abstract DependencyBuilder createArquillianStandaloneDependency();
+
+   public void setStandalone(boolean standalone) {
+      this.standalone = standalone;
+   }
 
    @Override
    public boolean install() {
@@ -59,7 +69,14 @@ public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
    }
 
    protected void installDependencies() {
-      installArquillianDependency(createArquillianDependency());
+      if (standalone)
+      {
+         installArquillianDependency(createArquillianStandaloneDependency());
+      }
+      else
+      {
+         installArquillianDependency(createArquillianDependency());
+      }
       installFrameworkDependency(createFrameworkDependency());
    }
 
@@ -70,18 +87,21 @@ public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
    }
 
    protected void installArquillianDependency(DependencyBuilder arquillianDependency) {
-      if (hasEffectiveDependency(arquillianDependency)) {
+      if (hasEffectiveDependency(arquillianDependency))
+      {
          return;
       }
       final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
 
-      if(arquillianDependency != null) {
+      if(arquillianDependency != null)
+      {
          dependencyFacet.addDirectDependency(arquillianDependency);
       }
    }
    
    protected void installFrameworkDependency(DependencyBuilder frameworkDependency) {
-      if (hasEffectiveDependency(frameworkDependency)) {
+      if (hasEffectiveDependency(frameworkDependency))
+      {
          return;
       }
       

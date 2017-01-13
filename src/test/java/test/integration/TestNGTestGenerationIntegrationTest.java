@@ -22,6 +22,8 @@ import org.jboss.forge.addon.ui.test.UITestHarness;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.roaster.model.JavaClass;
+import org.jboss.forge.roaster.model.Method;
 import org.jboss.forge.roaster.model.source.JavaSource;
 import org.junit.After;
 import org.junit.Before;
@@ -32,9 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -49,6 +49,7 @@ public class TestNGTestGenerationIntegrationTest
    private FacetFactory facetFactory;
 
    private Project project;
+   private DependencyFacet dependencyFacet;
 
    @Before
    public void setUp() throws Exception {
@@ -59,6 +60,8 @@ public class TestNGTestGenerationIntegrationTest
       facetFactory = addonRegistry.getServices(FacetFactory.class).get();
       final List<Class<? extends ProjectFacet>> facetTypes = Arrays.asList(ArquillianFacet.class, JavaSourceFacet.class);
       project = projectFactory.createTempProject(facetTypes);
+      dependencyFacet = project.getFacet(DependencyFacet.class);
+      shellTest.getShell().setCurrentResource(project.getRoot());
 
    }
 
@@ -72,14 +75,35 @@ public class TestNGTestGenerationIntegrationTest
    @Test
    public void shouldGenerateTestNGBasedTest() throws Exception
    {
-      testNgTestGenerationUsing("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework testng");
+      final JavaClass<?> testClass = testNgTestGenerationUsing("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework testng");
+
+      final DependencyBuilder universeJunitDependency = DependencyBuilder.create("org.arquillian.universe:arquillian-testng");
+      universeJunitDependency.setPackaging("pom");
+      assertThat(dependencyFacet.hasDirectDependency(universeJunitDependency), is(true));
+
+      assertThat(testClass.hasField("bean"), is(true));
+
+      final Method<?, ?> createDeployment = testClass.getMethod("createDeployment");
+      assertThat(createDeployment, is(notNullValue()));
    }
 
-   private void testNgTestGenerationUsing(String arquillianSetupCommand) throws Exception {
+   @Test
+   public void shouldGenerateTestNGStandaloneBasedTest() throws Exception
+   {
+      final JavaClass<?> testClass = testNgTestGenerationUsing("arquillian-setup --standalone-mode --test-framework testng");
 
-      DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
+      final DependencyBuilder universeJunitDependency = DependencyBuilder.create("org.arquillian.universe:arquillian-testng-standalone");
+      universeJunitDependency.setPackaging("pom");
+      assertThat(dependencyFacet.hasDirectDependency(universeJunitDependency), is(true));
 
-      shellTest.getShell().setCurrentResource(project.getRoot());
+      assertThat(testClass.hasField("bean"), is(false));
+
+      final Method<?, ?> createDeployment = testClass.getMethod("createDeployment");
+      assertThat(createDeployment, is(nullValue()));
+   }
+
+   private JavaClass<?> testNgTestGenerationUsing(String arquillianSetupCommand) throws Exception
+   {
 
       final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 2, TimeUnit.MINUTES);
       assertThat(resultNewJavaClass, is(not(instanceOf(Failed.class))));
@@ -93,10 +117,6 @@ public class TestNGTestGenerationIntegrationTest
       final DependencyBuilder junitDependency = DependencyBuilder.create("org.testng:testng");
       assertThat(dependencyFacet.hasDirectDependency(junitDependency), is(true));
 
-      final DependencyBuilder universeJunitDependency = DependencyBuilder.create("org.arquillian.universe:arquillian-testng");
-      universeJunitDependency.setPackaging("pom");
-      assertThat(dependencyFacet.hasDirectDependency(universeJunitDependency), is(true));
-
       final DependencyBuilder universeDependency = DependencyBuilder.create("org.arquillian:arquillian-universe");
       universeDependency.setPackaging("pom");
       assertThat(dependencyFacet.hasDirectManagedDependency(universeDependency), is(true));
@@ -106,6 +126,8 @@ public class TestNGTestGenerationIntegrationTest
               .getJavaType();
 
       assertThat(testClass.hasImport("org.jboss.arquillian.testng.Arquillian"), is(true));
+
+      return (JavaClass<?>) testClass;
    }
 
 }

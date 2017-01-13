@@ -21,9 +21,14 @@ public class JUnitFacet extends TestFrameworkFacet
    }
 
    @Override
-   public String getTemplateName()
+   public String getTemplateLocation()
    {
-      return "JUnitTest.vtl";
+      return "/JUnitTest.ftl";
+   }
+
+   @Override
+   public String getTemplateStandaloneLocation() {
+      return "/JUnitStandaloneTest.ftl";
    }
 
    @Override
@@ -49,5 +54,14 @@ public class JUnitFacet extends TestFrameworkFacet
                               .setArtifactId("arquillian-junit")
                               .setScopeType("test")
                               .setPackaging("pom");
+   }
+
+   @Override
+   public DependencyBuilder createArquillianStandaloneDependency() {
+      return DependencyBuilder.create()
+              .setGroupId("org.arquillian.universe")
+              .setArtifactId("arquillian-junit-standalone")
+              .setScopeType("test")
+              .setPackaging("pom");
    }
 }

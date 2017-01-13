@@ -1,22 +1,28 @@
 package org.jboss.forge.arquillian.command;
 
 import java.io.FileNotFoundException;
-import java.io.StringWriter;
+import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
 import javax.inject.Inject;
 
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.jboss.forge.addon.convert.Converter;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.parser.java.resources.JavaResource;
 import org.jboss.forge.addon.parser.java.resources.JavaResourceVisitor;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
+import org.jboss.forge.addon.projects.facets.DependencyFacet;
+import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
+import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.addon.resource.Resource;
+import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.addon.resource.visit.VisitContext;
+import org.jboss.forge.addon.templates.Template;
+import org.jboss.forge.addon.templates.TemplateFactory;
+import org.jboss.forge.addon.templates.freemarker.FreemarkerTemplate;
 import org.jboss.forge.addon.text.Inflector;
 import org.jboss.forge.addon.ui.command.UICommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
@@ -43,18 +49,14 @@ import org.jboss.forge.roaster.model.source.JavaSource;
 public class CreateTestCommand extends AbstractProjectCommand implements UICommand
 {
 
-   static
-   {
-      Properties properties = new Properties();
-      properties.setProperty("resource.loader", "class");
-      properties.setProperty("class.resource.loader.class",
-               "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-
-      Velocity.init(properties);
-   }
+   @Inject
+   private TemplateFactory templateFactory;
 
    @Inject
    private ProjectFactory projectFactory;
+
+   @Inject
+   private ResourceFactory resourceFactory;
 
    @Inject
    @WithAttributes(shortName = 't', label = "Targets", required = true)
@@ -154,23 +156,39 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
    }
 
    private JavaResource createTest(Project project, JavaClassSource classUnderTest, boolean enableJPA, ArchiveType type)
-            throws FileNotFoundException
+           throws IOException
    {
       final TestFrameworkFacet testFrameworkFacet = project.getFacet(TestFrameworkFacet.class);
       final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
 
-      final VelocityContext context = initializeVelocityContext(enableJPA, type, classUnderTest);
+      final Template template = getTemplateFor(isStandalone(project) ? testFrameworkFacet.getTemplateStandaloneLocation() : testFrameworkFacet.getTemplateLocation());
 
-      final StringWriter writer = new StringWriter();
-      Velocity.mergeTemplate(testFrameworkFacet.getTemplateName(), "UTF-8", context, writer);
-
-      final JavaSource<?> testClass = Roaster.parse(JavaSource.class, writer.toString());
+      final Map<String, Object> context = initializeFreeMarkerContext(enableJPA, type, classUnderTest);
+      final JavaSource<?> testClass = Roaster.parse(JavaSource.class, template.process(context));
       return java.saveTestJavaSource(testClass);
    }
 
-   private VelocityContext initializeVelocityContext(boolean enableJPA, ArchiveType type, JavaSource<?> javaSource)
+   private Template getTemplateFor(String name)
    {
-      VelocityContext context = new VelocityContext();
+      final Resource<URL> resource = resourceFactory.create(getClass().getResource(name));
+      return templateFactory.create(resource, FreemarkerTemplate.class);
+   }
+
+   private boolean isStandalone(Project project)
+   {
+      final DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
+
+      return dependencyFacet.getDependencies().stream()
+              .map(dependency -> dependency.getCoordinate())
+              .anyMatch(coordinate ->
+                      "org.arquillian.universe".equals(coordinate.getGroupId()) &&
+                              coordinate.getArtifactId().contains("standalone"));
+
+   }
+
+   private Map<String, Object> initializeFreeMarkerContext(boolean enableJPA, ArchiveType type, JavaSource<?> javaSource)
+   {
+      final Map<String, Object> context = new HashMap<>();
       context.put("package", javaSource.getPackage());
       context.put("ClassToTest", javaSource.getName());
       context.put("classToTest", inflector.lowerCamelCase(javaSource.getName()));
