@@ -69,6 +69,10 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
    private UISelectOne<ArchiveType> archiveType;
 
    @Inject
+   @WithAttributes(label = "Deployment testable", defaultValue = "true", description = "Defines if this deployment should be wrapped up based on the protocol so the testcase can be executed incontainer.")
+   private UIInput<Boolean> testable;
+
+   @Inject
    private Inflector inflector;
 
    @Override
@@ -83,7 +87,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
    @Override
    public void initializeUI(final UIBuilder builder) throws Exception
    {
-      builder.add(targets).add(enableJPA).add(archiveType);
+      builder.add(targets).add(enableJPA).add(archiveType).add(testable);;
 
       Project project = getSelectedProject(builder);
       final List<JavaClassSource> sources = new ArrayList<>();
@@ -132,7 +136,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
       for (JavaClassSource clazz : targets.getValue())
       {
          JavaResource test = createTest(getSelectedProject(context), clazz, enableJPA.getValue(),
-                  archiveType.getValue());
+                  archiveType.getValue(), testable.getValue());
          resources.add(test);
          results.add(Results.success("Created test class " + test.getJavaType().getQualifiedName()));
       }
@@ -153,13 +157,14 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
       return projectFactory;
    }
 
-   private JavaResource createTest(Project project, JavaClassSource classUnderTest, boolean enableJPA, ArchiveType type)
+   private JavaResource createTest(Project project, JavaClassSource classUnderTest, boolean enableJPA, ArchiveType type,
+                                   Boolean testable)
             throws FileNotFoundException
    {
       final TestFrameworkFacet testFrameworkFacet = project.getFacet(TestFrameworkFacet.class);
       final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
 
-      final VelocityContext context = initializeVelocityContext(enableJPA, type, classUnderTest);
+      final VelocityContext context = initializeVelocityContext(enableJPA, type, classUnderTest, testable);
 
       final StringWriter writer = new StringWriter();
       Velocity.mergeTemplate(testFrameworkFacet.getTemplateName(), "UTF-8", context, writer);
@@ -168,7 +173,8 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
       return java.saveTestJavaSource(testClass);
    }
 
-   private VelocityContext initializeVelocityContext(boolean enableJPA, ArchiveType type, JavaSource<?> javaSource)
+   private VelocityContext initializeVelocityContext(boolean enableJPA, ArchiveType type, JavaSource<?> javaSource,
+                                                     Boolean testable)
    {
       VelocityContext context = new VelocityContext();
       context.put("package", javaSource.getPackage());
@@ -177,6 +183,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
       context.put("packageImport", javaSource.getPackage());
       context.put("enableJPA", enableJPA);
       context.put("archiveType", type);
+      context.put("testable", testable);
       return context;
    }
 }
