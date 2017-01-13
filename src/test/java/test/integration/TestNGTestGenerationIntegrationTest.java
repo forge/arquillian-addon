@@ -7,137 +7,72 @@
 package test.integration;
 
 
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.addon.facets.FacetFactory;
-import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
-import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.projects.ProjectFacet;
-import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.projects.facets.DependencyFacet;
-import org.jboss.forge.addon.shell.test.ShellTest;
-import org.jboss.forge.addon.ui.result.Failed;
-import org.jboss.forge.addon.ui.result.Result;
-import org.jboss.forge.addon.ui.test.UITestHarness;
-import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.furnace.Furnace;
-import org.jboss.forge.furnace.addons.AddonRegistry;
-import org.jboss.forge.roaster.model.JavaClass;
-import org.jboss.forge.roaster.model.Method;
-import org.jboss.forge.roaster.model.source.JavaSource;
-import org.junit.After;
-import org.junit.Before;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import test.integration.extension.AddDependencies;
+import test.integration.extension.AddPackages;
+import test.integration.support.ShellTestTemplate;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
-/**
- * @author <a href="mailto:bartosz.majsak@gmail.com">Bartosz Majsak</a>
- */
 @RunWith(Arquillian.class)
-public class TestNGTestGenerationIntegrationTest
-{
-   private ProjectFactory projectFactory;
-   private UITestHarness uiTestHarness;
-   private ShellTest shellTest;
-   private FacetFactory facetFactory;
+@AddDependencies("org.assertj:assertj-core")
+@AddPackages(ShellTestTemplate.PACKAGE_NAME)
+public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
 
-   private Project project;
-   private DependencyFacet dependencyFacet;
+    @Test
+    public void should_generate_testng_test_with_as_client_mode() throws Exception {
 
-   @Before
-   public void setUp() throws Exception {
-      AddonRegistry addonRegistry = Furnace.instance(getClass().getClassLoader()).getAddonRegistry();
-      projectFactory = addonRegistry.getServices(ProjectFactory.class).get();
-      uiTestHarness = addonRegistry.getServices(UITestHarness.class).get();
-      shellTest = addonRegistry.getServices(ShellTest.class).get();
-      facetFactory = addonRegistry.getServices(FacetFactory.class).get();
-      final List<Class<? extends ProjectFacet>> facetTypes = Arrays.asList(ArquillianFacet.class, JavaSourceFacet.class);
-      project = projectFactory.createTempProject(facetTypes);
-      dependencyFacet = project.getFacet(DependencyFacet.class);
-      shellTest.getShell().setCurrentResource(project.getRoot());
-   }
+        shell().execute("java-new-class --named Bean --target-package org.superbiz")
+                .execute("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework testng")
+                .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean --as-client ");
 
-   @After
-   public void tearDown() throws Exception {
-      if (shellTest != null) {
-         shellTest.close();
-      }
-   }
+        assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng").withType("pom").withScope("test");
+        assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
 
-   @Test
-   public void shouldGenerateTestNGBasedTest() throws Exception
-   {
-      final JavaClass<?> testClass = testNgTestGenerationUsing("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework testng", "arquillian-create-test --targets org.superbiz.Bean");
+        final JavaClassSource testClass = extractClass(project, "org.superbiz.BeanTest");
+        assertThat(testClass).extendsClass("org.jboss.arquillian.testng.Arquillian");
+        assertThat(testClass).hasMethod("createDeployment").withAnnotation(Deployment.class).withEntry("testable", "false");
+        assertThat(testClass).hasField("applicationUrl").ofType("java.net.URL").annotatedWith(ArquillianResource.class);
+    }
 
-      final DependencyBuilder universeJunitDependency = DependencyBuilder.create("org.arquillian.universe:arquillian-testng");
-      universeJunitDependency.setPackaging("pom");
-      assertThat(dependencyFacet.hasDirectDependency(universeJunitDependency), is(true));
+    @Test
+    public void should_generate_testng_test_setup() throws Exception {
+        shell().execute("java-new-class --named Bean --target-package org.superbiz")
+                .execute("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework testng")
+                .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean");
 
-      assertThat(testClass.hasField("bean"), is(true));
+        assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng").withType("pom").withScope("test");
+        assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
 
-      final Method<?, ?> createDeployment = testClass.getMethod("createDeployment");
-      assertThat(createDeployment, is(notNullValue()));
-   }
+        final JavaClassSource testClass = extractClass(project, "org.superbiz.BeanTest");
+        assertThat(testClass).extendsClass("org.jboss.arquillian.testng.Arquillian");
+        assertThat(testClass).hasMethod("createDeployment").withAnnotation(Deployment.class).withEntry("testable", null);
+        assertThat(testClass).hasField("bean").ofType("org.superbiz.Bean").annotatedWith(Inject.class);
+    }
 
-   @Test
-   public void shouldGenerateTestNGStandaloneBasedTest() throws Exception
-   {
-      final JavaClass<?> testClass = testNgTestGenerationUsing("arquillian-setup --standalone --test-framework testng", "arquillian-create-test --target-package org.superbiz --named BeanTest");
+    @Test
+    public void should_generate_testng_test_setup_in_standalone_mode() throws Exception {
+        shell().execute("java-new-class --named Bean --target-package org.superbiz")
+                .execute("arquillian-setup  --standalone --test-framework testng")
+                .execute("arquillian-create-test --target-package org.superbiz --named BeanTest");
 
-      final DependencyBuilder universeJunitDependency = DependencyBuilder.create("org.arquillian.universe:arquillian-testng-standalone");
-      universeJunitDependency.setPackaging("pom");
-      assertThat(dependencyFacet.hasDirectDependency(universeJunitDependency), is(true));
+        assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng-standalone").withType("pom").withScope("test");
+        assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
 
-      assertThat(testClass.hasField("bean"), is(false));
-
-      final Method<?, ?> createDeployment = testClass.getMethod("createDeployment");
-      assertThat(createDeployment, is(nullValue()));
-   }
-
-   private JavaClass<?> testNgTestGenerationUsing(String arquillianSetupCommand, String createTestCommand) throws Exception
-   {
-
-      final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 2, TimeUnit.MINUTES);
-      assertThat(resultNewJavaClass, is(not(instanceOf(Failed.class))));
-
-      final Result resultArquillianSetup = shellTest.execute(arquillianSetupCommand, 2, TimeUnit.MINUTES);
-      assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
-
-      final Result createTestResult = shellTest.execute(createTestCommand, 2, TimeUnit.MINUTES);
-
-      if (createTestResult instanceof Failed)
-      {
-         Failed f = (Failed) createTestResult;
-         f.getException().printStackTrace();
-      }
-
-      assertThat(createTestResult, is(not(instanceOf(Failed.class))));
-
-      final DependencyBuilder junitDependency = DependencyBuilder.create("org.testng:testng");
-      assertThat(dependencyFacet.hasDirectDependency(junitDependency), is(true));
-
-      final DependencyBuilder universeDependency = DependencyBuilder.create("org.arquillian:arquillian-universe");
-      universeDependency.setPackaging("pom");
-      assertThat(dependencyFacet.hasDirectManagedDependency(universeDependency), is(true));
-
-      final JavaSource<?> testClass = project.getFacet(JavaSourceFacet.class)
-              .getTestJavaResource("org.superbiz.BeanTest")
-              .getJavaType();
-
-      assertThat(testClass.hasImport("org.jboss.arquillian.testng.Arquillian"), is(true));
-
-      return (JavaClass<?>) testClass;
-   }
-
+        final JavaClassSource testClass = extractClass(project, "org.superbiz.BeanTest");
+        assertThat(testClass).extendsClass("org.jboss.arquillian.testng.Arquillian");
+        assertThat(testClass).doesNotHaveMethod("createDeployment");
+        assertThat(testClass).doesNotHaveField("bean");
+    }
 }
+

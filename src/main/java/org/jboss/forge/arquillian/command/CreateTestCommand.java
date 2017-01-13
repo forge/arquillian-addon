@@ -61,6 +61,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
    @Inject
    @WithAttributes(shortName = 'n', label = "Test Name", required = false, enabled = false)
    private UIInput<String> named;
+
    @Inject
    @WithAttributes(shortName = 'p', label = "Target Package", required = false, enabled = false)
    private UIInput<String> targetPackage;
@@ -78,8 +79,9 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
    private UISelectOne<ArchiveType> archiveType;
 
    @Inject
-   @WithAttributes(label = "Deployment testable", defaultValue = "true", description = "Defines if this deployment should be wrapped up based on the protocol so the testcase can be executed incontainer.")
-   private UIInput<Boolean> testable;
+   @WithAttributes(label = "Deployment and tests in client mode", defaultValue = "false",
+           description = "Defines if this deployment should be wrapped up based on the protocol so the test case can be executed in-container.")
+   private UIInput<Boolean> asClient;
 
    @Inject
    private Inflector inflector;
@@ -99,7 +101,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
       builder
               .add(targets).add(enableJPA).add(archiveType)
               .add(named).add(targetPackage)
-              .add(testable);
+              .add(asClient);
 
       Project project = getSelectedProject(builder);
       final List<JavaClassSource> sources = new ArrayList<>();
@@ -244,7 +246,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
       context.put("packageImport", javaSource.getPackage());
       context.put("enableJPA", enableJPA);
       context.put("archiveType", type);
-      context.put("testable", testable.getValue());
+      context.put("asClient", asClient.getValue());
       return context;
    }
 
