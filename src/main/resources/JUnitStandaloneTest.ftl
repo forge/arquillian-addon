@@ -12,6 +12,5 @@ public class ${ClassToTest}Test {
 
     @Test
     public void should_be_deployed() {
-        Assert.assertNotNull(url);
     }
 }

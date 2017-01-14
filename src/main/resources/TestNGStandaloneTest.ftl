@@ -9,6 +9,5 @@ public class ${ClassToTest}Test extends Arquillian {
 
     @Test
     public void should_be_deployed() {
-        Assert.assertNotNull(url);
     }
 }

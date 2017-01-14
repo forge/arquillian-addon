@@ -3,7 +3,6 @@ package org.jboss.forge.arquillian.command;
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
-import org.jboss.forge.addon.ui.command.UICommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
@@ -49,8 +48,8 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
    private UISelectOne<String> testFrameworkVersion;
 
    @Inject
-   @WithAttributes(shortName = 's', label = "Standalone Mode", type = InputType.CHECKBOX)
-   private UIInput<Boolean> standaloneMode;
+   @WithAttributes(shortName = 's', label = "Standalone", type = InputType.CHECKBOX)
+   private UIInput<Boolean> standalone;
 
    @Override
    public UICommandMetadata getMetadata(UIContext context) {
@@ -64,7 +63,7 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
    public void initializeUI(final UIBuilder builder) throws Exception {
       builder.add(testFramework)
              .add(testFrameworkVersion)
-             .add(standaloneMode);
+             .add(standalone);
 
       testFramework.setEnabled(true);
       testFramework.setItemLabelConverter(source -> {
@@ -93,8 +92,8 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
          return null;
       });
 
-      standaloneMode.setEnabled(true);
-      standaloneMode.setDefaultValue(false);
+      standalone.setEnabled(true);
+      standalone.setDefaultValue(false);
 
    }
 
@@ -102,7 +101,7 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
    public Result execute(UIExecutionContext context) throws Exception {
       TestFrameworkFacet selectedTestFramework = testFramework.getValue();
       try {
-         selectedTestFramework.setStandalone(standaloneMode.getValue());
+         selectedTestFramework.setStandalone(standalone.getValue());
          selectedTestFramework.setVersion(testFrameworkVersion.getValue());
          facetFactory.install(getSelectedProject(context), selectedTestFramework);
          installEvent.fire(new TestFrameworkInstallEvent(selectedTestFramework));
@@ -125,7 +124,7 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
    }
 
    private boolean isNotStandalone() {
-      return !this.standaloneMode.getValue();
+      return !this.standalone.getValue();
    }
 
    @Override
