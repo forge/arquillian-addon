@@ -54,7 +54,7 @@ public class AddArquillianCommand  extends AbstractProjectCommand implements UIC
    public Result execute(UIExecutionContext context) throws Exception {
       facet.setVersion(arquillianVersion.getValue());
       facetFactory.install(getSelectedProject(context), facet);
-      return Results.success("Installed Arquillian " + arquillianVersion.getValue());
+      return Results.success("Installed Arquillian Universe " + arquillianVersion.getValue());
    }
 
    @Override

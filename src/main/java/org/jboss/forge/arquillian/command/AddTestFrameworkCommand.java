@@ -3,18 +3,21 @@ package org.jboss.forge.arquillian.command;
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
-import org.jboss.forge.addon.ui.command.UICommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
+import org.jboss.forge.addon.ui.context.UINavigationContext;
 import org.jboss.forge.addon.ui.hints.InputType;
+import org.jboss.forge.addon.ui.input.UIInput;
 import org.jboss.forge.addon.ui.input.UISelectOne;
 import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
+import org.jboss.forge.addon.ui.result.NavigationResult;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
+import org.jboss.forge.addon.ui.wizard.UIWizard;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 import org.jboss.forge.arquillian.api.TestFrameworkInstallEvent;
@@ -24,7 +27,7 @@ import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 import java.util.Collections;
 
-public class AddTestFrameworkCommand extends AbstractProjectCommand implements UICommand {
+public class AddTestFrameworkCommand extends AbstractProjectCommand implements UIWizard {
 
    @Inject
    private ProjectFactory projectFactory;
@@ -44,6 +47,10 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
    @WithAttributes(shortName = 'n', label = "Test Framework Version", type = InputType.DROPDOWN)
    private UISelectOne<String> testFrameworkVersion;
 
+   @Inject
+   @WithAttributes(shortName = 's', label = "Standalone", type = InputType.CHECKBOX)
+   private UIInput<Boolean> standalone;
+
    @Override
    public UICommandMetadata getMetadata(UIContext context) {
       return Metadata.from(super.getMetadata(context), getClass())
@@ -55,7 +62,8 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
    @Override
    public void initializeUI(final UIBuilder builder) throws Exception {
       builder.add(testFramework)
-             .add(testFrameworkVersion);
+             .add(testFrameworkVersion)
+             .add(standalone);
 
       testFramework.setEnabled(true);
       testFramework.setItemLabelConverter(source -> {
@@ -83,12 +91,17 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
          }
          return null;
       });
+
+      standalone.setEnabled(true);
+      standalone.setDefaultValue(false);
+
    }
 
    @Override
    public Result execute(UIExecutionContext context) throws Exception {
       TestFrameworkFacet selectedTestFramework = testFramework.getValue();
       try {
+         selectedTestFramework.setStandalone(standalone.getValue());
          selectedTestFramework.setVersion(testFrameworkVersion.getValue());
          facetFactory.install(getSelectedProject(context), selectedTestFramework);
          installEvent.fire(new TestFrameworkInstallEvent(selectedTestFramework));
@@ -98,7 +111,22 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
          return Results.fail("Could not install Test Framework " + selectedTestFramework.getFrameworkName(), e);
       }
    }
-   
+
+   @Override
+   @SuppressWarnings("unchecked")
+   public NavigationResult next(UINavigationContext context) throws Exception {
+      if (isNotStandalone())
+      {
+         return Results.navigateTo(ContainerSetupWizard.class);
+      }
+
+      return null;
+   }
+
+   private boolean isNotStandalone() {
+      return !this.standalone.getValue();
+   }
+
    @Override
    protected boolean isProjectRequired() {
       return true;

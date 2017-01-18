@@ -38,10 +38,9 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>org.apache.velocity</groupId>
-      <artifactId>velocity</artifactId>
-      <version>${version.velocity}</version>
-      <scope>compile</scope>
+      <groupId>org.jboss.forge.addon</groupId>
+      <artifactId>templates</artifactId>
+      <classifier>forge-addon</classifier>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>

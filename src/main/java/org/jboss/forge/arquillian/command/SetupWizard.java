@@ -44,8 +44,7 @@ public class SetupWizard extends AbstractProjectCommand implements UIWizard {
    public NavigationResult next(UINavigationContext context) throws Exception {
       return Results.navigateTo(
             AddArquillianCommand.class,
-            AddTestFrameworkCommand.class,
-            ContainerSetupWizard.class);
+            AddTestFrameworkCommand.class);
    }
 
    @Override
