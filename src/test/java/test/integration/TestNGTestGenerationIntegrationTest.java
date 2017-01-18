@@ -76,7 +76,7 @@ public class TestNGTestGenerationIntegrationTest
    @Test
    public void shouldGenerateTestNGBasedTest() throws Exception
    {
-      final JavaClass<?> testClass = testNgTestGenerationUsing("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework testng");
+      final JavaClass<?> testClass = testNgTestGenerationUsing("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework testng", "arquillian-create-test --targets org.superbiz.Bean");
 
       final DependencyBuilder universeJunitDependency = DependencyBuilder.create("org.arquillian.universe:arquillian-testng");
       universeJunitDependency.setPackaging("pom");
@@ -91,7 +91,7 @@ public class TestNGTestGenerationIntegrationTest
    @Test @Ignore("This test is flaky for some unknown reason that we didn't realized why yet. To ot block the release we are going to test this feature manually and continue the research on that")
    public void shouldGenerateTestNGStandaloneBasedTest() throws Exception
    {
-      final JavaClass<?> testClass = testNgTestGenerationUsing("arquillian-setup --standalone --test-framework testng");
+      final JavaClass<?> testClass = testNgTestGenerationUsing("arquillian-setup --standalone --test-framework testng", "arquillian-create-test --target-package org.superbiz --named BeanTest");
 
       final DependencyBuilder universeJunitDependency = DependencyBuilder.create("org.arquillian.universe:arquillian-testng-standalone");
       universeJunitDependency.setPackaging("pom");
@@ -103,7 +103,7 @@ public class TestNGTestGenerationIntegrationTest
       assertThat(createDeployment, is(nullValue()));
    }
 
-   private JavaClass<?> testNgTestGenerationUsing(String arquillianSetupCommand) throws Exception
+   private JavaClass<?> testNgTestGenerationUsing(String arquillianSetupCommand, String createTestCommand) throws Exception
    {
 
       final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 2, TimeUnit.MINUTES);
@@ -112,7 +112,7 @@ public class TestNGTestGenerationIntegrationTest
       final Result resultArquillianSetup = shellTest.execute(arquillianSetupCommand, 2, TimeUnit.MINUTES);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
-      final Result createTestResult = shellTest.execute("arquillian-create-test --targets org.superbiz.Bean", 2, TimeUnit.MINUTES);
+      final Result createTestResult = shellTest.execute(createTestCommand, 2, TimeUnit.MINUTES);
 
       if (createTestResult instanceof Failed)
       {

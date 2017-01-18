@@ -79,7 +79,7 @@ public class JUnitTestGenerationIntegrationTest {
    @Test
    public void shouldGenerateJUnitBasedTest() throws Exception
    {
-      final JavaClass<?> testClass = testJUnitTestGenerationUsing("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework junit");
+      final JavaClass<?> testClass = testJUnitTestGenerationUsing("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework junit", "arquillian-create-test --targets org.superbiz.Bean");
 
       final DependencyBuilder universeJunitDependency = DependencyBuilder.create("org.arquillian.universe:arquillian-junit");
       universeJunitDependency.setPackaging("pom");
@@ -95,8 +95,8 @@ public class JUnitTestGenerationIntegrationTest {
    public void shouldGenerateJUnitStandaloneBasedTest() throws Exception
    {
 
-      final JavaClass<?> testClass = testJUnitTestGenerationUsing("arquillian-setup --standalone --test-framework junit");
-
+      final JavaClass<?> testClass = testJUnitTestGenerationUsing("arquillian-setup --standalone --test-framework junit",
+              "arquillian-create-test --target-package org.superbiz --named BeanTest");
       final DependencyBuilder universeJunitDependency = DependencyBuilder.create("org.arquillian.universe:arquillian-junit-standalone");
       universeJunitDependency.setPackaging("pom");
       assertThat(dependencyFacet.hasDirectDependency(universeJunitDependency), is(true));
@@ -108,7 +108,7 @@ public class JUnitTestGenerationIntegrationTest {
 
    }
 
-   private JavaClass<?> testJUnitTestGenerationUsing(String arquillianSetupCommand) throws Exception
+   private JavaClass<?> testJUnitTestGenerationUsing(String arquillianSetupCommand, String createTestCommand) throws Exception
    {
 
       final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 30, TimeUnit.SECONDS);
@@ -117,7 +117,7 @@ public class JUnitTestGenerationIntegrationTest {
       final Result resultArquillianSetup = shellTest.execute(arquillianSetupCommand, 15, TimeUnit.SECONDS);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
-      final Result createTestResult = shellTest.execute("arquillian-create-test --targets org.superbiz.Bean", 30, TimeUnit.SECONDS);
+      final Result createTestResult = shellTest.execute(createTestCommand, 30, TimeUnit.SECONDS);
 
       if (createTestResult instanceof Failed)
       {
