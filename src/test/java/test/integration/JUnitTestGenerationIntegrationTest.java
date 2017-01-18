@@ -114,7 +114,7 @@ public class JUnitTestGenerationIntegrationTest {
       final Result resultNewJavaClass = shellTest.execute("java-new-class --named Bean --target-package org.superbiz", 30, TimeUnit.SECONDS);
       assertThat(resultNewJavaClass, is(not(instanceOf(Failed.class))));
 
-      final Result resultArquillianSetup = shellTest.execute(arquillianSetupCommand, 15, TimeUnit.SECONDS);
+      final Result resultArquillianSetup = shellTest.execute(arquillianSetupCommand, 30, TimeUnit.SECONDS);
       assertThat(resultArquillianSetup, is(not(instanceOf(Failed.class))));
 
       final Result createTestResult = shellTest.execute(createTestCommand, 30, TimeUnit.SECONDS);

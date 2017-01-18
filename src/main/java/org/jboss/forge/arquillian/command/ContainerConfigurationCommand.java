@@ -1,11 +1,5 @@
 package org.jboss.forge.arquillian.command;
 
-import java.util.Collections;
-import java.util.concurrent.Callable;
-
-import javax.inject.Inject;
-
-import org.jboss.forge.addon.convert.Converter;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
@@ -26,6 +20,9 @@ import org.jboss.forge.arquillian.api.ArquillianConfig;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.arquillian.container.ProfileManager;
 import org.jboss.forge.arquillian.container.model.Configuration;
+
+import javax.inject.Inject;
+import java.util.Collections;
 
 @FacetConstraint(ArquillianFacet.class)
 public class ContainerConfigurationCommand extends AbstractProjectCommand implements UICommand
@@ -101,13 +98,7 @@ public class ContainerConfigurationCommand extends AbstractProjectCommand implem
          }
          return null;
       });
-      containerValue.setRequired(() -> {
-         if (containerValue.isEnabled())
-         {
-            return containerOption.getValue().getDefault() != null;
-         }
-         return true;
-      });
+      containerValue.setRequired(() -> !containerValue.isEnabled() || containerOption.getValue().getDefault() != null);
    }
 
    @Override
