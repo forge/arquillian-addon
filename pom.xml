@@ -16,7 +16,6 @@
     <version.forge>3.4.0.Final</version.forge>
     <version.jackson>1.9.1</version.jackson>
     <version.junit>4.12</version.junit>
-    <version.velocity>1.7</version.velocity>
   </properties>
   <dependencyManagement>
     <dependencies>
