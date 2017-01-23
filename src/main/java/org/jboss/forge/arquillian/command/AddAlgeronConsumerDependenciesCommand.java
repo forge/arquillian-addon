@@ -25,9 +25,6 @@ public class AddAlgeronConsumerDependenciesCommand extends AbstractAlgeronComman
    private FacetFactory facetFactory;
 
    @Inject
-   private AlgeronConsumer algeronConsumerFacet;
-
-   @Inject
    @WithAttributes(shortName = 'l', label = "Contracts Library", type = InputType.DROPDOWN)
    private UISelectOne<ContractConsumerLibrary> type;
 
@@ -51,9 +48,13 @@ public class AddAlgeronConsumerDependenciesCommand extends AbstractAlgeronComman
 
    @Override
    public Result execute(UIExecutionContext context) throws Exception {
+
+      AlgeronConsumer algeronConsumerFacet = facetFactory.create(getSelectedProject(context), AlgeronConsumer.class);
+
       algeronConsumerFacet.setContractLibrary(type.getValue());
       final String contractDefaultVersion = algeronConsumerFacet.getDefaultVersion();
       algeronConsumerFacet.setVersion(contractDefaultVersion);
+
       facetFactory.install(getSelectedProject(context), algeronConsumerFacet);
       return Results.success("Installed Arquillian Algeron Consumer " + type.getValue().name().toLowerCase() + "and contract library version" + contractDefaultVersion);
    }

@@ -71,8 +71,8 @@ public class AddArquillianAlgeronConsumerTest
    }
 
    private void checkResult(Result result) {
-      Assert.assertFalse(result instanceof Failed);
       printIfFailed(result);
+      Assert.assertFalse(result instanceof Failed);
    }
 
    public void printIfFailed(Result result)
