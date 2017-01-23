@@ -55,7 +55,7 @@ public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
    @Override
    public boolean isInstalled() {
       return hasEffectiveDependency(createFrameworkDependency())
-             && hasEffectiveDependency(createArquillianDependency());
+             && (hasEffectiveDependency(createArquillianDependency()) || hasEffectiveDependency(createArquillianStandaloneDependency()));
    }
 
    @Override
