@@ -9,18 +9,13 @@ package org.jboss.forge.arquillian.api;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
-import org.jboss.forge.addon.facets.constraints.FacetConstraints;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 
 /**
  * @author <a href="mailto:bartosz.majsak@gmail.com">Bartosz Majsak</a>
  */
-@FacetConstraints({
-   @FacetConstraint(DependencyFacet.class),
-   @FacetConstraint(MetadataFacet.class),
-   @FacetConstraint(ArquillianFacet.class)
-})
+@FacetConstraint(ArquillianFacet.class)
 public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
 
    private boolean standalone = false;
