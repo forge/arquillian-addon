@@ -27,7 +27,6 @@ import org.jboss.forge.roaster.model.Method;
 import org.jboss.forge.roaster.model.source.JavaSource;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,7 +34,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -63,7 +66,6 @@ public class TestNGTestGenerationIntegrationTest
       project = projectFactory.createTempProject(facetTypes);
       dependencyFacet = project.getFacet(DependencyFacet.class);
       shellTest.getShell().setCurrentResource(project.getRoot());
-
    }
 
    @After
@@ -88,7 +90,7 @@ public class TestNGTestGenerationIntegrationTest
       assertThat(createDeployment, is(notNullValue()));
    }
 
-   @Test @Ignore("This test is flaky for some unknown reason that we didn't realized why yet. To ot block the release we are going to test this feature manually and continue the research on that")
+   @Test
    public void shouldGenerateTestNGStandaloneBasedTest() throws Exception
    {
       final JavaClass<?> testClass = testNgTestGenerationUsing("arquillian-setup --standalone --test-framework testng", "arquillian-create-test --target-package org.superbiz --named BeanTest");

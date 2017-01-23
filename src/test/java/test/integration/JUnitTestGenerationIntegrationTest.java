@@ -19,26 +19,25 @@ import org.jboss.forge.addon.ui.result.Failed;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.test.UITestHarness;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.arquillian.command.AddTestFrameworkCommand;
 import org.jboss.forge.arquillian.testframework.junit.JUnitFacet;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.addons.AddonRegistry;
-import org.jboss.forge.roaster.model.Field;
 import org.jboss.forge.roaster.model.JavaClass;
 import org.jboss.forge.roaster.model.Method;
-import org.jboss.forge.roaster.model.source.JavaSource;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -91,7 +90,7 @@ public class JUnitTestGenerationIntegrationTest {
       assertThat(createDeployment, is(notNullValue()));
    }
 
-   @Test @Ignore("This test is flaky for some unknown reason that we didn't realized why yet. To ot block the release we are going to test this feature manually and continue the research on that")
+   @Test
    public void shouldGenerateJUnitStandaloneBasedTest() throws Exception
    {
 
