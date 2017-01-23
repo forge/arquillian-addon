@@ -1,6 +1,7 @@
 package test.integration;
 
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
@@ -13,6 +14,7 @@ import org.jboss.forge.arquillian.command.AddArquillianCommand;
 import org.jboss.forge.arquillian.command.AddTestFrameworkCommand;
 import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
 import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
+import org.jboss.forge.arquillian.testframework.junit.JUnitFacet;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +30,9 @@ public class AddArquillianAlgeronConsumerTest
 
    @Inject
    private ProjectFactory factory;
+
+   @Inject
+   private FacetFactory facetFactory;
 
    @Test
    public void should_add_arquillian_algeron_consumer_dependencies() throws Exception {
@@ -47,12 +52,14 @@ public class AddArquillianAlgeronConsumerTest
          addTestFrameworkCommandController.initialize();
          addTestFrameworkCommandController.setValueFor("standalone", true);
          addTestFrameworkCommandController.setValueFor("testFramework", "junit");
+
          Result result = addTestFrameworkCommandController.execute();
 
          checkResult(result);
 
       }
 
+      facetFactory.install(project, JUnitFacet.class);
       try(CommandController addAlgeronConsumerCommandController = testHarness.createCommandController(AddAlgeronConsumerDependenciesCommand.class, project.getRoot())) {
          addAlgeronConsumerCommandController.initialize();
          addAlgeronConsumerCommandController.setValueFor("type", "pact");
