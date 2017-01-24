@@ -32,6 +32,6 @@ Of course you can use the TAB key to navigate to the class that you want to test
 
 For more details please about available commands have a look at integration tests:
 
-  * https://github.com/forge/addon-arquillian/blob/d55cdf5678ddf167ad8832498342c1c12612b901/src/test/java/test/integration/JUnitTestGenerationIntegrationTest.java[JUnit command line tests]
-  * https://github.com/forge/addon-arquillian/blob/d55cdf5678ddf167ad8832498342c1c12612b901/src/test/java/test/integration/TestNGTestGenerationIntegrationTest.java[TestNG command line tests]
+  * https://github.com/forge/addon-arquillian/blob/e61fad56cab4a1684eb283345d93adeeb0789741/src/test/java/test/integration/JUnitTestGenerationIntegrationTest.java[JUnit command line tests]
+  * https://github.com/forge/addon-arquillian/blob/e61fad56cab4a1684eb283345d93adeeb0789741/src/test/java/test/integration/TestNGTestGenerationIntegrationTest.java[TestNG command line tests]
 
