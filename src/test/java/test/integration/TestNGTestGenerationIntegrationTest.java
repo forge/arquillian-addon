@@ -14,7 +14,7 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import test.integration.extension.AddDependencies;
-import test.integration.extension.AddPackages;
+import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
 import test.integration.support.assertions.ProjectAssert;
 
@@ -24,8 +24,8 @@ import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
 @AddDependencies("org.assertj:assertj-core")
-@AddPackages(value = ShellTestTemplate.PACKAGE_NAME, recursive = false)
-@AddPackages(containing = ProjectAssert.class)
+@AddPackage(value = ShellTestTemplate.PACKAGE_NAME, recursive = false)
+@AddPackage(containing = ProjectAssert.class)
 public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
 
     @Test

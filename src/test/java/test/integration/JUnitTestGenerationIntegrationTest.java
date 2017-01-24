@@ -13,7 +13,7 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import test.integration.extension.AddDependencies;
-import test.integration.extension.AddPackages;
+import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
 
 import javax.inject.Inject;
@@ -22,7 +22,7 @@ import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
 @AddDependencies("org.assertj:assertj-core")
-@AddPackages(ShellTestTemplate.PACKAGE_NAME)
+@AddPackage(ShellTestTemplate.PACKAGE_NAME)
 public class JUnitTestGenerationIntegrationTest extends ShellTestTemplate {
 
    @Test

@@ -6,24 +6,23 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.container.ClassContainer;
 
 /**
- * Adds packages defined using {@link AddPackages} annotation. 
+ * Adds packages defined using {@link AddPackage} annotation.
  */
 public class PackagesArchiveProcessor implements ApplicationArchiveProcessor {
 
     @Override
     public void process(Archive<?> applicationArchive, TestClass testClass) {
         if (canEnhanceWithPackages(applicationArchive, testClass)) {
-            final AddPackages[] packages = testClass.getJavaClass().getAnnotationsByType(AddPackages.class);
-            for (AddPackages pkg : packages) {
+            final AddPackage[] packages = testClass.getJavaClass().getAnnotationsByType(AddPackage.class);
+            for (AddPackage pkg : packages) {
                 ((ClassContainer) applicationArchive).addPackages(pkg.recursive(), getPackages(pkg));
             }
         }
-
     }
 
-    private String[] getPackages(AddPackages pkg) {
-        if (pkg.value().length == 1 && pkg.value()[0].isEmpty()) {
-            return new String[]{pkg.containing().getPackage().getName()};
+    private String getPackages(AddPackage pkg) {
+        if (pkg.value().isEmpty()) {
+            return pkg.containing().getPackage().getName();
         }
 
         return pkg.value();
@@ -31,6 +30,6 @@ public class PackagesArchiveProcessor implements ApplicationArchiveProcessor {
 
     private boolean canEnhanceWithPackages(Archive<?> applicationArchive, TestClass testClass) {
         return (applicationArchive instanceof ClassContainer)
-                && testClass.getJavaClass().getAnnotationsByType(AddPackages.class).length > 0;
+                && testClass.getJavaClass().getAnnotationsByType(AddPackage.class).length > 0;
     }
 }
