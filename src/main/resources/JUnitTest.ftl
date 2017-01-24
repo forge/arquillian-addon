@@ -27,7 +27,7 @@ public class ${ClassToTest}Test {
 
     <#if asClient>
     @ArquillianResource
-    URL applicationUrl;
+    private URL applicationUrl;
     <#else>
     @Inject
     private ${ClassToTest} ${classToTest};
@@ -49,6 +49,10 @@ public class ${ClassToTest}Test {
 
     @Test
     public void should_be_deployed() {
+        <#if asClient>
+        Assert.assertNotNull(applicationUrl);
+        <#else>
         Assert.assertNotNull(${classToTest});
+        </#if>
     }
 }
