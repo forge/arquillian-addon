@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import test.integration.extension.AddDependencies;
 import test.integration.extension.AddPackages;
 import test.integration.support.ShellTestTemplate;
+import test.integration.support.assertions.ProjectAssert;
 
 import javax.inject.Inject;
 
@@ -23,7 +24,8 @@ import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
 @AddDependencies("org.assertj:assertj-core")
-@AddPackages(ShellTestTemplate.PACKAGE_NAME)
+@AddPackages(value = ShellTestTemplate.PACKAGE_NAME, recursive = false)
+@AddPackages(containing = ProjectAssert.class)
 public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
 
     @Test
