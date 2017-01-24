@@ -1,7 +1,12 @@
 package ${package};
 
 import ${packageImport}.${ClassToTest};
+<#if asClient>
+import java.net.URL;
+import org.jboss.arquillian.test.api.ArquillianResource;
+<#else>
 import javax.inject.Inject;
+</#if>
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.testng.annotations.Test;
 import org.testng.Assert;
@@ -13,10 +18,19 @@ import org.jboss.arquillian.testng.Arquillian;
 
 public class ${ClassToTest}Test extends Arquillian {
 
+    <#if asClient>
+    @ArquillianResource
+    private URL applicationUrl;
+    <#else>
     @Inject
     private ${ClassToTest} ${classToTest};
+    </#if>
 
-    @Deployment 
+    <#if asClient>
+    @Deployment(testable = false)
+    <#else>
+    @Deployment
+    </#if>
     public static ${archiveType.simpleClassName} createDeployment() {
         return ShrinkWrap.create(${archiveType.simpleClassName}.class)
                 .addClass(${ClassToTest}.class)
@@ -28,6 +42,10 @@ public class ${ClassToTest}Test extends Arquillian {
 
     @Test
     public void should_be_deployed() {
+        <#if asClient>
+        Assert.assertNotNull(applicationUrl);
+        <#else>
         Assert.assertNotNull(${classToTest});
+        </#if>
     }
 }
