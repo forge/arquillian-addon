@@ -41,7 +41,7 @@ public class AddArquillianAlgeronConsumerTest
 
       try(CommandController addCommandController = testHarness.createCommandController(AddArquillianCommand.class, project.getRoot())) {
          addCommandController.initialize();
-         addCommandController.setValueFor("arquillianVersion", "1.0.0.Alpha5");
+         addCommandController.setValueFor("arquillianVersion", "1.0.0.Alpha6");
          Result result = addCommandController.execute();
 
          checkResult(result);
