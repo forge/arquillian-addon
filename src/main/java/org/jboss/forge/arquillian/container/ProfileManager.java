@@ -1,13 +1,5 @@
 package org.jboss.forge.arquillian.container;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -20,6 +12,13 @@ import org.jboss.forge.addon.maven.dependencies.MavenDependencyAdapter;
 import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.arquillian.container.model.Container;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ProfileManager
 {

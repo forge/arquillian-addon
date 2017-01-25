@@ -299,6 +299,8 @@ public class ContainerInstallationIntegrationTest
 
       MavenFacet mavenFacet = project.getFacet(MavenFacet.class);
       final Profile profile = mavenFacet.getModel().getProfiles().get(0);
+      System.out.println(profile);
+      System.out.println("dependnecie::" + profile.getDependencies());
 
       for (DependencyMatcher dependency : dependencyMatchers)
       {

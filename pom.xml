@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jboss</groupId>
@@ -17,7 +18,7 @@
     <version.jackson>1.9.1</version.jackson>
     <version.junit>4.12</version.junit>
     <version.shrinkwrap-maven-resolver>2.2.5</version.shrinkwrap-maven-resolver>
-    <version.assertj>3.6.2</version.assertj>
+    <version.assertj>3.6.1</version.assertj>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -136,6 +137,18 @@
       <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
       <version>${version.shrinkwrap-maven-resolver}</version>
       <scope>test</scope>
+      </dependency>
+    <dependency>
+      <groupId>org.arquillian.container</groupId>
+      <artifactId>arquillian-chameleon-configuration</artifactId>
+      <version>1.0.0.Final-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>3.0.24</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <build>

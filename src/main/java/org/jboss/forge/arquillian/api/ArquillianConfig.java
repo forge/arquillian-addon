@@ -1,9 +1,9 @@
 package org.jboss.forge.arquillian.api;
 
-import java.io.InputStream;
-
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
+
+import java.io.InputStream;
 
 public class ArquillianConfig {
 
@@ -29,7 +29,18 @@ public class ArquillianConfig {
       }
       return false;
    }
-   
+
+   public void getOrCreateContainerAndAddProperty(String containerId, String key, String value) {
+      System.out.println(addContainer(containerId));
+
+      Node container = xml.getSingle("container@qualifier=" + containerId);
+      if (container == null) {
+         container = xml.createChild("container@qualifier=" + containerId);
+      }
+
+      container.attribute(key, value);
+   }
+
    public boolean addContainerProperty(String container, String key, String value)
    {
       xml.getOrCreate("container@qualifier=" + container)

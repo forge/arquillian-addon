@@ -6,11 +6,12 @@
  */
 package org.jboss.forge.arquillian.container.model;
 
+import org.arquillian.container.chameleon.configuration.ChameleonConfiguration;
+import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 
 /**
  * @Author Paul Bakker - paul.bakker.nl@gmail.com
@@ -150,4 +151,37 @@ public class Container implements Comparable<Container> {
 
         return id;
     }
+
+    public String getNameForChameleon() {
+        String artifactId = getArtifactId();
+        if (artifactId.startsWith("arquillian-tomcat")) {
+            return "tomcat";
+        } else if (artifactId.startsWith("arquillian-glassfish")) {
+            return "glassfish";
+        } else if (artifactId.startsWith("arquillian-jbossas") || artifactId.startsWith("jboss-as")) {
+            return "jboss as";
+        } else if (artifactId.startsWith("wildfly")) {
+            return "wildfly";
+        }
+
+        return "";
+    }
+
+    public String getChameleonTarget(String version) {
+        return getNameForChameleon() + ":" + version + ":" + getContainerType();
+    }
+
+    public boolean isSupportedByChameleon( String version) throws Exception {
+      String containerName = this.getNameForChameleon();
+      if (!containerName.isEmpty()) {
+         String chameleonTarget = this.getNameForChameleon() + ":" + version + ":" + this.getContainerType();
+         System.out.println("chameleon" + chameleonTarget);
+         ChameleonConfiguration chameleonConfiguration = new ChameleonConfiguration();
+         return chameleonConfiguration.isSupported(chameleonTarget);
+      }
+
+      return false;
+   }
+
+   // https://github.com/arquillian/arquillian-container-chameleon/blob/master/src/main/resources/chameleon/default/containers.yaml
 }
