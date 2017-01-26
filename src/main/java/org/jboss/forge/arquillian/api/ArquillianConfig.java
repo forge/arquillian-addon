@@ -81,7 +81,7 @@ public class ArquillianConfig {
 
       if (single == null)
       {
-         return "";
+         return null;
       }
 
       return single.getText();
