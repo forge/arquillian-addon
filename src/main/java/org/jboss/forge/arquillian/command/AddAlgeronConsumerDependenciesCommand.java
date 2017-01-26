@@ -26,23 +26,23 @@ public class AddAlgeronConsumerDependenciesCommand extends AbstractAlgeronComman
 
    @Inject
    @WithAttributes(shortName = 'l', label = "Contracts Library", type = InputType.DROPDOWN)
-   private UISelectOne<ContractConsumerLibrary> type;
+   private UISelectOne<ContractConsumerLibrary> contractsLibrary;
 
    @Override
    public UICommandMetadata getMetadata(UIContext context) {
       return Metadata.from(super.getMetadata(context), getClass())
-              .category(Categories.create("Arquillian"))
+              .category(Categories.create("Algeron"))
               .name("Arquillian Algeron: Setup Consumer")
               .description("This addon will help you setup Arquillian Algeron for Consumer side");
    }
 
    @Override
    public void initializeUI(UIBuilder builder) throws Exception {
-      builder.add(type);
+      builder.add(contractsLibrary);
 
-      type.setValueChoices(Arrays.asList(ContractConsumerLibrary.values()));
-      type.setItemLabelConverter(element -> element.name().toLowerCase());
-      type.setDefaultValue(ContractConsumerLibrary.PACT);
+      contractsLibrary.setValueChoices(Arrays.asList(ContractConsumerLibrary.values()));
+      contractsLibrary.setItemLabelConverter(element -> element.name().toLowerCase());
+      contractsLibrary.setDefaultValue(ContractConsumerLibrary.PACT);
 
    }
 
@@ -51,12 +51,12 @@ public class AddAlgeronConsumerDependenciesCommand extends AbstractAlgeronComman
 
       AlgeronConsumer algeronConsumerFacet = facetFactory.create(getSelectedProject(context), AlgeronConsumer.class);
 
-      algeronConsumerFacet.setContractLibrary(type.getValue());
+      algeronConsumerFacet.setContractLibrary(contractsLibrary.getValue());
       final String contractDefaultVersion = algeronConsumerFacet.getDefaultVersion();
       algeronConsumerFacet.setVersion(contractDefaultVersion);
 
       facetFactory.install(getSelectedProject(context), algeronConsumerFacet);
-      return Results.success("Installed Arquillian Algeron Consumer " + type.getValue().name().toLowerCase() + "and contract library version" + contractDefaultVersion);
+      return Results.success("Installed Arquillian Algeron Consumer " + contractsLibrary.getValue().name().toLowerCase() + " and contract library version " + contractDefaultVersion);
    }
 
    @Override

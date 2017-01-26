@@ -18,7 +18,26 @@ public class ArquillianConfig {
    public ArquillianConfig(InputStream is) {
       xml = XMLParser.parse(is);
    }
-   
+
+   public boolean addExtension(String qualifier)
+   {
+      Node containerConfig = xml.getSingle("extension@qualifier=" + qualifier);
+      if (containerConfig == null)
+      {
+         xml.createChild("extension@qualifier=" + qualifier);
+         return true;
+      }
+      return false;
+   }
+
+   public boolean addExtensionProperty(String qualifier, String key, String value)
+   {
+      xml.getOrCreate("extension@qualifier=" + qualifier)
+              .getOrCreate("property@name=" + key)
+              .text(value);
+      return true;
+   }
+
    public boolean addContainer(String containerId)
    {
       Node containerConfig = xml.getSingle("container@qualifier=" + containerId);
@@ -46,7 +65,28 @@ public class ArquillianConfig {
          .getOrCreate("property@name=" + key)
          .text(value);
    }
-   
+
+   public boolean isExtensionRegistered(String qualifier)
+   {
+      return xml.get("extension")
+              .stream()
+              .map(n -> n.getAttribute("qualifier"))
+              .filter(q -> qualifier.equals(q))
+              .findAny().isPresent();
+   }
+
+   public String getContentOfNode(String node)
+   {
+      final Node single = xml.getSingle(node);
+
+      if (single == null)
+      {
+         return "";
+      }
+
+      return single.getText();
+   }
+
    @Override
    public String toString() {
       return XMLParser.toXMLString(xml);
