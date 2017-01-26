@@ -1,10 +1,8 @@
-package test.integration;
+package test.integration.algeron;
 
-import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.arquillian.api.ArquillianConfig;
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import test.integration.extension.AddDependencies;
@@ -12,14 +10,13 @@ import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
 import test.integration.support.assertions.ForgeAssertions;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Arquillian.class)
 @AddDependencies("org.assertj:assertj-core")
-@AddPackage(ShellTestTemplate.PACKAGE_NAME)
+@AddPackage(containing = ShellTestTemplate.class)
 public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate
 {
 
@@ -54,7 +51,7 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate
               .contains("provider: url", "url: http://localhost");
    }
 
-   /**@Test
+   @Test
    public void should_register_git_publisher() throws TimeoutException {
       shell().execute("arquillian-setup --standalone --test-framework junit")
               .execute("arquillian-algeron-setup-consumer --contracts-library pact")
@@ -70,7 +67,7 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate
 
       ForgeAssertions.assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-git-publisher").withType("pom").withScope("test");
 
-   }**/
+   }
 
    @Test
    public void should_set_publish_contracts_property_as_environment_property_with_default_value_to_false() throws TimeoutException {

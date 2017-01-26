@@ -1,9 +1,9 @@
 package org.jboss.forge.arquillian.container.model;
 
 import org.jboss.forge.addon.ui.command.UICommand;
-import org.jboss.forge.arquillian.command.AddAlgeronFolderPublisher;
-import org.jboss.forge.arquillian.command.AddAlgeronGitPublisher;
-import org.jboss.forge.arquillian.command.AddAlgeronUrlPublisher;
+import org.jboss.forge.arquillian.command.algeron.AddAlgeronFolderPublisher;
+import org.jboss.forge.arquillian.command.algeron.AddAlgeronGitPublisher;
+import org.jboss.forge.arquillian.command.algeron.AddAlgeronUrlPublisher;
 
 public enum AlgeronPublishers {
 

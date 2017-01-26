@@ -1,7 +1,5 @@
-package org.jboss.forge.arquillian.command;
+package org.jboss.forge.arquillian.command.algeron;
 
-import org.jboss.forge.addon.facets.FacetFactory;
-import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.input.UIInput;
@@ -14,18 +12,12 @@ import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AddAlgeronUrlPublisher extends AbstractAlgeronPublisherCommand
+public class AddAlgeronFolderPublisher extends AbstractAlgeronPublisherCommand
 {
 
    @Inject
-   private ProjectFactory projectFactory;
-
-   @Inject
-   private FacetFactory facetFactory;
-
-   @Inject
-   @WithAttributes(shortName = 'u', label = "Url to POST", required = true)
-   private UIInput<String> url;
+   @WithAttributes(shortName = 'o', label = "Output Folder", required = true)
+   private UIInput<String> outputFolder;
 
    @Inject
    @WithAttributes(shortName = 'c', label = "Contracts Folder")
@@ -36,14 +28,14 @@ public class AddAlgeronUrlPublisher extends AbstractAlgeronPublisherCommand
    {
       return Metadata.from(super.getMetadata(context), getClass())
               .category(Categories.create("Algeron"))
-              .name("Arquillian Algeron: Add Url Publisher")
-              .description("This command registers a Url Publisher for Algeron");
+              .name("Arquillian Algeron: Add Folder Publisher")
+              .description("This command registers a Folder Publisher for Algeron");
    }
 
    @Override
    public void initializeUI(UIBuilder builder) throws Exception
    {
-      builder.add(url).add(contractFolder);
+      builder.add(outputFolder).add(contractFolder);
       contractFolder.setDefaultValue("target/pacts");
    }
 
@@ -51,14 +43,14 @@ public class AddAlgeronUrlPublisher extends AbstractAlgeronPublisherCommand
    protected Map<String, String> getParameters()
    {
       Map<String, String> parameters = new LinkedHashMap<>();
-      parameters.put("provider", "url");
-      parameters.put("url", url.getValue());
+      parameters.put("provider", "folder");
+      parameters.put("outputFolder", outputFolder.getValue());
       parameters.put("contractsFolder", contractFolder.getValue());
       return parameters;
    }
 
    @Override
    protected String getName() {
-      return "Url";
+      return "Folder";
    }
 }

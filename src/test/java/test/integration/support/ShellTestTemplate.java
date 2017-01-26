@@ -45,7 +45,6 @@ public abstract class ShellTestTemplate {
         }
         if (projectFactory != null) {
             projectFactory.invalidateCaches();
-            project.getRoot().delete(true);
         }
 
     }

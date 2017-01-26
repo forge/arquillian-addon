@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command;
+package org.jboss.forge.arquillian.command.algeron;
 
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.ui.context.UIBuilder;

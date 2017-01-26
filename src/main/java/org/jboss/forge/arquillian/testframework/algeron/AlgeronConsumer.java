@@ -10,7 +10,9 @@ public class AlgeronConsumer extends AlgeronSetupFacet {
 
    @Override
    public DependencyBuilder createContractLibraryDependency() {
-      return contractLibrary.getContractConsumer();
+      final DependencyBuilder contractConsumer = contractLibrary.getContractConsumer();
+      // Creates a new copy of object since enum ContractLibrary creation happens only once and for Forge this instance is not immutable
+      return DependencyBuilder.create(contractConsumer);
    }
 
    @Override
