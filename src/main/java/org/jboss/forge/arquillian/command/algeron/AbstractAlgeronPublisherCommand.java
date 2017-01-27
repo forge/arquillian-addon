@@ -3,6 +3,7 @@ package org.jboss.forge.arquillian.command.algeron;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.ProjectFactory;
+import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.ui.command.UICommand;
 import org.jboss.forge.addon.ui.context.UIContext;
@@ -11,6 +12,7 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.arquillian.api.algeron.AlgeronPublisherFacet;
 import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
+import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -19,6 +21,7 @@ public abstract class AbstractAlgeronPublisherCommand extends AbstractProjectCom
 {
 
    public static final DependencyBuilder NO_DEPENDENCY = null;
+
    @Inject
    protected ProjectFactory projectFactory;
 
@@ -63,7 +66,7 @@ public abstract class AbstractAlgeronPublisherCommand extends AbstractProjectCom
    {
       Boolean parent = super.isEnabled(context);
       if(parent) {
-         return getSelectedProject(context).hasFacet(AlgeronSetupFacet.class);
+         return getSelectedProject(context).hasFacet(AlgeronConsumer.class);
       }
       return parent;
    }

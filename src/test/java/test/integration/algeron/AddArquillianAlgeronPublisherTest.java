@@ -24,8 +24,9 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate
    public void should_register_folder_publisher() throws TimeoutException
    {
       shell().execute("arquillian-setup --standalone --test-framework junit")
-              .execute("arquillian-algeron-setup-consumer --contracts-library pact")
-              .execute("arquillian-algeron-setup-publisher --publisher folder --output-folder /tmp/pacts");
+              .execute("arquillian-algeron-setup-consumer --contracts-library pact");
+
+      shell().execute("arquillian-algeron-setup-publisher --publisher folder --output-folder /tmp/pacts");
 
       final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
       assertThat(arquillianXml.exists()).isTrue();

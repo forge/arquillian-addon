@@ -1,5 +1,7 @@
 package org.jboss.forge.arquillian.api.algeron;
 
+import org.jboss.forge.addon.configuration.Configuration;
+import org.jboss.forge.addon.configuration.facets.ConfigurationFacet;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
@@ -13,9 +15,12 @@ import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 @FacetConstraint(DependencyFacet.class)
 public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
 
+   public static final String CONTRACT_TYPE = "contractType";
+
    public abstract DependencyBuilder createContractLibraryDependency();
    public abstract DependencyBuilder createAlgeronDependency();
    public abstract String getVersionPropertyName();
+   public abstract String getContractType();
 
    @Override
    protected Coordinate getVersionedCoordinate() {
@@ -26,9 +31,20 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
    public boolean install() {
       if(getVersion() != null) {
          installDependencies();
+         configureForge();
          return true;
       }
       return false;
+   }
+
+   private void configureForge() {
+      // stores which kind of contract is been installed so it can be used by isInstalled method.
+      // it is done in this way because AlgeronSetupFacet is recreated every time, so variables values are lost.
+
+      final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
+      final Configuration configuration = configurationFacet.getConfiguration();
+
+      configuration.setProperty(CONTRACT_TYPE, getContractType());
    }
 
    private void installDependencies()
@@ -64,7 +80,10 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
 
    @Override
    public boolean isInstalled() {
-      return hasEffectiveDependency(createAlgeronDependency());
+      final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
+      final Configuration configuration = configurationFacet.getConfiguration();
+      final String contractType = configuration.getString(CONTRACT_TYPE);
+      return contractType != null && ! contractType.isEmpty();
    }
 
    private boolean hasEffectiveDependency(DependencyBuilder frameworkDependency)

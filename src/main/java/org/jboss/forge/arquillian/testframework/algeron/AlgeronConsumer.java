@@ -27,6 +27,11 @@ public class AlgeronConsumer extends AlgeronSetupFacet {
       return contractLibrary.getVersionPropertyName();
    }
 
+   @Override
+   public String getContractType() {
+      return contractLibrary.name();
+   }
+
    public void setContractLibrary(ContractConsumerLibrary contractLibrary) {
       this.contractLibrary = contractLibrary;
    }
