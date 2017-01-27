@@ -9,8 +9,8 @@ import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
-import org.jboss.forge.arquillian.api.AlgeronPublisherFacet;
-import org.jboss.forge.arquillian.api.AlgeronSetupFacet;
+import org.jboss.forge.arquillian.api.algeron.AlgeronPublisherFacet;
+import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
 
 import javax.inject.Inject;
 import java.util.Map;

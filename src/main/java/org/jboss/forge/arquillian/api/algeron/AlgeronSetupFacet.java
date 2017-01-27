@@ -1,10 +1,12 @@
-package org.jboss.forge.arquillian.api;
+package org.jboss.forge.arquillian.api.algeron;
 
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
+import org.jboss.forge.arquillian.api.AbstractVersionedFacet;
+import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 
 @FacetConstraint(TestFrameworkFacet.class)
 @FacetConstraint(MetadataFacet.class)
@@ -62,7 +64,7 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
 
    @Override
    public boolean isInstalled() {
-      return false;
+      return hasEffectiveDependency(createAlgeronDependency());
    }
 
    private boolean hasEffectiveDependency(DependencyBuilder frameworkDependency)

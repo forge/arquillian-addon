@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.api;
+package org.jboss.forge.arquillian.api.algeron;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
@@ -6,6 +6,9 @@ import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFacet;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
+import org.jboss.forge.arquillian.api.ArquillianConfig;
+import org.jboss.forge.arquillian.api.ArquillianFacet;
+import org.jboss.forge.arquillian.api.YamlGenerator;
 import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
 
 import java.util.Map;
