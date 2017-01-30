@@ -6,7 +6,7 @@
  */
 package org.jboss.forge.arquillian.container.model;
 
-import org.arquillian.container.chameleon.configuration.ChameleonConfiguration;
+import org.arquillian.container.chameleon.configuration.spi.model.Target;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 
 import java.util.HashMap;
@@ -176,8 +176,7 @@ public class Container implements Comparable<Container> {
       if (!containerName.isEmpty()) {
          String chameleonTarget = this.getNameForChameleon() + ":" + version + ":" + this.getContainerType();
          System.out.println("chameleon" + chameleonTarget);
-         ChameleonConfiguration chameleonConfiguration = new ChameleonConfiguration();
-         return chameleonConfiguration.isSupported(chameleonTarget);
+         return Target.from(chameleonTarget).isSupported();
       }
 
       return false;

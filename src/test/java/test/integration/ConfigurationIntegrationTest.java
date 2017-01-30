@@ -26,7 +26,7 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
 
         shell().execute("arquillian-setup --container-adapter tomcat-embedded-6 --test-framework junit");
 
-        assertThat(arquillianXML.getContents()).contains("<property name=\"bindHttpPort\">9090</property>");
+        assertThat(arquillianXML.getContents()).contains("<container qualifier=\"arquillian-tomcat-embedded-6\"/>");
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
         final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
         FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
 
-        assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">wildfly:8.2.1.Final:REMOTE</property>");
+        assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">${chameleon.target}</property>");
 
     }
 
@@ -53,10 +53,10 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
         final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
         FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
 
-        assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">wildfly:8.2.1.Final:REMOTE</property>");
+        assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">${chameleon.target}</property>");
 
         shell().execute("arquillian-container-setup --container-adapter wildfly-managed");
-        assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">wildfly:8.2.1.Final:MANAGED</property>");
+        assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">${chameleon.target}</property>");
     }
 
 

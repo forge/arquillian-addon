@@ -107,20 +107,20 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
          dependencyManager.addChameleonDependency(project);
 
          config.getOrCreateContainerAndAddProperty("chameleon", "default", "true");
-         config.addContainerProperty("chameleon", "chameleonTarget", container.getChameleonTarget(version));
+         config.addContainerProperty("chameleon", "chameleonTarget","${chameleon.target}");
 
          arquillian.setConfig(config);
 
       } else {
-         containerInstaller.installContainer(
-                 project,
-                 container,
-                 version,
-                 getVersionedDependenciesMap());
-
          config.addContainer(container.getProfileId());
          arquillian.setConfig(config);
       }
+
+      containerInstaller.installContainer(
+              project,
+              container,
+              version,
+              getVersionedDependenciesMap());
 
       installEvent.fire(new ContainerInstallEvent(container));
 
