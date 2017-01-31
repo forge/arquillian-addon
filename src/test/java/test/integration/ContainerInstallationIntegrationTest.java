@@ -186,12 +186,12 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
       installContainerAssertProfileAndDependencies("was-remote-8",
               "org.jboss.arquillian.container:arquillian-was-remote-8");
    }
-
+   
    @Test
    public void installTomcat6RemoteContainer() throws Exception
    {
-      installContainerAssertProfileAndDependencies("tomcat-remote-6",
-              "org.jboss.arquillian.container:arquillian-tomcat-remote-6");
+      installContainerUsingChameleon("tomcat-remote");
+
    }
 
    @Test

@@ -137,10 +137,10 @@
       <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
       <version>${version.shrinkwrap-maven-resolver}</version>
       <scope>test</scope>
-      </dependency>
+    </dependency>
     <dependency>
       <groupId>org.arquillian.container</groupId>
-      <artifactId>arquillian-chameleon-configuration</artifactId>
+      <artifactId>arquillian-chameleon-container-model</artifactId>
       <version>1.0.0.Final-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>

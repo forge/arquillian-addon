@@ -376,9 +376,9 @@
         ]
     },
     {
-        "artifact_id": "arquillian-tomcat-remote-6",
-        "group_id": "org.jboss.arquillian.container",
-        "name": "Arquillian Container Tomcat Remote 6.x",
+        "artifact_id": "tomcat",
+        "group_id": "org.apache.tomcat",
+        "name": "Arquillian Container Tomcat Remote",
         "container_type": "REMOTE",
         "configurations": [
             {
@@ -414,12 +414,9 @@
         ]
     },
     {
-        "artifact_id": "arquillian-tomcat-managed-6",
-        "download": {
-            "url": "http://archive.apache.org/dist/tomcat/tomcat-6/v${version.org.apache.tomcat}/bin/apache-tomcat-${version.org.apache.tomcat}.zip"
-        },
-        "group_id": "org.jboss.arquillian.container",
-        "name": "Arquillian Container Tomcat Managed 6.x",
+        "artifact_id": "tomcat",
+        "group_id": "org.apache.tomcat",
+        "name": "Arquillian Container Tomcat Managed",
         "container_type": "MANAGED",
         "configurations": [
             {
@@ -516,15 +513,6 @@
         "group_id": "org.jboss.arquillian.container",
         "container_type": "EMBEDDED",
         "name": "Arquillian Container Tomcat Embedded 7.x"
-    },
-    {
-        "artifact_id": "arquillian-tomcat-managed-7",
-        "download": {
-            "url": "http://archive.apache.org/dist/tomcat/tomcat-7/v${version.org.apache.tomcat}/bin/apache-tomcat-${version.org.apache.tomcat}.zip"
-        },
-        "group_id": "org.jboss.arquillian.container",
-        "name": "Arquillian Container Tomcat Managed 7.x",
-        "container_type": "MANAGED"
     },
     {
         "artifact_id": "arquillian-glassfish-managed-3.1",
@@ -1309,9 +1297,9 @@
 
     },
     {
-        "artifact_id": "wildfly-arquillian-container-managed",
+        "artifact_id": "wildfly-dist",
         "group_id": "org.wildfly",
-        "name": "Arquillian Container WildFly Managed 8.x",
+        "name": "Arquillian Container WildFly Managed",
         "container_type": "MANAGED",
         "configurations": [
             {
@@ -1368,14 +1356,7 @@
                 "name": "managementPort",
                 "default": "9999"
             }
-        ],
-
-        "download": {
-            "group_id": "org.wildfly",
-            "artifact_id": "wildfly-dist"
-        }
-
-
+        ]
     },
     {
         "artifact_id": "jboss-as-arquillian-container-remote",
@@ -1398,9 +1379,9 @@
         ]
     },
     {
-        "artifact_id": "wildfly-arquillian-container-remote",
+        "artifact_id": "wildfly-dist",
         "group_id": "org.wildfly",
-        "name": "Arquillian Container WildFly Remote 8.x",
+        "name": "Arquillian Container WildFly Remote",
         "container_type": "REMOTE",
         "configurations": [
             {

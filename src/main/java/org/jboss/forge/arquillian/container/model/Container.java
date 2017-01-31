@@ -6,7 +6,7 @@
  */
 package org.jboss.forge.arquillian.container.model;
 
-import org.arquillian.container.chameleon.configuration.spi.model.Target;
+import org.arquillian.container.chameleon.spi.model.Target;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 
 import java.util.HashMap;
@@ -18,12 +18,12 @@ import java.util.Map;
  */
 public class Container implements Comparable<Container> {
 
-    private static final Map<String,String> ABBREVIATIONS = new HashMap<>();
+    private static final Map<String, String> ABBREVIATIONS = new HashMap<>();
 
     static {
         ABBREVIATIONS.put("jbossas-", "jboss-as-");
-        ABBREVIATIONS.put("wls-",     "weblogic-server-");
-        ABBREVIATIONS.put("was-",     "websphere-as-");
+        ABBREVIATIONS.put("wls-", "weblogic-server-");
+        ABBREVIATIONS.put("was-", "websphere-as-");
     }
 
     private String groupId;
@@ -105,9 +105,11 @@ public class Container implements Comparable<Container> {
     private String getBaseId() {
         String id = getArtifactId().replaceAll("arquillian-(?:container-)?", "");
         // HACK fix names for JBoss AS containers since they don't follow the naming conventions
-        if ("org.jboss.as".equals(getGroupId()))
-        {
-          id = id.replace("jboss-as-", "jbossas-") + "-7";
+        if ("org.jboss.as".equals(getGroupId())) {
+            id = id.replace("jboss-as-", "jbossas-") + "-7";
+        } else if ("wildfly-dist".equals(getArtifactId()) || "tomcat".equals(getArtifactId())) {
+            id = getName().toLowerCase().replaceAll("arquillian (?:container )?", "");
+            id = id.replaceAll(" ", "-");
         }
 
         return id;
@@ -118,9 +120,9 @@ public class Container implements Comparable<Container> {
     }
 
     public DependencyBuilder asDependency() {
-       return DependencyBuilder.create()
-             .setGroupId(getGroupId())
-             .setArtifactId(getArtifactId());
+        return DependencyBuilder.create()
+                .setGroupId(getGroupId())
+                .setArtifactId(getArtifactId());
     }
 
     @Override
@@ -133,7 +135,7 @@ public class Container implements Comparable<Container> {
     }
 
     public static String expandAbbr(String id) {
-        for (Map.Entry<String,String> abbr : ABBREVIATIONS.entrySet()) {
+        for (Map.Entry<String, String> abbr : ABBREVIATIONS.entrySet()) {
             if (id.contains(abbr.getKey())) {
                 id = id.replace(abbr.getKey(), abbr.getValue());
             }
@@ -143,7 +145,7 @@ public class Container implements Comparable<Container> {
     }
 
     public static String abbr(String id) {
-        for (Map.Entry<String,String> abbr : ABBREVIATIONS.entrySet()) {
+        for (Map.Entry<String, String> abbr : ABBREVIATIONS.entrySet()) {
             if (id.contains(abbr.getValue())) {
                 id = id.replace(abbr.getValue(), abbr.getKey());
             }
@@ -154,14 +156,14 @@ public class Container implements Comparable<Container> {
 
     public String getNameForChameleon() {
         String artifactId = getArtifactId();
-        if (artifactId.startsWith("arquillian-tomcat")) {
-            return "tomcat";
+        if (artifactId.startsWith("tomcat")) {
+            return artifactId;
         } else if (artifactId.startsWith("arquillian-glassfish")) {
             return "glassfish";
         } else if (artifactId.startsWith("arquillian-jbossas") || artifactId.startsWith("jboss-as")) {
             return "jboss as";
         } else if (artifactId.startsWith("wildfly")) {
-            return "wildfly";
+            return artifactId;
         }
 
         return "";
@@ -171,16 +173,61 @@ public class Container implements Comparable<Container> {
         return getNameForChameleon() + ":" + version + ":" + getContainerType();
     }
 
-    public boolean isSupportedByChameleon( String version) throws Exception {
-      String containerName = this.getNameForChameleon();
-      if (!containerName.isEmpty()) {
-         String chameleonTarget = this.getNameForChameleon() + ":" + version + ":" + this.getContainerType();
-         System.out.println("chameleon" + chameleonTarget);
-         return Target.from(chameleonTarget).isSupported();
-      }
+    public boolean isSupportedByChameleon(String version) throws Exception {
+        String containerName = this.getNameForChameleon();
+        if (!containerName.isEmpty()) {
+            String chameleonTarget = getChameleonTarget(version);
+            System.out.println("chameleon" + chameleonTarget);
+            return Target.from(chameleonTarget).isSupported();
+        } else {
+            System.out.println("container Name is empty");
+        }
 
-      return false;
-   }
+        return false;
+    }
 
-   // https://github.com/arquillian/arquillian-container-chameleon/blob/master/src/main/resources/chameleon/default/containers.yaml
+    public boolean isVersionMatches(String version) throws Exception {
+        return Target.from(getChameleonTarget(version)).isVersionSupported();
+    }
+
+
+    // This is work aroung as method calling from chameleon is not working.
+
+//    public boolean isVersionMatches(String version) throws Exception {
+//        InputStream inputStream = Target.class.getClassLoader().getResourceAsStream("chameleon/default/containers.yaml");
+//        Map<String, List<String>> map = read(inputStream);
+//        if (map.get(getNameForChameleon()) != null) {
+//            for (String versionExp : map.get(getNameForChameleon())) {
+//                if (version.matches(versionExp)) {
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
+//
+//    public Map<String, List<String>> read(InputStream input) throws IOException {
+//        Map<String, List<String>> map = new HashMap<>();
+//        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
+//            List<String> list = buffer.lines().
+//                    filter(s -> s.contains("- name:") || s.contains("versionExpression:")).
+//                    collect(Collectors.toList());
+//            String name = null;
+//            for (String s : list) {
+//                if (s.contains("- name:")) {
+//                    name = s.split(":")[1].trim().toLowerCase();
+//                } else if (s.contains("versionExpression:") && name != null) {
+//                    String version = s.split(":")[1].trim().toLowerCase();
+//                    if (map.containsKey(name)) {
+//                        map.get(name).add(version);
+//                    } else {
+//                        List<String> versionExps = new ArrayList<>();
+//                        versionExps.add(version);
+//                        map.put(name, versionExps);
+//                    }
+//                }
+//            }
+//        }
+//        return map;
+//    }
 }

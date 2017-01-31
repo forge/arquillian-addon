@@ -23,10 +23,11 @@
  */
 package org.jboss.forge.arquillian.util;
 
+import org.jboss.forge.addon.dependencies.Coordinate;
+import org.jboss.forge.arquillian.container.model.Container;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jboss.forge.addon.dependencies.Coordinate;
 
 /**
  * DependencyUtil
@@ -47,7 +48,26 @@ public final class DependencyUtil
       {
          versions.add(cor.getVersion());
       }
+      System.out.println("toVersionString" + versions);
       return versions;
+   }
+
+   public static List<String> getChameleonSupportedVersions(List<Coordinate> dependencies, Container container) throws Exception {
+      List<String> versions = new ArrayList<>();
+      for (Coordinate cor : dependencies)
+      {
+         if (container.isVersionMatches(cor.getVersion())) {
+            versions.add(cor.getVersion());
+         }
+      }
+
+      return versions;
+
+   }
+
+   public static String getLatestNonSnapshotVersionCoordinateForChameleon(
+           List<Coordinate> dependencies, Container container) throws Exception {
+      return getLatestNonSnapshotVersion(getChameleonSupportedVersions(dependencies, container));
    }
 
    public static String getLatestNonSnapshotVersionCoordinate(
