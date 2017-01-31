@@ -18,6 +18,8 @@
     <version.junit>4.12</version.junit>
     <version.shrinkwrap-maven-resolver>2.2.5</version.shrinkwrap-maven-resolver>
     <version.assertj>3.6.2</version.assertj>
+    <version.arquillian.algeron>1.0.0.Alpha5</version.arquillian.algeron>
+    <version.pact>3.5.0-beta.2</version.pact>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -34,6 +36,16 @@
         <version>${version.forge}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.arquillian.algeron</groupId>
+        <artifactId>arquillian-algeron-pact-consumer-spi</artifactId>
+        <version>${version.arquillian.algeron}</version>
+      </dependency>
+      <dependency>
+        <groupId>au.com.dius</groupId>
+        <artifactId>pact-jvm-consumer_2.11</artifactId>
+        <version>${version.pact}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -54,6 +66,20 @@
       <artifactId>jackson-mapper-asl</artifactId>
       <version>${version.jackson}</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.arquillian.algeron</groupId>
+      <artifactId>arquillian-algeron-pact-consumer-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>au.com.dius</groupId>
+      <artifactId>pact-jvm-consumer_2.11</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.forge.furnace.container</groupId>

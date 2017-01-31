@@ -31,6 +31,12 @@ public class JavaSourceAssert extends AbstractAssert<JavaSourceAssert, JavaClass
         return new MethodAssert(method);
     }
 
+    public MethodAssert hasMethod(String methodName, Class<?>... paramTypes) {
+        final MethodSource<JavaClassSource> method = actual.getMethod(methodName, paramTypes);
+        Assertions.assertThat(method).isNotNull();
+        return new MethodAssert(method);
+    }
+
     public JavaSourceAssert doesNotHaveMethod(String methodName) {
         final MethodSource<JavaClassSource> method = actual.getMethod(methodName);
         Assertions.assertThat(method).isNull();

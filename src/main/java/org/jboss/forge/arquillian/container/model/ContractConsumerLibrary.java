@@ -1,6 +1,8 @@
 package org.jboss.forge.arquillian.container.model;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
+import org.jboss.forge.arquillian.command.algeron.AlgeronConsumerTestSetup;
+import org.jboss.forge.arquillian.command.algeron.PactAlgeronConsumerTestSetup;
 
 public enum ContractConsumerLibrary {
 
@@ -14,7 +16,12 @@ public enum ContractConsumerLibrary {
            .setGroupId("au.com.dius")
            .setArtifactId("pact-jvm-consumer_2.11")
            .setScopeType("test")
-       );
+       ) {
+      @Override
+      public AlgeronConsumerTestSetup getAlgeronConsumerTestSetup() {
+         return new PactAlgeronConsumerTestSetup();
+      }
+   };
 
    private String versionPropertyName;
    private DependencyBuilder algeronConsumer;
@@ -39,4 +46,7 @@ public enum ContractConsumerLibrary {
    {
       return versionPropertyName;
    }
+
+   public abstract AlgeronConsumerTestSetup getAlgeronConsumerTestSetup();
+
 }
