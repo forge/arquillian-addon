@@ -32,14 +32,14 @@ public class PactAlgeronConsumerTestSetup implements AlgeronConsumerTestSetup
    {
 
       addImports(test);
-      annotateTest(test, consumer, provider);
-      createFragment(test, fragmentName);
-      createTest(test, consumer, provider, fragmentName);
+      annotateTestClass(test, consumer, provider);
+      createContractFragment(test, fragmentName);
+      createTestMethod(test, consumer, provider, fragmentName);
       
       return test;
    }
 
-   private void createTest(JavaClassSource test, String consumer, String provider, String fragmentName)
+   private void createTestMethod(JavaClassSource test, String consumer, String provider, String fragmentName)
    {
       final MethodSource<JavaClassSource> javaClassSourceMethodSource = test.addMethod().setName(generateTestMethodName(consumer, provider, fragmentName));
       javaClassSourceMethodSource
@@ -62,7 +62,7 @@ public class PactAlgeronConsumerTestSetup implements AlgeronConsumerTestSetup
       return String.format("should_%s_between_%s_and_%s", deCamelCasealize(fragmentName, '_'), consumer, provider);
    }
 
-   private void createFragment(JavaClassSource test, String fragmentName) {
+   private void createContractFragment(JavaClassSource test, String fragmentName) {
       test.addMethod()
               .setName(fragmentName)
               .setPublic()
@@ -71,7 +71,7 @@ public class PactAlgeronConsumerTestSetup implements AlgeronConsumerTestSetup
               .addParameter(PactDslWithProvider.class, "builder");
    }
 
-   private void annotateTest(JavaClassSource test, String consumer, String provider)
+   private void annotateTestClass(JavaClassSource test, String consumer, String provider)
    {
       try
       {
