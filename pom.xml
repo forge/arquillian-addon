@@ -21,6 +21,7 @@
     <version.assertj>3.6.2</version.assertj>
     <version.arquillian.algeron>1.0.0.Alpha5</version.arquillian.algeron>
     <version.pact>3.5.0-beta.2</version.pact>
+    <version.chameleon.container.model>1.0.0.Beta1</version.chameleon.container.model>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -167,7 +168,7 @@
     <dependency>
       <groupId>org.arquillian.container</groupId>
       <artifactId>arquillian-chameleon-container-model</artifactId>
-      <version>1.0.0.Final-SNAPSHOT</version>
+      <version>${version.chameleon.container.model}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
