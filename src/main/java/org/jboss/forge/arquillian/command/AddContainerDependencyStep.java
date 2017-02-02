@@ -104,18 +104,22 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
       ArquillianFacet arquillian = project.getFacet(ArquillianFacet.class);
       ArquillianConfig config = arquillian.getConfig();
 
-      if (container.isSupportedByChameleon(version)) {
+      final String profileId = container.getProfileId();
+
+      if (container. isSupportedByChameleon(version)) {
          dependencyManager.addChameleonDependency(project);
+         if (config.isContainerWithDefault("true")) {
+            config.addContainer(profileId);
+         } else {
+            config.addContainerWithAttribute(profileId, "default", "true");
+         }
 
-         config.getOrCreateContainerAndAddProperty("chameleon", "default", "true");
-         config.addContainerProperty("chameleon", "chameleonTarget","${chameleon.target}");
-
-         arquillian.setConfig(config);
-
+         config.addContainerProperty(profileId, "chameleonTarget","${chameleon.target}");
       } else {
-         config.addContainer(container.getProfileId());
-         arquillian.setConfig(config);
+         config.addContainer(profileId);
       }
+
+      arquillian.setConfig(config);
 
       containerInstaller.installContainer(
               project,

@@ -100,11 +100,7 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
       containerAdapterVersion.setValueChoices(() -> {
          if (containerAdapterVersion.isEnabled())
          {
-//            return DependencyUtil.toVersionString( resolver.resolveVersions(
-//                              DependencyQueryBuilder.create(
-//
-//                                       containerAdapter.getValue().asDependency().getCoordinate())));
-            return DependencyUtil.getChameleonSupportedVersions(
+            return DependencyUtil.toVersionString(
                      resolver.resolveVersions(
                               DependencyQueryBuilder.create(
                                        containerAdapter.getValue().asDependency().getCoordinate())), containerAdapter.getValue());
@@ -115,7 +111,7 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
       containerAdapterVersion.setDefaultValue(() -> {
          if (containerAdapter.hasValue())
          {
-            return DependencyUtil.getLatestNonSnapshotVersionCoordinateForChameleon(
+            return DependencyUtil.getLatestNonSnapshotVersionCoordinate(
                      resolver.resolveVersions(
                               DependencyQueryBuilder.create(
                                        containerAdapter.getValue().asDependency().getCoordinate())), containerAdapter.getValue());

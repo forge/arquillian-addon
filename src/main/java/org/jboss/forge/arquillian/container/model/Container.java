@@ -8,10 +8,17 @@ package org.jboss.forge.arquillian.container.model;
 
 import org.arquillian.container.chameleon.spi.model.Target;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
+import org.jboss.forge.arquillian.util.Identifier;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author Paul Bakker - paul.bakker.nl@gmail.com
@@ -19,6 +26,14 @@ import java.util.Map;
 public class Container implements Comparable<Container> {
 
     private static final Map<String, String> ABBREVIATIONS = new HashMap<>();
+
+    private static final String AS = " AS ";
+    private static final String DOMAIN = "Domain";
+    private static final String EAP =  " EAP ";
+    private static final String EAP_DOMAIN =  EAP + DOMAIN;
+    private static final String AS_DOMAIN =  AS + DOMAIN;
+
+
 
     static {
         ABBREVIATIONS.put("jbossas-", "jboss-as-");
@@ -104,11 +119,18 @@ public class Container implements Comparable<Container> {
 
     private String getBaseId() {
         String id = getArtifactId().replaceAll("arquillian-(?:container-)?", "");
-        // HACK fix names for JBoss AS containers since they don't follow the naming conventions
-        if ("org.jboss.as".equals(getGroupId())) {
-            id = id.replace("jboss-as-", "jbossas-") + "-7";
-        } else if ("wildfly-dist".equals(getArtifactId()) || "tomcat".equals(getArtifactId())) {
+
+        // HACK display names for CLI depending on name for containers who is installing
+        // using chameleon & if it doesn't have unique artifact ID.
+
+        if (Identifier.WILDFLY.getArtifactID().equals(getArtifactId()) ||
+                Identifier.TOMCAT.getArtifactID().equals(getArtifactId()) ||
+                Identifier.GLASSFISH.getArtifactID().equals(getArtifactId()) ||
+                Identifier.PAYARA.getArtifactID().equals(getArtifactId())) {
             id = getName().toLowerCase().replaceAll("arquillian (?:container )?", "");
+            id = id.replaceAll(" ", "-");
+        } else if (Identifier.JBOSS_AS.getArtifactID().equals(getArtifactId())) {
+            id = getName().toLowerCase().replaceAll("\\b(?:arquillian |container |.x)\\b", "");
             id = id.replaceAll(" ", "-");
         }
 
@@ -155,15 +177,25 @@ public class Container implements Comparable<Container> {
     }
 
     public String getNameForChameleon() {
-        String artifactId = getArtifactId();
-        if (artifactId.startsWith("tomcat")) {
-            return artifactId;
-        } else if (artifactId.startsWith("arquillian-glassfish")) {
-            return "glassfish";
-        } else if (artifactId.startsWith("arquillian-jbossas") || artifactId.startsWith("jboss-as")) {
-            return "jboss as";
-        } else if (artifactId.startsWith("wildfly")) {
-            return artifactId;
+        final String artifactId = getArtifactId();
+        if (Identifier.TOMCAT.getArtifactID().equals(artifactId)) {
+            return Identifier.TOMCAT.getName();
+        } else if (Identifier.JBOSS_AS.getArtifactID().equals(artifactId) && getName().contains(AS) && !getName().contains(AS_DOMAIN)) {
+            return Identifier.JBOSS_AS.getName();
+        } else if (Identifier.JBOSS_AS_DOMAIN.getArtifactID().equals(artifactId) && getName().contains(AS_DOMAIN)) {
+            return Identifier.JBOSS_AS_DOMAIN.getName();
+        } else if (Identifier.JBOSS_EAP_DOMAIN.getArtifactID().equals(artifactId) && getName().contains(EAP_DOMAIN)) {
+            return Identifier.JBOSS_EAP_DOMAIN.getName();
+        } else if (Identifier.JBOSS_EAP.getArtifactID().equals(artifactId) && getName().contains(EAP) && !getName().contains(EAP_DOMAIN)) {
+            return Identifier.JBOSS_EAP.getName();
+        } else if (Identifier.WILDFLY_DOMAIN.getArtifactID().equals(artifactId) && getName().contains(DOMAIN)) {
+            return Identifier.WILDFLY_DOMAIN.getName();
+        } else if (Identifier.WILDFLY.getArtifactID().equals(artifactId) && !getName().contains(DOMAIN)) {
+            return Identifier.WILDFLY.getName();
+        } else if (Identifier.GLASSFISH.getArtifactID().equals(artifactId)) {
+            return Identifier.GLASSFISH.getName();
+        } else if (Identifier.PAYARA.getArtifactID().equals(artifactId)) {
+            return Identifier.PAYARA.getName();
         }
 
         return "";
@@ -177,57 +209,56 @@ public class Container implements Comparable<Container> {
         String containerName = this.getNameForChameleon();
         if (!containerName.isEmpty()) {
             String chameleonTarget = getChameleonTarget(version);
-            System.out.println("chameleon" + chameleonTarget);
             return Target.from(chameleonTarget).isSupported();
-        } else {
-            System.out.println("container Name is empty");
         }
 
         return false;
     }
 
+    // This is work around as method written in chameleon-model is
+    // not working if called from initializeUI of Command AddContainerDependecyStep.
+
     public boolean isVersionMatches(String version) throws Exception {
-        return Target.from(getChameleonTarget(version)).isVersionSupported();
+        InputStream inputStream = Target.class.getClassLoader().getResourceAsStream("chameleon/default/containers.yaml");
+        Map<String, List<String>> map = parseNameAndVersionExpressions(inputStream);
+
+        if (map.get(getNameForChameleon()) != null) {
+            for (String versionExp : map.get(getNameForChameleon())) {
+                if (version.matches(versionExp)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
+    private Map<String, List<String>> parseNameAndVersionExpressions(InputStream input) throws IOException {
+        Map<String, List<String>> map = new HashMap<>();
+        final String nameToMatch = "- name:";
+        final String versionExprtoMatch = "versionExpression:";
 
-    // This is work aroung as method calling from chameleon is not working.
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
+            List<String> namesAndExpsLines = buffer.lines().
+                    filter(s -> s.contains(nameToMatch) || s.contains(versionExprtoMatch)).
+                    collect(Collectors.toList());
+            String name = null;
+            for (String line : namesAndExpsLines) {
+                if (line.contains(nameToMatch)) {
+                    name = line.split(":")[1].trim().toLowerCase();
+                } else if (line.contains(versionExprtoMatch) && name != null) {
+                    String version = line.split(":")[1].trim().toLowerCase();
+                    if (map.containsKey(name)) {
+                        map.get(name).add(version);
+                    } else {
+                        List<String> versionExps = new ArrayList<>();
+                        versionExps.add(version);
+                        map.put(name, versionExps);
+                    }
+                }
+            }
+        }
 
-//    public boolean isVersionMatches(String version) throws Exception {
-//        InputStream inputStream = Target.class.getClassLoader().getResourceAsStream("chameleon/default/containers.yaml");
-//        Map<String, List<String>> map = read(inputStream);
-//        if (map.get(getNameForChameleon()) != null) {
-//            for (String versionExp : map.get(getNameForChameleon())) {
-//                if (version.matches(versionExp)) {
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-//
-//    public Map<String, List<String>> read(InputStream input) throws IOException {
-//        Map<String, List<String>> map = new HashMap<>();
-//        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
-//            List<String> list = buffer.lines().
-//                    filter(s -> s.contains("- name:") || s.contains("versionExpression:")).
-//                    collect(Collectors.toList());
-//            String name = null;
-//            for (String s : list) {
-//                if (s.contains("- name:")) {
-//                    name = s.split(":")[1].trim().toLowerCase();
-//                } else if (s.contains("versionExpression:") && name != null) {
-//                    String version = s.split(":")[1].trim().toLowerCase();
-//                    if (map.containsKey(name)) {
-//                        map.get(name).add(version);
-//                    } else {
-//                        List<String> versionExps = new ArrayList<>();
-//                        versionExps.add(version);
-//                        map.put(name, versionExps);
-//                    }
-//                }
-//            }
-//        }
-//        return map;
-//    }
+        return map;
+    }
 }

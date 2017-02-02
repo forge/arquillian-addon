@@ -32,7 +32,7 @@ public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
     public void should_generate_testng_test_with_as_client_mode() throws Exception {
 
         shell().execute("java-new-class --named Bean --target-package org.superbiz")
-                .execute("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework testng")
+                .execute("arquillian-setup --container-adapter glassfish-embedded --test-framework testng")
                 .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean --as-client ");
 
         assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
@@ -48,7 +48,7 @@ public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
     @Test
     public void should_generate_testng_test_setup() throws Exception {
         shell().execute("java-new-class --named Bean --target-package org.superbiz")
-                .execute("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework testng")
+                .execute("arquillian-setup --container-adapter glassfish-embedded --test-framework testng")
                 .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean");
 
         assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");

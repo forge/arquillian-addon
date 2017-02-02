@@ -29,16 +29,24 @@ public class ArquillianConfig {
         return false;
     }
 
-    public void getOrCreateContainerAndAddProperty(String containerId, String key, String value) {
-        System.out.println(addContainer(containerId));
+    public boolean isContainerWithDefault(String value) {
+        return xml.get("container")
+                .stream()
+                .map(n -> n.getAttribute("default"))
+                .filter(v -> v.equals(value))
+                .findAny()
+                .isPresent();
+    }
 
-        Node container = xml.getSingle("container@qualifier=" + containerId);
-        if (container == null) {
-            container = createChildContainerWithAttribute(containerId, key, value);
+    public void addContainerWithAttribute(String containerId, String attribute, String value) {
+
+        Node containerConfig = xml.getSingle("containerConfig@qualifier=" + containerId);
+        if (containerConfig == null) {
+            createContainerWithAttribute(containerId, attribute, value);
         }
     }
 
-    private Node createChildContainerWithAttribute(String containerId, String key, String value) {
+    private Node createContainerWithAttribute(String containerId, String key, String value) {
         Node container = xml.createChild("container@qualifier=" + containerId);
 
         if (key != null && value != null) {

@@ -6,7 +6,6 @@
  */
 package test.integration;
 
-import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.maven.projects.MavenFacet;
@@ -33,7 +32,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
 {
 
    @Test
-   public void installOpenEJBContainer() throws Exception
+   public void should_install_open_ejb_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("openejb-embedded-3.1",
               "org.jboss.arquillian.container:arquillian-openejb-embedded-3.1",
@@ -42,7 +41,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
    }
 
    @Test
-   public void installOpenWebBeansContainer() throws Exception
+   public void should_install_open_web_beans_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("openwebbeans-embedded-1",
               "org.jboss.arquillian.container:arquillian-openwebbeans-embedded-1",
@@ -50,95 +49,140 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
    }
 
    @Test
-   public void installGlassfishEmbeddedContainer() throws Exception
+   public void should_install_glass_fish_embedded_container() throws Exception
    {
-      installContainerAssertProfileAndDependencies("glassfish-embedded-3.1",
-              "org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1",
-              "org.glassfish.extras:glassfish-embedded-all");
+      installContainerAssertProfileAndDependencies("glassfish-embedded");
    }
 
    @Test
-   public void installGlassfishManagedContainer() throws Exception
+   public void should_install_glassfish_managed_container() throws Exception
    {
-      installContainerAssertProfileAndDependencies("glassfish-managed-3.1",
-              "org.jboss.arquillian.container:arquillian-glassfish-managed-3.1");
+      installContainerAssertProfileAndDependencies("glassfish-managed");
    }
 
    @Test
-   public void installGlassfishRemoteContainer() throws Exception
+   public void should_install_glassfish_remote_container() throws Exception
    {
-      installContainerAssertProfileAndDependencies("glassfish-remote-3.1",
-              "org.jboss.arquillian.container:arquillian-glassfish-remote-3.1");
+      installContainerAssertProfileAndDependencies("glassfish-remote");
    }
 
    @Test
-   public void installJBossAS51ManagedContainer() throws Exception
+   public void should_install_payara_embedded_container() throws Exception
+   {
+      installContainerAssertProfileAndDependencies("payara-embedded");
+   }
+
+   @Test
+   public void should_install_payara_managed_ontainer() throws Exception
+   {
+      installContainerAssertProfileAndDependencies("payara-managed");
+   }
+
+   @Test
+   public void should_install_payara_remote_container() throws Exception
+   {
+      installContainerAssertProfileAndDependencies("payara-remote");
+   }
+
+   @Test
+   public void should_install_jboss_as_5_1_managed_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("jbossas-managed-5.1",
               "org.jboss.arquillian.container:arquillian-jbossas-managed-5.1");
    }
 
    @Test
-   public void installJBossAS51RemoteContainer() throws Exception
+   public void should_install_jboss_as_5_1_remote_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("jbossas-remote-5.1",
               "org.jboss.arquillian.container:arquillian-jbossas-remote-5.1");
    }
 
    @Test
-   public void installJBossAS5RemoteContainer() throws Exception
+   public void should_install_jboss_as_5_remote_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("jbossas-remote-5",
               "org.jboss.arquillian.container:arquillian-jbossas-remote-5");
    }
 
    @Test
-   public void installJBossAS6EmbeddedContainer() throws Exception
+   public void should_install_jboss_as_6_embedded_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("jbossas-embedded-6",
               "org.jboss.arquillian.container:arquillian-jbossas-embedded-6");
    }
 
    @Test
-   public void installJBossAS6ManagedContainer() throws Exception
+   public void should_install_jboss_as_6_managed_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("jbossas-managed-6",
               "org.jboss.arquillian.container:arquillian-jbossas-managed-6");
    }
 
    @Test
-   public void installJBossAS6RemoteContainer() throws Exception
+   public void should_install_jboss_as_6_remote_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("jbossas-remote-6",
               "org.jboss.arquillian.container:arquillian-jbossas-remote-6");
    }
 
    @Test
-   public void installJBossAS7ManagedContainer() throws Exception
+   public void should_install_jboss_7_managed_container() throws Exception
    {
-      installContainerUsingChameleon("jbossas-managed-7");
+      installContainerAssertProfileAndDependencies("jboss-as-managed-7");
    }
 
    @Test
-   public void installJBossAS7RemoteContainer() throws Exception
+   public void should_install_jboss_as_7_remote_container() throws Exception
    {
-      installContainerUsingChameleon("jbossas-remote-7");
+      installContainerAssertProfileAndDependencies("jboss-as-remote-7");
    }
 
    @Test
-   public void installWildFlyManagedContainer() throws Exception
+   public void should_install_jboss_eap_7_embedded_container() throws Exception
    {
-      installContainerUsingChameleon("wildfly-managed");
+      installContainerAssertProfileAndDependencies("jboss-eap-embedded-7");
    }
 
    @Test
-   public void installWildFlyRemoteContainer() throws Exception
+   public void should_install_jboss_eap_7_managed_container() throws Exception
    {
-      installContainerUsingChameleon("wildfly-remote");
+      installContainerAssertProfileAndDependencies("jboss-eap-managed-7");
    }
 
    @Test
-   public void installJetty6EmbeddedContainer() throws Exception
+   public void should_install_jboss_eap_7_remote_container() throws Exception
+   {
+      installContainerAssertProfileAndDependencies("jboss-eap-remote-7");
+   }
+
+   @Test
+   public void should_install_jboss_as_7_embedded_container() throws Exception
+   {
+      installContainerAssertProfileAndDependencies("jboss-as-embedded-7");
+   }
+
+
+   @Test
+   public void should_install_wildfly_managed_container() throws Exception
+   {
+      installContainerAssertProfileAndDependencies("wildfly-managed");
+   }
+
+   @Test
+   public void should_install_wildfly_remote_container() throws Exception
+   {
+      installContainerAssertProfileAndDependencies("wildfly-remote");
+   }
+
+   @Test
+   public void should_install_wildfly_embedded_container() throws Exception
+   {
+      installContainerAssertProfileAndDependencies("wildfly-embedded");
+   }
+
+   @Test
+   public void should_install_jetty_6_embedded_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("jetty-embedded-6.1",
               "org.jboss.arquillian.container:arquillian-jetty-embedded-6.1",
@@ -146,7 +190,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
    }
 
    @Test
-   public void installJetty7EmbeddedContainer() throws Exception
+   public void should_install_jetty_7_embedded_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("jetty-embedded-7",
               "org.jboss.arquillian.container:arquillian-jetty-embedded-7",
@@ -154,7 +198,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
    }
 
    @Test
-   public void installTomcat6EmbeddedContainer() throws Exception
+   public void should_install_tomcat_6_embedded_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("tomcat-embedded-6",
                "org.jboss.arquillian.container:arquillian-tomcat-embedded-6",
@@ -165,7 +209,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
 
    @Test
    @Ignore("Not in default maven repo")
-   public void installWAS7RemoteContainer() throws Exception
+   public void should_install_was_7_remote_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("was-remote-7",
               "org.jboss.arquillian.container:arquillian-was-remote-7");
@@ -173,7 +217,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
 
    @Test
    @Ignore("Not in default maven repo")
-   public void installWAS8EmbeddedContainer() throws Exception
+   public void should_install_was_8_embedded_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("was-embedded-8",
               "org.jboss.arquillian.container:arquillian-was-embedded-8");
@@ -181,57 +225,62 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
 
    @Test
    @Ignore("Not in default maven repo")
-   public void installWAS8RemoteContainer() throws Exception
+   public void should_install_was_8_remote_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("was-remote-8",
               "org.jboss.arquillian.container:arquillian-was-remote-8");
    }
-   
+
    @Test
-   public void installTomcat6RemoteContainer() throws Exception
+   public void should_install_tomcat_remote_container() throws Exception
    {
-      installContainerUsingChameleon("tomcat-remote");
+      installContainerAssertProfileAndDependencies("tomcat-remote");
 
    }
 
    @Test
-   public void installWeldEEEmbeddedContainer() throws Exception
+   public void should_install_tomcat_managed_container() throws Exception
+   {
+      installContainerAssertProfileAndDependencies("tomcat-managed");
+
+   }
+
+   @Test
+   public void should_install_weld_ee_embedded_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("weld-ee-embedded-1.1",
               "org.jboss.arquillian.container:arquillian-weld-ee-embedded-1.1");
    }
 
    @Test
-   public void installWeldSEEmbeddedContainer() throws Exception
+   public void should_install_weld_se_embedded_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("weld-se-embedded-1",
               "org.jboss.arquillian.container:arquillian-weld-se-embedded-1");
    }
 
    @Test
-   public void installWeldSEEmbedded1_1Container() throws Exception
+   public void should_install_weld_se_embedded_1_1_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("weld-se-embedded-1.1",
               "org.jboss.arquillian.container:arquillian-weld-se-embedded-1.1");
    }
 
    @Test
-   public void installWWeblogicRemoteContainer() throws Exception
+   public void should_install_weblogic_remote_container() throws Exception
    {
       installContainerAssertProfileAndDependencies("wls-remote-10.3",
               "org.jboss.arquillian.container:arquillian-wls-remote-10.3");
    }
 
    private void installContainerAssertProfileAndDependencies(final String container, String... dependencies) throws Exception {
+      executeCmd(container);
 
-
-      shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit");
-
-      MavenFacet mavenFacet = project.getFacet(MavenFacet.class);
-      final Profile profile = mavenFacet.getModel().getProfiles().get(0);
+      final Profile profile = getProfile();
       final String profileId = "arquillian-" + container;
 
       assertThat(profile).hasId(profileId);
+
 
       for (String dependency : dependencies) {
          String[] gav = dependency.split(":");
@@ -239,28 +288,45 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate
       }
 
       assertJunitAndUniverseDependency();
+
+      assertContainerOrPropertyFromArquillianConfig("<container qualifier=\"" + profileId + "\"/>");
    }
 
-   private void installContainerUsingChameleon(final  String container) throws TimeoutException {
+   private void installContainerAssertProfileAndDependencies(final  String container) throws TimeoutException {
+      executeCmd(container);
+
+      Profile profile = getProfile();
+      final String profileId = "arquillian-" + container;
+
+      assertThat(profile).hasId(profileId);
+      assertJunitAndUniverseDependency();
+
+      assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
+      assertContainerOrPropertyFromArquillianConfig(
+              "<container default=\"true\" qualifier=\"" + profileId + "\">",
+              "<property name=\"chameleonTarget\">${chameleon.target}</property>");
+   }
+
+   private void executeCmd(String container) throws TimeoutException {
       shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit");
+   }
 
+   private Profile getProfile() {
       MavenFacet mavenFacet = project.getFacet(MavenFacet.class);
-      final Profile profile = mavenFacet.getModel().getProfiles().get(0);
-      final Plugin surefirePlugin = profile.getBuild().getPlugins().get(0);
 
+      return mavenFacet.getModel().getProfiles().get(0);
+   }
+
+   private void assertContainerOrPropertyFromArquillianConfig(String... properties) {
       final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
       final FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
 
-      assertJunitAndUniverseDependency();
-      assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
-      assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">${chameleon.target}</property>");
-
+      assertThat(arquillianXML.getContents()).contains(properties);
    }
 
    private void assertJunitAndUniverseDependency() {
       assertThat(project).hasDirectDependency("junit:junit").withType("jar").withScope("test");
       assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit").withType("pom").withScope("test");
       assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
-
    }
 }

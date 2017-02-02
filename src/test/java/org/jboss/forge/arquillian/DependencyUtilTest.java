@@ -25,13 +25,16 @@ package org.jboss.forge.arquillian;
 
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
+import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.util.DependencyUtil;
-import org.junit.Assert;
+import org.jboss.forge.arquillian.util.Identifier;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * DependencyUtilTestCase
@@ -43,7 +46,7 @@ public class DependencyUtilTest
 {
 
    @Test
-   public void shouldGetLastNonSnapshotVersion()
+   public void should_get_last_non_snapshot_version()
    {
       List<Coordinate> deps = new ArrayList<>();
       deps.add(DependencyBuilder.create().setVersion("1.0").getCoordinate());
@@ -51,11 +54,38 @@ public class DependencyUtilTest
 
       String dep = DependencyUtil.getLatestNonSnapshotVersion(DependencyUtil.toVersionString(deps));
 
-      Assert.assertEquals("1.0", dep);
+      assertThat(dep).isEqualTo("1.0");
    }
 
    @Test
-   public void shouldReturnLatestIfAllSnapshots()
+   public void should_get_versions_only_supported_by_chameleon() throws Exception {
+      List<Coordinate> deps = new ArrayList<>();
+      deps.add(DependencyBuilder.create().setVersion("4.1").getCoordinate());
+      deps.add(DependencyBuilder.create().setVersion("2.1").getCoordinate());
+      deps.add(DependencyBuilder.create().setVersion("7.1").getCoordinate());
+      deps.add(DependencyBuilder.create().setVersion("1.0-SNAPSHOT").getCoordinate());
+
+      List<String> dep = DependencyUtil.toVersionString(deps,
+              createContainer(Identifier.TOMCAT.getArtifactID(), Identifier.TOMCAT.getName()));
+
+      assertThat(dep).doesNotContain("2.1","4.1");
+      assertThat(dep).contains("7.1");
+   }
+
+   @Test
+   public void should_get_all_available_versions_if_not_supported_by_chameleon() throws Exception {
+      List<Coordinate> deps = new ArrayList<>();
+      deps.add(DependencyBuilder.create().setVersion("4.1").getCoordinate());
+      deps.add(DependencyBuilder.create().setVersion("7.1").getCoordinate());
+
+      List<String> dep = DependencyUtil.toVersionString(deps,
+              createContainer("arquillian-jbossas-managed-4.2", "JBoss As"));
+
+      assertThat(dep).contains("4.1", "7.1");
+   }
+
+   @Test
+   public void should_return_latest_if_all_snapshots()
    {
       List<Coordinate> deps = new ArrayList<>();
       deps.add(DependencyBuilder.create().setVersion("1.0-SNAPSHOT").getCoordinate());
@@ -63,14 +93,22 @@ public class DependencyUtilTest
 
       String dep = DependencyUtil.getLatestNonSnapshotVersion(DependencyUtil.toVersionString(deps));
 
-      Assert.assertEquals("2.0-SNAPSHOT", dep);
+      assertThat(dep).isEqualTo("2.0-SNAPSHOT");
    }
 
    @Test
-   public void shouldReturnNullIfEmpty()
+   public void should_return_null_if_empty()
    {
       String dep = DependencyUtil.getLatestNonSnapshotVersion(Collections.emptyList());
 
-      Assert.assertNull(dep);
+      assertThat(dep).isNull();
+   }
+
+   private Container createContainer(String artifactId, String name) {
+      Container container = new Container();
+      container.setArtifactId(artifactId);
+      container.setName(name);
+
+      return container;
    }
 }

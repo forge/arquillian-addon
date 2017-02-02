@@ -48,26 +48,32 @@ public final class DependencyUtil
       {
          versions.add(cor.getVersion());
       }
-      System.out.println("toVersionString" + versions);
+
       return versions;
    }
 
-   public static List<String> getChameleonSupportedVersions(List<Coordinate> dependencies, Container container) throws Exception {
+   public static List<String> toVersionString(List<Coordinate> dependencies, Container container) throws Exception {
       List<String> versions = new ArrayList<>();
       for (Coordinate cor : dependencies)
       {
+         // This checks given version is supporting by chameleon as we want to
+         // show versions supported by chameleon only.
          if (container.isVersionMatches(cor.getVersion())) {
             versions.add(cor.getVersion());
          }
       }
 
+      // This indicates that no support by chameleon as there is no name & version expression match.
+      if (versions.isEmpty()) {
+         versions = toVersionString(dependencies);
+      }
       return versions;
 
    }
 
-   public static String getLatestNonSnapshotVersionCoordinateForChameleon(
+   public static String getLatestNonSnapshotVersionCoordinate(
            List<Coordinate> dependencies, Container container) throws Exception {
-      return getLatestNonSnapshotVersion(getChameleonSupportedVersions(dependencies, container));
+      return getLatestNonSnapshotVersion(toVersionString(dependencies, container));
    }
 
    public static String getLatestNonSnapshotVersionCoordinate(
