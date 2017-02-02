@@ -1,7 +1,7 @@
 package org.jboss.forge.arquillian.testframework.algeron;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.arquillian.api.AlgeronSetupFacet;
+import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
 import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
 
 public class AlgeronConsumer extends AlgeronSetupFacet {
@@ -10,17 +10,26 @@ public class AlgeronConsumer extends AlgeronSetupFacet {
 
    @Override
    public DependencyBuilder createContractLibraryDependency() {
-      return contractLibrary.getContractConsumer();
+      final DependencyBuilder contractConsumer = contractLibrary.getContractConsumer();
+      // Creates a new copy of object since enum ContractLibrary creation happens only once and for Forge this instance is not immutable
+      return DependencyBuilder.create(contractConsumer);
    }
 
    @Override
    public DependencyBuilder createAlgeronDependency() {
-      return contractLibrary.getAlgeronConsumer();
+      final DependencyBuilder algeronConsumer = contractLibrary.getAlgeronConsumer();
+      // Creates a new copy of object since enum ContractLibrary creation happens only once and for Forge this instance is not immutable
+      return DependencyBuilder.create(algeronConsumer);
    }
 
    @Override
    public String getVersionPropertyName() {
       return contractLibrary.getVersionPropertyName();
+   }
+
+   @Override
+   public String getContractType() {
+      return contractLibrary.name();
    }
 
    public void setContractLibrary(ContractConsumerLibrary contractLibrary) {

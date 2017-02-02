@@ -15,12 +15,12 @@ public class AnnotationAssert extends AbstractAssert<AnnotationAssert, Annotatio
    }
 
    public AnnotationAssert withValue(String value) {
-      Assertions.assertThat(actual.getLiteralValue()).isEqualTo(value);
+      Assertions.assertThat(actual.getStringValue()).isEqualTo(value);
       return this;
    }
 
    public AnnotationAssert withEntry(String entry, String value) {
-      Assertions.assertThat(actual.getLiteralValue(entry)).isEqualTo(value);
+      Assertions.assertThat(actual.getStringValue(entry)).isEqualTo(value);
       return this;
    }
 }

@@ -1,4 +1,4 @@
-package test.integration;
+package test.integration.algeron;
 
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -11,7 +11,7 @@ import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
 @AddDependencies("org.assertj:assertj-core")
-@AddPackage(ShellTestTemplate.PACKAGE_NAME)
+@AddPackage(containing = ShellTestTemplate.class)
 public class AddArquillianAlgeronConsumerTest extends ShellTestTemplate
 {
 

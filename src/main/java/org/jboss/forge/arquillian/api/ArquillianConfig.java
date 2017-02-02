@@ -9,8 +9,7 @@ public class ArquillianConfig {
 
     private Node xml;
 
-
-    public ArquillianConfig() {
+    ArquillianConfig() {
         xml = XMLParser
                 .parse("<arquillian xmlns=\"http://jboss.org/schema/arquillian\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
                         + "            xsi:schemaLocation=\"http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd\"></arquillian>");
@@ -69,6 +68,40 @@ public class ArquillianConfig {
                 .getOrCreate("configuration")
                 .getOrCreate("property@name=" + key)
                 .text(value);
+    }
+
+    public boolean addExtension(String qualifier) {
+        Node containerConfig = xml.getSingle("extension@qualifier=" + qualifier);
+        if (containerConfig == null) {
+            xml.createChild("extension@qualifier=" + qualifier);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addExtensionProperty(String qualifier, String key, String value) {
+        xml.getOrCreate("extension@qualifier=" + qualifier)
+                .getOrCreate("property@name=" + key)
+                .text(value);
+        return true;
+    }
+
+    public boolean isExtensionRegistered(String qualifier) {
+        return xml.get("extension")
+                .stream()
+                .map(n -> n.getAttribute("qualifier"))
+                .filter(q -> qualifier.equals(q))
+                .findAny().isPresent();
+    }
+
+    public String getContentOfNode(String node) {
+        final Node single = xml.getSingle(node);
+
+        if (single == null) {
+            return null;
+        }
+
+        return single.getText();
     }
 
     @Override

@@ -79,13 +79,12 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
          builder.add(dependencyVersion);
          dependencyVersions.put(dependency, dependencyVersion);
 
-         System.out.println("dependencyVersions:" + dependencyVersions);
          final DependencyQuery dependencyCoordinate = DependencyQueryBuilder.create(
                DependencyBuilder.create()
                .setGroupId(dependency.getGroupId())
                .setArtifactId(dependency.getArtifactId())
                .getCoordinate());
-         System.out.println("dependency coordinate:" + dependencyCoordinate.getCoordinate());
+
          dependencyVersion.setEnabled(true);
          dependencyVersion.setValueChoices(() -> DependencyUtil.toVersionString(
                resolver.resolveVersions(dependencyCoordinate)));

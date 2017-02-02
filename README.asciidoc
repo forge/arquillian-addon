@@ -1,7 +1,7 @@
 Arquillian Forge Addon
 ========================
 
-image:https://travis-ci.org/forge/addon-arquillian.svg?branch=master["Build Status", link="https://travis-ci.org/forge/addon-arquillian"]
+image:https://forge.ci.cloudbees.com/job/arquillian-addon/badge/icon["Build Status", link="https://forge.ci.cloudbees.com/job/arquillian-addon/"] 
 
 Setting up an Arquillian profile
 ================================

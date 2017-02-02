@@ -8,9 +8,8 @@ import org.junit.runner.RunWith;
 import test.integration.extension.AddDependencies;
 import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
-import test.integration.support.assertions.ForgeAssertions;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 
 @RunWith(Arquillian.class)
@@ -34,7 +33,7 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
 
         shell().execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit");
 
-        ForgeAssertions.assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
 
         final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
         FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
@@ -48,7 +47,7 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
 
         shell().execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit");
 
-        ForgeAssertions.assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
 
         final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
         FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");

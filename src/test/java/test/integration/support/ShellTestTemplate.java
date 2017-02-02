@@ -4,6 +4,8 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
+import org.jboss.forge.addon.projects.facets.ResourcesFacet;
+import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.shell.test.ShellTest;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.furnace.Furnace;
@@ -25,11 +27,12 @@ public abstract class ShellTestTemplate {
     public static final String PACKAGE_NAME = "test.integration.support";
     private ShellTest shellTest;
     protected Project project;
+    private ProjectFactory projectFactory;
 
     @Before
     public void setUp() throws Exception {
         final AddonRegistry addonRegistry = Furnace.instance(getClass().getClassLoader()).getAddonRegistry();
-        final ProjectFactory projectFactory = addonRegistry.getServices(ProjectFactory.class).get();
+        projectFactory = addonRegistry.getServices(ProjectFactory.class).get();
         shellTest = addonRegistry.getServices(ShellTest.class).get();
         project = projectFactory.createTempProject(asList(ArquillianFacet.class, JavaSourceFacet.class));
         shellTest.getShell().setCurrentResource(project.getRoot());
@@ -40,6 +43,10 @@ public abstract class ShellTestTemplate {
         if (shellTest != null) {
             shellTest.close();
         }
+        if (projectFactory != null) {
+            projectFactory.invalidateCaches();
+        }
+
     }
 
     protected ShellExecutor shell() {
@@ -50,6 +57,12 @@ public abstract class ShellTestTemplate {
         return (JavaClassSource) project.getFacet(JavaSourceFacet.class)
                 .getTestJavaResource(className)
                 .getJavaType();
+    }
+
+    protected FileResource<?> extractTestResource(Project project, String filename)
+    {
+        ResourcesFacet resources = project.getFacet(ResourcesFacet.class);
+        return resources.getTestResource(filename);
     }
 
 }

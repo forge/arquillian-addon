@@ -56,7 +56,4 @@ public class ProfileAssert extends AbstractAssert<ProfileAssert, Profile> {
 
         return dependency;
     }
-
-
 }
-
