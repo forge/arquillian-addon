@@ -105,7 +105,7 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
 
       final String profileId = container.getProfileId();
 
-      if (container. isSupportedByChameleon(version)) {
+      if (container.isSupportedByChameleon(version)) {
          dependencyManager.addChameleonDependency(project);
          if (config.isContainerWithDefault("true")) {
             config.addContainer(profileId);
@@ -130,12 +130,12 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
 
       return Results.success("Installed " + container.getName() + " dependencies");
    }
-   
+
    @Override
    protected boolean isProjectRequired() {
       return true;
    }
-   
+
    @Override
    public boolean isEnabled(UIContext context) {
       Boolean parent = super.isEnabled(context);
