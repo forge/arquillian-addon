@@ -1,15 +1,5 @@
 package org.jboss.forge.arquillian.command;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Any;
-import javax.inject.Inject;
-
-import org.jboss.forge.addon.convert.Converter;
 import org.jboss.forge.addon.dependencies.DependencyResolver;
 import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
@@ -35,6 +25,13 @@ import org.jboss.forge.arquillian.container.ContainerResolver;
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.container.model.ContainerType;
 import org.jboss.forge.arquillian.util.DependencyUtil;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 @FacetConstraint(ArquillianFacet.class)
 public class ContainerSetupWizard extends AbstractProjectCommand implements UIWizard
@@ -106,7 +103,8 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
             return DependencyUtil.toVersionString(
                      resolver.resolveVersions(
                               DependencyQueryBuilder.create(
-                                       containerAdapter.getValue().asDependency().getCoordinate())));
+                                       containerAdapter.getValue().asDependency().getCoordinate())), containerAdapter.getValue());
+
          }
          return Collections.emptyList();
       });
@@ -116,7 +114,7 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
             return DependencyUtil.getLatestNonSnapshotVersionCoordinate(
                      resolver.resolveVersions(
                               DependencyQueryBuilder.create(
-                                       containerAdapter.getValue().asDependency().getCoordinate())));
+                                       containerAdapter.getValue().asDependency().getCoordinate())), containerAdapter.getValue());
          }
          return null;
       });

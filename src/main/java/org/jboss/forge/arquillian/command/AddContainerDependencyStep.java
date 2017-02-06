@@ -1,17 +1,10 @@
 package org.jboss.forge.arquillian.command;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Any;
-import javax.inject.Inject;
-
 import org.jboss.forge.addon.dependencies.DependencyQuery;
 import org.jboss.forge.addon.dependencies.DependencyResolver;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
+import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
@@ -32,9 +25,16 @@ import org.jboss.forge.arquillian.api.ArquillianConfig;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.arquillian.api.ContainerInstallEvent;
 import org.jboss.forge.arquillian.container.ContainerInstaller;
+import org.jboss.forge.arquillian.container.DependencyManager;
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.container.model.Dependency;
 import org.jboss.forge.arquillian.util.DependencyUtil;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddContainerDependencyStep extends AbstractProjectCommand implements UIWizardStep {
 
@@ -46,6 +46,9 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
 
    @Inject
    private ContainerInstaller containerInstaller;
+
+   @Inject
+   private DependencyManager dependencyManager;
 
    @Inject
    private DependencyResolver resolver;
@@ -67,7 +70,7 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
    @Override
    public void initializeUI(final UIBuilder builder) throws Exception {
 
-      Container selectedContainer = (Container)builder.getUIContext().getAttributeMap().get(ContainerSetupWizard.CTX_CONTAINER);
+      Container selectedContainer = (Container) builder.getUIContext().getAttributeMap().get(ContainerSetupWizard.CTX_CONTAINER);
       if(selectedContainer == null || selectedContainer.getDependencies() == null) {
          return;
       }
@@ -75,7 +78,7 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
          UISelectOne<String> dependencyVersion = inputFactory.createSelectOne(dependency.getArtifactId() + "-version", String.class);
          builder.add(dependencyVersion);
          dependencyVersions.put(dependency, dependencyVersion);
-         
+
          final DependencyQuery dependencyCoordinate = DependencyQueryBuilder.create(
                DependencyBuilder.create()
                .setGroupId(dependency.getGroupId())
@@ -96,28 +99,43 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
       Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
       Container container = (Container)ctx.get(ContainerSetupWizard.CTX_CONTAINER);
       String version = (String)ctx.get(ContainerSetupWizard.CTX_CONTAINER_VERSION);
+      Project project = getSelectedProject(context);
+      ArquillianFacet arquillian = project.getFacet(ArquillianFacet.class);
+      ArquillianConfig config = arquillian.getConfig();
+
+      final String profileId = container.getProfileId();
+
+      if (container.isSupportedByChameleon(version)) {
+         dependencyManager.addChameleonDependency(project);
+         if (config.containsDefaultContainer()) {
+            config.addContainer(profileId);
+         } else {
+            config.addContainerWithAttribute(profileId, "default", "true");
+         }
+
+         config.addContainerProperty(profileId, "chameleonTarget","${chameleon.target}");
+      } else {
+         config.addContainer(profileId);
+      }
+
+      arquillian.setConfig(config);
 
       containerInstaller.installContainer(
-            getSelectedProject(context),
-            container,
-            version,
-            getVersionedDependenciesMap());
-
-      ArquillianFacet arquillian = getSelectedProject(context).getFacet(ArquillianFacet.class);
-      ArquillianConfig config = arquillian.getConfig();
-      config.addContainer(container.getProfileId());
-      arquillian.setConfig(config);
+              project,
+              container,
+              version,
+              getVersionedDependenciesMap());
 
       installEvent.fire(new ContainerInstallEvent(container));
 
       return Results.success("Installed " + container.getName() + " dependencies");
    }
-   
+
    @Override
    protected boolean isProjectRequired() {
       return true;
    }
-   
+
    @Override
    public boolean isEnabled(UIContext context) {
       Boolean parent = super.isEnabled(context);

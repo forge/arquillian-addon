@@ -1,9 +1,9 @@
 package org.jboss.forge.arquillian.api;
 
-import java.io.InputStream;
-
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
+
+import java.io.InputStream;
 
 public class ArquillianConfig {
 
@@ -58,6 +58,24 @@ public class ArquillianConfig {
       return true;
    }
 
+   public void addContainerWithAttribute(String containerId, String attribute, String value) {
+      Node containerConfig = xml.getSingle("containerConfig@qualifier=" + containerId);
+
+      if (containerConfig == null) {
+         createContainerWithAttribute(containerId, attribute, value);
+      }
+   }
+
+   private Node createContainerWithAttribute(String containerId, String key, String value) {
+       Node container = xml.createChild("container@qualifier=" + containerId);
+
+       if (key != null && value != null) {
+           container.attribute(key, value);
+       }
+
+       return container;
+    }
+
    public static void addPropertyToArquillianConfig(Node xml, String container, String key, String value)
    {
       xml.getOrCreate("container@qualifier=" + container)
@@ -73,6 +91,15 @@ public class ArquillianConfig {
               .map(n -> n.getAttribute("qualifier"))
               .filter(q -> qualifier.equals(q))
               .findAny().isPresent();
+   }
+
+   public boolean containsDefaultContainer() {
+      return xml.get("container")
+              .stream()
+              .map(n -> n.getAttribute("default"))
+              .filter(v -> v.equals("true"))
+              .findAny()
+              .isPresent();
    }
 
    public String getContentOfNode(String node)

@@ -29,7 +29,7 @@ public class JUnitTestGenerationIntegrationTest extends ShellTestTemplate {
    public void should_generate_junit_test_with_as_client_mode() throws Exception {
 
       shell().execute("java-new-class --named Bean --target-package org.superbiz")
-             .execute("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework junit")
+             .execute("arquillian-setup --container-adapter glassfish-embedded --test-framework junit")
              .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean --as-client ");
 
       assertThat(project).hasDirectDependency("junit:junit").withType("jar").withScope("test");
@@ -45,7 +45,7 @@ public class JUnitTestGenerationIntegrationTest extends ShellTestTemplate {
    @Test
    public void should_generate_junit_test_setup() throws Exception {
       shell().execute("java-new-class --named Bean --target-package org.superbiz")
-              .execute("arquillian-setup --container-adapter glassfish-embedded-3.1 --test-framework junit")
+              .execute("arquillian-setup --container-adapter glassfish-embedded --container-version 3.1.2 --test-framework junit")
               .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean");
 
       assertThat(project).hasDirectDependency("junit:junit").withType("jar").withScope("test");
