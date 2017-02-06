@@ -27,14 +27,6 @@ public class Container implements Comparable<Container> {
 
     private static final Map<String, String> ABBREVIATIONS = new HashMap<>();
 
-    private static final String AS = " AS ";
-    private static final String DOMAIN = "Domain";
-    private static final String EAP =  " EAP ";
-    private static final String EAP_DOMAIN =  EAP + DOMAIN;
-    private static final String AS_DOMAIN =  AS + DOMAIN;
-
-
-
     static {
         ABBREVIATIONS.put("jbossas-", "jboss-as-");
         ABBREVIATIONS.put("wls-", "weblogic-server-");
@@ -176,37 +168,14 @@ public class Container implements Comparable<Container> {
         return id;
     }
 
-    public String getNameForChameleon() {
-        final String artifactId = getArtifactId();
-        if (Identifier.TOMCAT.getArtifactID().equals(artifactId)) {
-            return Identifier.TOMCAT.getName();
-        } else if (Identifier.JBOSS_AS.getArtifactID().equals(artifactId) && getName().contains(AS) && !getName().contains(AS_DOMAIN)) {
-            return Identifier.JBOSS_AS.getName();
-        } else if (Identifier.JBOSS_AS_DOMAIN.getArtifactID().equals(artifactId) && getName().contains(AS_DOMAIN)) {
-            return Identifier.JBOSS_AS_DOMAIN.getName();
-        } else if (Identifier.JBOSS_EAP_DOMAIN.getArtifactID().equals(artifactId) && getName().contains(EAP_DOMAIN)) {
-            return Identifier.JBOSS_EAP_DOMAIN.getName();
-        } else if (Identifier.JBOSS_EAP.getArtifactID().equals(artifactId) && getName().contains(EAP) && !getName().contains(EAP_DOMAIN)) {
-            return Identifier.JBOSS_EAP.getName();
-        } else if (Identifier.WILDFLY_DOMAIN.getArtifactID().equals(artifactId) && getName().contains(DOMAIN)) {
-            return Identifier.WILDFLY_DOMAIN.getName();
-        } else if (Identifier.WILDFLY.getArtifactID().equals(artifactId) && !getName().contains(DOMAIN)) {
-            return Identifier.WILDFLY.getName();
-        } else if (Identifier.GLASSFISH.getArtifactID().equals(artifactId)) {
-            return Identifier.GLASSFISH.getName();
-        } else if (Identifier.PAYARA.getArtifactID().equals(artifactId)) {
-            return Identifier.PAYARA.getName();
-        }
 
-        return "";
-    }
 
     public String getChameleonTarget(String version) {
-        return getNameForChameleon() + ":" + version + ":" + getContainerType();
+        return Identifier.getNameForChameleon(this) + ":" + version + ":" + getContainerType();
     }
 
     public boolean isSupportedByChameleon(String version) throws Exception {
-        String containerName = this.getNameForChameleon();
+        String containerName = Identifier.getNameForChameleon(this);
         if (!containerName.isEmpty()) {
             String chameleonTarget = getChameleonTarget(version);
             return Target.from(chameleonTarget).isSupported();
@@ -221,9 +190,9 @@ public class Container implements Comparable<Container> {
     public boolean isVersionMatches(String version) throws Exception {
         InputStream inputStream = Target.class.getClassLoader().getResourceAsStream("chameleon/default/containers.yaml");
         Map<String, List<String>> map = parseNameAndVersionExpressions(inputStream);
-
-        if (map.get(getNameForChameleon()) != null) {
-            for (String versionExp : map.get(getNameForChameleon())) {
+        final String containerName = Identifier.getNameForChameleon(this);
+        if (map.get(containerName) != null) {
+            for (String versionExp : map.get(containerName)) {
                 if (version.matches(versionExp)) {
                     return true;
                 }

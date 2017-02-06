@@ -45,7 +45,7 @@ public class ContainerTest {
                 "Arquillian Container Tomcat Remote");
 
         assertThat(container.getId()).isEqualTo("tomcat-remote");
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase(Identifier.TOMCAT.getName());
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase(Identifier.TOMCAT.getName());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ContainerTest {
                 "Arquillian Container Payara Embedded");
 
         assertThat(container.getId()).isEqualTo("payara-embedded");
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase(Identifier.PAYARA.getName());
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase(Identifier.PAYARA.getName());
 
     }
 
@@ -64,7 +64,7 @@ public class ContainerTest {
                 "Arquillian Container Glassfish Managed");
 
         assertThat(container.getId()).isEqualTo("glassfish-managed");
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase(Identifier.GLASSFISH.getName());
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase(Identifier.GLASSFISH.getName());
 
     }
 
@@ -74,7 +74,7 @@ public class ContainerTest {
                 "Arquillian Container Wildfly Remote");
 
         assertThat(container.getId()).isEqualTo("wildfly-remote");
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase(Identifier.WILDFLY.getName());
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase(Identifier.WILDFLY.getName());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class ContainerTest {
                 "Arquillian Container Wildfly Domain Managed");
 
         assertThat(container.getId()).isEqualTo("wildfly-domain-managed");
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase("Wildfly Domain");
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase("Wildfly Domain");
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ContainerTest {
                 JBOSS_EAP_7_REMOTE);
 
         assertThat(container.getId()).isEqualTo("jboss-eap-remote-7");
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase("jboss eap");
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase("jboss eap");
     }
 
     @Test
@@ -101,7 +101,7 @@ public class ContainerTest {
                 "Arquillian Container JBoss EAP Domain Managed 7.x");
 
         assertThat(container.getId()).isEqualTo("jboss-eap-domain-managed-7");
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase("jboss eap domain");
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase("jboss eap domain");
     }
 
     @Test
@@ -109,7 +109,7 @@ public class ContainerTest {
         final Container container = createContainer(Identifier.JBOSS_EAP.getArtifactID(),
                 JBOSS_EAP_7_REMOTE);
 
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase(Identifier.JBOSS_EAP.getName());
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase(Identifier.JBOSS_EAP.getName());
         assertThat(container.getId()).isEqualTo("jboss-eap-remote-7");
     }
 
@@ -118,7 +118,7 @@ public class ContainerTest {
         final Container container = createContainer(Identifier.JBOSS_AS.getArtifactID(),
                 JBOSS_AS_7_REMOTE);
 
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase(Identifier.JBOSS_AS.getName());
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase(Identifier.JBOSS_AS.getName());
         assertThat(container.getId()).isEqualTo("jboss-as-remote-7");
     }
 
@@ -127,7 +127,7 @@ public class ContainerTest {
         final Container container = createContainer(Identifier.JBOSS_AS.getArtifactID(),
                 JBOSS_AS_7_DOMAIN_REMOTE);
 
-        assertThat(container.getNameForChameleon()).isEqualToIgnoringCase("JBoss AS Domain");
+        assertThat(Identifier.getNameForChameleon(container)).isEqualToIgnoringCase("JBoss AS Domain");
         assertThat(container.getId()).isEqualTo("jboss-as-domain-remote-7");
     }
 

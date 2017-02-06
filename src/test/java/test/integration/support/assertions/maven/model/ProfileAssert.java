@@ -42,15 +42,12 @@ public class ProfileAssert extends AbstractAssert<ProfileAssert, Profile> {
                 dependency.setVersion(split[2].trim());
             }
 
-            String trimmed;
             if(split.length > 3) {
-                trimmed = split[3].trim();
-                dependency.setScope(trimmed);
+                dependency.setScope(split[3].trim());
             }
 
             if(split.length > 4) {
-                trimmed = split[4].trim();
-                dependency.setType(trimmed);
+                dependency.setType(split[4].trim());
             }
         }
 

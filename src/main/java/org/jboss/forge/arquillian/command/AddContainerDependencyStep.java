@@ -107,7 +107,7 @@ public class AddContainerDependencyStep extends AbstractProjectCommand implement
 
       if (container.isSupportedByChameleon(version)) {
          dependencyManager.addChameleonDependency(project);
-         if (config.isContainerWithDefault("true")) {
+         if (config.containsDefaultContainer()) {
             config.addContainer(profileId);
          } else {
             config.addContainerWithAttribute(profileId, "default", "true");

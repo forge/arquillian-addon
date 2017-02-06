@@ -85,6 +85,12 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
 
         assertThat(arquillianXML).isNotNull();
         assertThat(arquillianXML.exists()).isTrue();
+        assertThat(arquillianXML.getContents()).contains(
+              "  <container default=\"true\" qualifier=\"arquillian-wildfly-remote\">\n" +
+                    "    <configuration>\n" +
+                    "      <property name=\"chameleonTarget\">${chameleon.target}</property>\n" +
+                    "    </configuration>\n" +
+                    "  </container>\n");
     }
 
 }
