@@ -34,7 +34,9 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
     public boolean install() {
         if (getVersion() != null) {
             installDependencies();
-            configureForge();
+            if (!isForgeConfigurationInstalled()) {
+                configureForge();
+            }
             return true;
         }
         return false;
@@ -80,6 +82,10 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
 
     @Override
     public boolean isInstalled() {
+        return hasEffectiveDependency(createAlgeronDependency()) && hasEffectiveDependency(createContractLibraryDependency());
+    }
+
+    public boolean isForgeConfigurationInstalled() {
         final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
         final Configuration configuration = configurationFacet.getConfiguration();
         final String contractType = configuration.getString(CONTRACT_TYPE);
