@@ -38,131 +38,125 @@ import java.util.Map;
 
 public class AddContainerDependencyStep extends AbstractProjectCommand implements UIWizardStep {
 
-   @Inject
-   private InputComponentFactory inputFactory;
+    private final Map<Dependency, InputComponent<?, String>> dependencyVersions = new HashMap<>();
+    @Inject
+    private InputComponentFactory inputFactory;
+    @Inject
+    private ProjectFactory projectFactory;
+    @Inject
+    private ContainerInstaller containerInstaller;
+    @Inject
+    private DependencyManager dependencyManager;
+    @Inject
+    private DependencyResolver resolver;
+    @Inject
+    @Any
+    private Event<ContainerInstallEvent> installEvent;
 
-   @Inject
-   private ProjectFactory projectFactory;
-
-   @Inject
-   private ContainerInstaller containerInstaller;
-
-   @Inject
-   private DependencyManager dependencyManager;
-
-   @Inject
-   private DependencyResolver resolver;
-
-   @Inject
-   @Any
-   private Event<ContainerInstallEvent> installEvent;
-
-   private final Map<Dependency, InputComponent<?, String>> dependencyVersions = new HashMap<>();
-
-   @Override
-   public UICommandMetadata getMetadata(UIContext context) {
-      return Metadata.from(super.getMetadata(context), getClass())
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Arquillian"))
             .name("Arquillian: Add Container")
             .description("This addon will help you setup a Arquillian Container Adapter");
-   }
+    }
 
-   @Override
-   public void initializeUI(final UIBuilder builder) throws Exception {
+    @Override
+    public void initializeUI(final UIBuilder builder) throws Exception {
 
-      Container selectedContainer = (Container) builder.getUIContext().getAttributeMap().get(ContainerSetupWizard.CTX_CONTAINER);
-      if(selectedContainer == null || selectedContainer.getDependencies() == null) {
-         return;
-      }
-      for(final Dependency dependency : selectedContainer.getDependencies()) {
-         UISelectOne<String> dependencyVersion = inputFactory.createSelectOne(dependency.getArtifactId() + "-version", String.class);
-         builder.add(dependencyVersion);
-         dependencyVersions.put(dependency, dependencyVersion);
+        Container selectedContainer = (Container) builder.getUIContext().getAttributeMap().get(ContainerSetupWizard.CTX_CONTAINER);
+        if (selectedContainer == null || selectedContainer.getDependencies() == null) {
+            return;
+        }
+        for (final Dependency dependency : selectedContainer.getDependencies()) {
+            UISelectOne<String> dependencyVersion = inputFactory.createSelectOne(dependency.getArtifactId() + "-version", String.class);
+            builder.add(dependencyVersion);
+            dependencyVersions.put(dependency, dependencyVersion);
 
-         final DependencyQuery dependencyCoordinate = DependencyQueryBuilder.create(
-               DependencyBuilder.create()
-               .setGroupId(dependency.getGroupId())
-               .setArtifactId(dependency.getArtifactId())
-               .getCoordinate());
+            final DependencyQuery dependencyCoordinate = DependencyQueryBuilder.create(
+                DependencyBuilder.create()
+                    .setGroupId(dependency.getGroupId())
+                    .setArtifactId(dependency.getArtifactId())
+                    .getCoordinate());
 
-         dependencyVersion.setEnabled(true);
-         dependencyVersion.setValueChoices(() -> DependencyUtil.toVersionString(
-               resolver.resolveVersions(dependencyCoordinate)));
-         dependencyVersion.setDefaultValue(() -> DependencyUtil.getLatestNonSnapshotVersionCoordinate(
-               resolver.resolveVersions(dependencyCoordinate)));
+            dependencyVersion.setEnabled(true);
+            dependencyVersion.setValueChoices(() -> DependencyUtil.toVersionString(
+                resolver.resolveVersions(dependencyCoordinate)));
+            dependencyVersion.setDefaultValue(() -> DependencyUtil.getLatestNonSnapshotVersionCoordinate(
+                resolver.resolveVersions(dependencyCoordinate)));
 
-      }
-   }
+        }
+    }
 
-   @Override
-   public Result execute(UIExecutionContext context) throws Exception {
-      Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
-      Container container = (Container)ctx.get(ContainerSetupWizard.CTX_CONTAINER);
-      String version = (String)ctx.get(ContainerSetupWizard.CTX_CONTAINER_VERSION);
-      Project project = getSelectedProject(context);
-      ArquillianFacet arquillian = project.getFacet(ArquillianFacet.class);
-      ArquillianConfig config = arquillian.getConfig();
+    @Override
+    public Result execute(UIExecutionContext context) throws Exception {
+        Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
+        Container container = (Container) ctx.get(ContainerSetupWizard.CTX_CONTAINER);
+        String version = (String) ctx.get(ContainerSetupWizard.CTX_CONTAINER_VERSION);
+        Project project = getSelectedProject(context);
+        ArquillianFacet arquillian = project.getFacet(ArquillianFacet.class);
+        ArquillianConfig config = arquillian.getConfig();
 
-      final String profileId = container.getProfileId();
+        final String profileId = container.getProfileId();
 
-      if (container.isSupportedByChameleon(version)) {
-         dependencyManager.addChameleonDependency(project);
-         if (config.containsDefaultContainer()) {
+        if (container.isSupportedByChameleon(version)) {
+            dependencyManager.addChameleonDependency(project);
+            if (config.containsDefaultContainer()) {
+                config.addContainer(profileId);
+            } else {
+                config.addContainerWithAttribute(profileId, "default", "true");
+            }
+
+            config.addContainerProperty(profileId, "chameleonTarget", "${chameleon.target}");
+        } else {
             config.addContainer(profileId);
-         } else {
-            config.addContainerWithAttribute(profileId, "default", "true");
-         }
+        }
 
-         config.addContainerProperty(profileId, "chameleonTarget","${chameleon.target}");
-      } else {
-         config.addContainer(profileId);
-      }
+        arquillian.setConfig(config);
 
-      arquillian.setConfig(config);
+        containerInstaller.installContainer(
+            project,
+            container,
+            version,
+            getVersionedDependenciesMap());
 
-      containerInstaller.installContainer(
-              project,
-              container,
-              version,
-              getVersionedDependenciesMap());
+        installEvent.fire(new ContainerInstallEvent(container));
 
-      installEvent.fire(new ContainerInstallEvent(container));
+        return Results.success("Installed " + container.getName() + " dependencies");
+    }
 
-      return Results.success("Installed " + container.getName() + " dependencies");
-   }
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
 
-   @Override
-   protected boolean isProjectRequired() {
-      return true;
-   }
+    @Override
+    public boolean isEnabled(UIContext context) {
+        Boolean parent = super.isEnabled(context);
+        if (parent) {
+            return getSelectedProject(context).hasFacet(ArquillianFacet.class);
+        }
+        return parent;
+    }
 
-   @Override
-   public boolean isEnabled(UIContext context) {
-      Boolean parent = super.isEnabled(context);
-      if(parent) {
-         return getSelectedProject(context).hasFacet(ArquillianFacet.class);
-      }
-      return parent;
-   }
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 
-   @Override
-   protected ProjectFactory getProjectFactory() {
-      return projectFactory;
-   }
+    private Map<Dependency, String> getVersionedDependenciesMap() {
+        if (dependencyVersions.isEmpty()) {
+            return null;
+        }
+        Map<Dependency, String> resolved = new HashMap<>();
+        for (Map.Entry<Dependency, InputComponent<?, String>> dep : dependencyVersions.entrySet()) {
+            resolved.put(dep.getKey(), (String) dep.getValue().getValue());
+        }
+        return resolved;
+    }
 
-   private Map<Dependency, String> getVersionedDependenciesMap() {
-      if(dependencyVersions.isEmpty()) {
-         return null;
-      }
-      Map<Dependency, String> resolved = new HashMap<>();
-      for(Map.Entry<Dependency, InputComponent<?, String>> dep : dependencyVersions.entrySet()) {
-         resolved.put(dep.getKey(), (String)dep.getValue().getValue());
-      }
-      return resolved;
-   }
-
-   @Override
-   public NavigationResult next(UINavigationContext context) throws Exception {
-      return null;
-   }
+    @Override
+    public NavigationResult next(UINavigationContext context) throws Exception {
+        return null;
+    }
 }

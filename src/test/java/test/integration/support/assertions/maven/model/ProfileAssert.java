@@ -28,25 +28,25 @@ public class ProfileAssert extends AbstractAssert<ProfileAssert, Profile> {
 
     private Dependency createDependency(String identifier) {
         Dependency dependency = new Dependency();
-        if(identifier != null) {
+        if (identifier != null) {
             String[] split = identifier.split(":");
-            if(split.length > 0) {
+            if (split.length > 0) {
                 dependency.setGroupId(split[0].trim());
             }
 
-            if(split.length > 1) {
+            if (split.length > 1) {
                 dependency.setArtifactId(split[1].trim());
             }
 
-            if(split.length > 2) {
+            if (split.length > 2) {
                 dependency.setVersion(split[2].trim());
             }
 
-            if(split.length > 3) {
+            if (split.length > 3) {
                 dependency.setScope(split[3].trim());
             }
 
-            if(split.length > 4) {
+            if (split.length > 4) {
                 dependency.setType(split[4].trim());
             }
         }

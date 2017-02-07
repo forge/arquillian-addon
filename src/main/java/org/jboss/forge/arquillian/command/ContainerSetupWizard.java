@@ -34,117 +34,106 @@ import java.util.Collections;
 import java.util.Map;
 
 @FacetConstraint(ArquillianFacet.class)
-public class ContainerSetupWizard extends AbstractProjectCommand implements UIWizard
-{
+public class ContainerSetupWizard extends AbstractProjectCommand implements UIWizard {
 
-   static final String CTX_CONTAINER = "arq-container";
-   static final String CTX_CONTAINER_VERSION = "arq-container-version";
+    static final String CTX_CONTAINER = "arq-container";
+    static final String CTX_CONTAINER_VERSION = "arq-container-version";
 
-   @Inject
-   private ProjectFactory projectFactory;
+    @Inject
+    private ProjectFactory projectFactory;
 
-   @Inject
-   private ContainerResolver containerResolver;
+    @Inject
+    private ContainerResolver containerResolver;
 
-   @Inject
-   private DependencyResolver resolver;
+    @Inject
+    private DependencyResolver resolver;
 
-   @Inject
-   @Any
-   private Event<ContainerInstallEvent> installEvent;
+    @Inject
+    @Any
+    private Event<ContainerInstallEvent> installEvent;
 
-   @Inject
-   @WithAttributes(shortName = 'f', label = "Container Adapter Type", type = InputType.DROPDOWN, required = false)
-   private UISelectOne<ContainerType> containerAdapterType;
+    @Inject
+    @WithAttributes(shortName = 'f', label = "Container Adapter Type", type = InputType.DROPDOWN, required = false)
+    private UISelectOne<ContainerType> containerAdapterType;
 
-   @Inject
-   @WithAttributes(shortName = 'c', label = "Container Adapter", type = InputType.DROPDOWN, required = true)
-   private UISelectOne<Container> containerAdapter;
+    @Inject
+    @WithAttributes(shortName = 'c', label = "Container Adapter", type = InputType.DROPDOWN, required = true)
+    private UISelectOne<Container> containerAdapter;
 
-   @Inject
-   @WithAttributes(shortName = 'x', label = "Container Adapter Version", type = InputType.DROPDOWN)
-   private UISelectOne<String> containerAdapterVersion;
+    @Inject
+    @WithAttributes(shortName = 'x', label = "Container Adapter Version", type = InputType.DROPDOWN)
+    private UISelectOne<String> containerAdapterVersion;
 
-   @Override
-   public UICommandMetadata getMetadata(UIContext context)
-   {
-      return Metadata.from(super.getMetadata(context), getClass())
-               .category(Categories.create("Arquillian"))
-               .name("Arquillian: Container Setup")
-               .description("This addon will guide you through adding a Container Adapter for Arquillian");
-   }
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.from(super.getMetadata(context), getClass())
+            .category(Categories.create("Arquillian"))
+            .name("Arquillian: Container Setup")
+            .description("This addon will guide you through adding a Container Adapter for Arquillian");
+    }
 
-   @Override
-   public void initializeUI(final UIBuilder builder) throws Exception
-   {
-      builder// .add(containerAdapterType)
-      .add(containerAdapter)
-               .add(containerAdapterVersion);
+    @Override
+    public void initializeUI(final UIBuilder builder) throws Exception {
+        builder// .add(containerAdapterType)
+            .add(containerAdapter)
+            .add(containerAdapterVersion);
 
-      containerAdapterType.setValueChoices(Arrays.asList(ContainerType.values()));
-      containerAdapterType.setEnabled(true);
-      containerAdapter.setEnabled(true);
-      containerAdapter.setValueChoices(() -> containerResolver.getContainers(containerAdapterType.getValue()));
-      containerAdapter.setItemLabelConverter(source -> {
-         if (source == null)
-         {
+        containerAdapterType.setValueChoices(Arrays.asList(ContainerType.values()));
+        containerAdapterType.setEnabled(true);
+        containerAdapter.setEnabled(true);
+        containerAdapter.setValueChoices(() -> containerResolver.getContainers(containerAdapterType.getValue()));
+        containerAdapter.setItemLabelConverter(source -> {
+            if (source == null) {
+                return null;
+            }
+            if (builder.getUIContext().getProvider().isGUI()) {
+                return source.getName();
+            }
+            return source.getId();
+        });
+        containerAdapterVersion.setEnabled(() -> containerAdapter.hasValue());
+        containerAdapterVersion.setValueChoices(() -> {
+            if (containerAdapterVersion.isEnabled()) {
+                return DependencyUtil.toVersionString(
+                    resolver.resolveVersions(
+                        DependencyQueryBuilder.create(
+                            containerAdapter.getValue().asDependency().getCoordinate())), containerAdapter.getValue());
+
+            }
+            return Collections.emptyList();
+        });
+        containerAdapterVersion.setDefaultValue(() -> {
+            if (containerAdapter.hasValue()) {
+                return DependencyUtil.getLatestNonSnapshotVersionCoordinate(
+                    resolver.resolveVersions(
+                        DependencyQueryBuilder.create(
+                            containerAdapter.getValue().asDependency().getCoordinate())), containerAdapter.getValue());
+            }
             return null;
-         }
-         if (builder.getUIContext().getProvider().isGUI())
-         {
-            return source.getName();
-         }
-         return source.getId();
-      });
-      containerAdapterVersion.setEnabled(() -> containerAdapter.hasValue());
-      containerAdapterVersion.setValueChoices(() -> {
-         if (containerAdapterVersion.isEnabled())
-         {
-            return DependencyUtil.toVersionString(
-                     resolver.resolveVersions(
-                              DependencyQueryBuilder.create(
-                                       containerAdapter.getValue().asDependency().getCoordinate())), containerAdapter.getValue());
+        });
+    }
 
-         }
-         return Collections.emptyList();
-      });
-      containerAdapterVersion.setDefaultValue(() -> {
-         if (containerAdapter.hasValue())
-         {
-            return DependencyUtil.getLatestNonSnapshotVersionCoordinate(
-                     resolver.resolveVersions(
-                              DependencyQueryBuilder.create(
-                                       containerAdapter.getValue().asDependency().getCoordinate())), containerAdapter.getValue());
-         }
-         return null;
-      });
-   }
+    @Override
+    public Result execute(UIExecutionContext context) throws Exception {
+        return Results.success("Installed " + containerAdapter.getValue().getName());
+    }
 
-   @Override
-   public Result execute(UIExecutionContext context) throws Exception
-   {
-      return Results.success("Installed " + containerAdapter.getValue().getName());
-   }
+    @Override
+    public NavigationResult next(UINavigationContext context) throws Exception {
+        Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
+        ctx.put(ContainerSetupWizard.CTX_CONTAINER, containerAdapter.getValue());
+        ctx.put(ContainerSetupWizard.CTX_CONTAINER_VERSION, containerAdapterVersion.getValue());
+        return Results.navigateTo(AddContainerDependencyStep.class);
+    }
 
-   @Override
-   public NavigationResult next(UINavigationContext context) throws Exception
-   {
-      Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
-      ctx.put(ContainerSetupWizard.CTX_CONTAINER, containerAdapter.getValue());
-      ctx.put(ContainerSetupWizard.CTX_CONTAINER_VERSION, containerAdapterVersion.getValue());
-      return Results.navigateTo(AddContainerDependencyStep.class);
-   }
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
 
-   @Override
-   protected boolean isProjectRequired()
-   {
-      return true;
-   }
-
-   @Override
-   protected ProjectFactory getProjectFactory()
-   {
-      return projectFactory;
-   }
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 
 }

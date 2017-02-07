@@ -16,71 +16,61 @@ import java.util.Map;
 @FacetConstraint(ArquillianFacet.class)
 @FacetConstraint(AlgeronConsumer.class)
 @FacetConstraint(DependencyFacet.class)
-public class AlgeronPublisherFacet extends AbstractFacet<Project> implements ProjectFacet
-{
+public class AlgeronPublisherFacet extends AbstractFacet<Project> implements ProjectFacet {
 
-   public static final String PUBLISHER_EXTENSION_NAME = "algeron-consumer";
+    public static final String PUBLISHER_EXTENSION_NAME = "algeron-consumer";
 
-   private DependencyBuilder publisherDependency;
-   private Map<String, String> configurationParameters;
-   private String publishContracts;
+    private DependencyBuilder publisherDependency;
+    private Map<String, String> configurationParameters;
+    private String publishContracts;
 
-   @Override
-   public boolean install()
-   {
-      if(publisherDependency != null)
-      {
-         installPublisherDependency();
-      }
+    @Override
+    public boolean install() {
+        if (publisherDependency != null) {
+            installPublisherDependency();
+        }
 
-      updateArquillianConfig();
+        updateArquillianConfig();
 
-      return true;
-   }
+        return true;
+    }
 
-   private void installPublisherDependency()
-   {
-      final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
-      dependencyFacet.addDirectDependency(publisherDependency);
-   }
+    private void installPublisherDependency() {
+        final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
+        dependencyFacet.addDirectDependency(publisherDependency);
+    }
 
-   @Override
-   public boolean isInstalled()
-   {
-      final ArquillianFacet arquillianFacet = getFaceted().getFacet(ArquillianFacet.class);
-      return arquillianFacet.getConfig().isExtensionRegistered(PUBLISHER_EXTENSION_NAME);
-   }
+    @Override
+    public boolean isInstalled() {
+        final ArquillianFacet arquillianFacet = getFaceted().getFacet(ArquillianFacet.class);
+        return arquillianFacet.getConfig().isExtensionRegistered(PUBLISHER_EXTENSION_NAME);
+    }
 
-   public void setConfigurationParameters(Map<String, String> configurationParameters)
-   {
-      this.configurationParameters = configurationParameters;
-   }
+    public void setConfigurationParameters(Map<String, String> configurationParameters) {
+        this.configurationParameters = configurationParameters;
+    }
 
-   public void setPublisherDependency(DependencyBuilder publisherDependency)
-   {
-      this.publisherDependency = publisherDependency;
-   }
+    public void setPublisherDependency(DependencyBuilder publisherDependency) {
+        this.publisherDependency = publisherDependency;
+    }
 
-   public void setPublishContracts(String publishContracts)
-   {
-      this.publishContracts = publishContracts;
-   }
+    public void setPublishContracts(String publishContracts) {
+        this.publishContracts = publishContracts;
+    }
 
-   private void updateArquillianConfig()
-   {
-      final ArquillianFacet arquillianFacet = getFaceted().getFacet(ArquillianFacet.class);
-      final ArquillianConfig config = arquillianFacet.getConfig();
+    private void updateArquillianConfig() {
+        final ArquillianFacet arquillianFacet = getFaceted().getFacet(ArquillianFacet.class);
+        final ArquillianConfig config = arquillianFacet.getConfig();
 
-      String publisherConfiguration = System.lineSeparator() + YamlGenerator.toYaml(configurationParameters);
-      config.addExtensionProperty(PUBLISHER_EXTENSION_NAME,"publishConfiguration", publisherConfiguration);
+        String publisherConfiguration = System.lineSeparator() + YamlGenerator.toYaml(configurationParameters);
+        config.addExtensionProperty(PUBLISHER_EXTENSION_NAME, "publishConfiguration", publisherConfiguration);
 
-      if (publishContracts != null)
-      {
-         config.addExtensionProperty(PUBLISHER_EXTENSION_NAME,"publishContracts", publishContracts);
-      }
+        if (publishContracts != null) {
+            config.addExtensionProperty(PUBLISHER_EXTENSION_NAME, "publishContracts", publishContracts);
+        }
 
-      arquillianFacet.setConfig(config);
+        arquillianFacet.setConfig(config);
 
-   }
+    }
 
 }

@@ -9,27 +9,24 @@ import org.jboss.forge.addon.ui.util.Metadata;
 
 import javax.inject.Inject;
 
-public abstract class AbstractAlgeronCommand  extends AbstractProjectCommand {
+public abstract class AbstractAlgeronCommand extends AbstractProjectCommand {
 
-   @Inject
-   private ProjectFactory projectFactory;
+    @Inject
+    private ProjectFactory projectFactory;
 
-   @Override
-   public UICommandMetadata getMetadata(UIContext context)
-   {
-      return Metadata.forCommand(getClass()).category(Categories.create("Algeron"));
-   }
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.forCommand(getClass()).category(Categories.create("Algeron"));
+    }
 
-   @Override
-   protected ProjectFactory getProjectFactory()
-   {
-      return projectFactory;
-   }
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 
-   @Override
-   protected boolean isProjectRequired()
-   {
-      return true;
-   }
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
 
 }

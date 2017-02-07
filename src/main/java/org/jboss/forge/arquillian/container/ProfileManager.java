@@ -147,11 +147,11 @@ public class ProfileManager {
     private Object buildConfiguration(String profileId) {
         try {
             return Xpp3DomBuilder.build(new StringReader(
-                    "<configuration>\n" +
-                            "    <systemPropertyVariables>\n" +
-                            "        <arquillian.launch>" + profileId + "</arquillian.launch>\n" +
-                            "    </systemPropertyVariables>\n" +
-                            "</configuration>"));
+                "<configuration>\n" +
+                    "    <systemPropertyVariables>\n" +
+                    "        <arquillian.launch>" + profileId + "</arquillian.launch>\n" +
+                    "    </systemPropertyVariables>\n" +
+                    "</configuration>"));
         } catch (XmlPullParserException | IOException e) {
             throw new IllegalStateException(e);
         }
@@ -166,12 +166,12 @@ public class ProfileManager {
     private Object buildConfiguration(String profileId, String chameleonTarget) {
         try {
             return Xpp3DomBuilder.build(new StringReader(
-                    "<configuration>\n" +
-                            "    <systemPropertyVariables>\n" +
-                            "        <arquillian.launch>" + profileId + "</arquillian.launch>\n" +
-                            "        <chameleon.target>" + chameleonTarget + "</chameleon.target>\n" +
-                            "    </systemPropertyVariables>\n" +
-                            "</configuration>"));
+                "<configuration>\n" +
+                    "    <systemPropertyVariables>\n" +
+                    "        <arquillian.launch>" + profileId + "</arquillian.launch>\n" +
+                    "        <chameleon.target>" + chameleonTarget + "</chameleon.target>\n" +
+                    "    </systemPropertyVariables>\n" +
+                    "</configuration>"));
         } catch (XmlPullParserException | IOException e) {
             throw new IllegalStateException(e);
         }

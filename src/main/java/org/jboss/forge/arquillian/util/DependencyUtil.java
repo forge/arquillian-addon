@@ -35,67 +35,57 @@ import java.util.List;
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public final class DependencyUtil
-{
-   private DependencyUtil()
-   {
-   }
+public final class DependencyUtil {
+    private DependencyUtil() {
+    }
 
-   public static List<String> toVersionString(List<Coordinate> dependencies)
-   {
-      List<String> versions = new ArrayList<>();
-      for (Coordinate cor : dependencies)
-      {
-         versions.add(cor.getVersion());
-      }
-
-      return versions;
-   }
-
-   public static List<String> toVersionString(List<Coordinate> dependencies, Container container) throws Exception {
-      List<String> versions = new ArrayList<>();
-      for (Coordinate cor : dependencies)
-      {
-         // This checks given version is supporting by chameleon as we want to
-         // show versions supported by chameleon only.
-         if (container.isVersionMatches(cor.getVersion())) {
+    public static List<String> toVersionString(List<Coordinate> dependencies) {
+        List<String> versions = new ArrayList<>();
+        for (Coordinate cor : dependencies) {
             versions.add(cor.getVersion());
-         }
-      }
+        }
 
-      // This indicates that no support by chameleon as there is no name & version expression match.
-      if (versions.isEmpty()) {
-         versions = toVersionString(dependencies);
-      }
-      return versions;
+        return versions;
+    }
 
-   }
+    public static List<String> toVersionString(List<Coordinate> dependencies, Container container) throws Exception {
+        List<String> versions = new ArrayList<>();
+        for (Coordinate cor : dependencies) {
+            // This checks given version is supporting by chameleon as we want to
+            // show versions supported by chameleon only.
+            if (container.isVersionMatches(cor.getVersion())) {
+                versions.add(cor.getVersion());
+            }
+        }
 
-   public static String getLatestNonSnapshotVersionCoordinate(
-           List<Coordinate> dependencies, Container container) throws Exception {
-      return getLatestNonSnapshotVersion(toVersionString(dependencies, container));
-   }
+        // This indicates that no support by chameleon as there is no name & version expression match.
+        if (versions.isEmpty()) {
+            versions = toVersionString(dependencies);
+        }
+        return versions;
 
-   public static String getLatestNonSnapshotVersionCoordinate(
-            List<Coordinate> dependencies)
-   {
-      return getLatestNonSnapshotVersion(toVersionString(dependencies));
-   }
+    }
 
-   public static String getLatestNonSnapshotVersion(List<String> dependencies)
-   {
-      if (dependencies == null || dependencies.isEmpty())
-      {
-         return null;
-      }
-      for (int i = dependencies.size() - 1; i >= 0; i--)
-      {
-         String dep = dependencies.get(i);
-         if (!dep.endsWith("SNAPSHOT"))
-         {
-            return dep;
-         }
-      }
-      return dependencies.get(dependencies.size() - 1);
-   }
+    public static String getLatestNonSnapshotVersionCoordinate(
+        List<Coordinate> dependencies, Container container) throws Exception {
+        return getLatestNonSnapshotVersion(toVersionString(dependencies, container));
+    }
+
+    public static String getLatestNonSnapshotVersionCoordinate(
+        List<Coordinate> dependencies) {
+        return getLatestNonSnapshotVersion(toVersionString(dependencies));
+    }
+
+    public static String getLatestNonSnapshotVersion(List<String> dependencies) {
+        if (dependencies == null || dependencies.isEmpty()) {
+            return null;
+        }
+        for (int i = dependencies.size() - 1; i >= 0; i--) {
+            String dep = dependencies.get(i);
+            if (!dep.endsWith("SNAPSHOT")) {
+                return dep;
+            }
+        }
+        return dependencies.get(dependencies.size() - 1);
+    }
 }

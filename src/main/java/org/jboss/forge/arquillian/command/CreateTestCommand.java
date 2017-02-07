@@ -49,212 +49,194 @@ import java.util.Map;
 @FacetConstraint(ArquillianFacet.class)
 public class CreateTestCommand extends AbstractProjectCommand implements UICommand {
 
-   @Inject
-   private TemplateFactory templateFactory;
+    @Inject
+    private TemplateFactory templateFactory;
 
-   @Inject
-   private ProjectFactory projectFactory;
+    @Inject
+    private ProjectFactory projectFactory;
 
-   @Inject
-   private ResourceFactory resourceFactory;
+    @Inject
+    private ResourceFactory resourceFactory;
 
-   @Inject
-   @WithAttributes(shortName = 'n', label = "Test Name", required = false, enabled = false)
-   private UIInput<String> named;
+    @Inject
+    @WithAttributes(shortName = 'n', label = "Test Name", required = false, enabled = false)
+    private UIInput<String> named;
 
-   @Inject
-   @WithAttributes(shortName = 'p', label = "Target Package", required = false, enabled = false)
-   private UIInput<String> targetPackage;
+    @Inject
+    @WithAttributes(shortName = 'p', label = "Target Package", required = false, enabled = false)
+    private UIInput<String> targetPackage;
 
-   @Inject
-   @WithAttributes(shortName = 't', label = "Targets", required = false, enabled = false)
-   private UISelectMany<JavaClassSource> targets;
+    @Inject
+    @WithAttributes(shortName = 't', label = "Targets", required = false, enabled = false)
+    private UISelectMany<JavaClassSource> targets;
 
-   @Inject
-   @WithAttributes(shortName = 'e', label = "Enable JPA", required = false, enabled = false)
-   private UIInput<Boolean> enableJPA;
+    @Inject
+    @WithAttributes(shortName = 'e', label = "Enable JPA", required = false, enabled = false)
+    private UIInput<Boolean> enableJPA;
 
-   @Inject
-   @WithAttributes(shortName = 'a', label = "Archive Type", defaultValue = "JAR", enabled = false)
-   private UISelectOne<ArchiveType> archiveType;
+    @Inject
+    @WithAttributes(shortName = 'a', label = "Archive Type", defaultValue = "JAR", enabled = false)
+    private UISelectOne<ArchiveType> archiveType;
 
-   @Inject
-   @WithAttributes(label = "Deployment and tests in client mode", defaultValue = "false",
-           description = "Defines if this deployment should be wrapped up based on the protocol so the test case can be executed in-container.")
-   private UIInput<Boolean> asClient;
+    @Inject
+    @WithAttributes(label = "Deployment and tests in client mode", defaultValue = "false",
+        description = "Defines if this deployment should be wrapped up based on the protocol so the test case can be executed in-container.")
+    private UIInput<Boolean> asClient;
 
-   @Inject
-   private Inflector inflector;
+    @Inject
+    private Inflector inflector;
 
-   @Override
-   public UICommandMetadata getMetadata(UIContext context)
-   {
-      return Metadata.from(super.getMetadata(context), getClass())
-              .category(Categories.create("Arquillian"))
-              .name("Arquillian: Create Test")
-              .description("This addon will help you create a test skeleton based on a given class");
-   }
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.from(super.getMetadata(context), getClass())
+            .category(Categories.create("Arquillian"))
+            .name("Arquillian: Create Test")
+            .description("This addon will help you create a test skeleton based on a given class");
+    }
 
-   @Override
-   public void initializeUI(final UIBuilder builder) throws Exception
-   {
-      builder
-              .add(targets).add(enableJPA).add(archiveType)
-              .add(named).add(targetPackage)
-              .add(asClient);
+    @Override
+    public void initializeUI(final UIBuilder builder) throws Exception {
+        builder
+            .add(targets).add(enableJPA).add(archiveType)
+            .add(named).add(targetPackage)
+            .add(asClient);
 
-      Project project = getSelectedProject(builder);
-      final List<JavaClassSource> sources = new ArrayList<>();
-      project.getFacet(JavaSourceFacet.class).visitJavaSources(new JavaResourceVisitor() {
-         @Override
-         public void visit(VisitContext context, JavaResource javaResource) {
-            JavaType<?> javaType;
-            try
-            {
-               javaType = javaResource.getJavaType();
-               if (javaType.isClass()) {
-                  sources.add((JavaClassSource) javaType);
-               }
+        Project project = getSelectedProject(builder);
+        final List<JavaClassSource> sources = new ArrayList<>();
+        project.getFacet(JavaSourceFacet.class).visitJavaSources(new JavaResourceVisitor() {
+            @Override
+            public void visit(VisitContext context, JavaResource javaResource) {
+                JavaType<?> javaType;
+                try {
+                    javaType = javaResource.getJavaType();
+                    if (javaType.isClass()) {
+                        sources.add((JavaClassSource) javaType);
+                    }
+                } catch (FileNotFoundException e) {
+                    // Do nothing
+                }
             }
-            catch (FileNotFoundException e)
-            {
-               // Do nothing
+        });
+
+        if (isStandalone(project)) {
+            named.setEnabled(true);
+            named.setRequired(true);
+
+            targetPackage.setEnabled(true);
+            targetPackage.setRequired(true);
+        } else {
+            targets.setRequired(true);
+            targets.setEnabled(true);
+
+            enableJPA.setEnabled(true);
+            archiveType.setEnabled(true);
+        }
+
+        targets.setItemLabelConverter(source -> source == null ? null : source.getQualifiedName());
+
+        targets.setValueChoices(sources);
+
+        UISelection<Object> initialSelection = builder.getUIContext().getInitialSelection();
+        if (initialSelection.get() instanceof JavaResource) {
+            JavaResource javaResource = (JavaResource) initialSelection.get();
+            JavaType<?> javaType = javaResource.getJavaType();
+            if (javaType.isClass()) {
+                targets.setDefaultValue(Collections.singletonList((JavaClassSource) javaType));
             }
-         }
-      });
+        }
+    }
 
-      if (isStandalone(project)) {
-         named.setEnabled(true);
-         named.setRequired(true);
+    @Override
+    public Result execute(UIExecutionContext context) throws Exception {
+        List<Result> results = new ArrayList<>();
+        UIContext uiContext = context.getUIContext();
+        List<JavaResource> resources = new ArrayList<>();
 
-         targetPackage.setEnabled(true);
-         targetPackage.setRequired(true);
-      } else {
-         targets.setRequired(true);
-         targets.setEnabled(true);
+        final Project project = getSelectedProject(context);
 
-         enableJPA.setEnabled(true);
-         archiveType.setEnabled(true);
-      }
-
-      targets.setItemLabelConverter(source -> source == null ? null : source.getQualifiedName());
-
-      targets.setValueChoices(sources);
-
-      UISelection<Object> initialSelection = builder.getUIContext().getInitialSelection();
-      if (initialSelection.get() instanceof JavaResource)
-      {
-         JavaResource javaResource = (JavaResource) initialSelection.get();
-         JavaType<?> javaType = javaResource.getJavaType();
-         if (javaType.isClass())
-         {
-            targets.setDefaultValue(Collections.singletonList((JavaClassSource) javaType));
-         }
-      }
-   }
-
-   @Override
-   public Result execute(UIExecutionContext context) throws Exception
-   {
-      List<Result> results = new ArrayList<>();
-      UIContext uiContext = context.getUIContext();
-      List<JavaResource> resources = new ArrayList<>();
-
-      final Project project = getSelectedProject(context);
-
-      if (targets.hasValue())
-      {
-         for (JavaClassSource clazz : targets.getValue())
-         {
-            JavaResource test = createTest(project, clazz, enableJPA.getValue(),
+        if (targets.hasValue()) {
+            for (JavaClassSource clazz : targets.getValue()) {
+                JavaResource test = createTest(project, clazz, enableJPA.getValue(),
                     archiveType.getValue());
+                resources.add(test);
+                results.add(Results.success("Created test class " + test.getJavaType().getQualifiedName()));
+            }
+        } else {
+            JavaResource test = createStandaloneTest(project, targetPackage.getValue(), named.getValue());
             resources.add(test);
             results.add(Results.success("Created test class " + test.getJavaType().getQualifiedName()));
-         }
-      }
-      else
-      {
-         JavaResource test = createStandaloneTest(project, targetPackage.getValue(), named.getValue());
-         resources.add(test);
-         results.add(Results.success("Created test class " + test.getJavaType().getQualifiedName()));
-      }
+        }
 
-      if (!resources.isEmpty())
-         uiContext.setSelection(resources);
-      return Results.aggregate(results);
-   }
+        if (!resources.isEmpty())
+            uiContext.setSelection(resources);
+        return Results.aggregate(results);
+    }
 
-   @Override
-   protected boolean isProjectRequired() {
-      return true;
-   }
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
 
-   @Override
-   protected ProjectFactory getProjectFactory() {
-      return projectFactory;
-   }
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 
-   private JavaResource createStandaloneTest(Project project, String targetPackage, String testName) throws Exception
-   {
-      final TestFrameworkFacet testFrameworkFacet = project.getFacet(TestFrameworkFacet.class);
-      final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
+    private JavaResource createStandaloneTest(Project project, String targetPackage, String testName) throws Exception {
+        final TestFrameworkFacet testFrameworkFacet = project.getFacet(TestFrameworkFacet.class);
+        final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
 
-      final Template template = getTemplateFor(testFrameworkFacet.getTemplateStandaloneLocation());
+        final Template template = getTemplateFor(testFrameworkFacet.getTemplateStandaloneLocation());
 
-      final Map<String, Object> context = initializeFreeMarkerContextForStandalone(targetPackage, testName);
-      final JavaSource<?> testClass = Roaster.parse(JavaSource.class, template.process(context));
-      return java.saveTestJavaSource(testClass);
-   }
+        final Map<String, Object> context = initializeFreeMarkerContextForStandalone(targetPackage, testName);
+        final JavaSource<?> testClass = Roaster.parse(JavaSource.class, template.process(context));
+        return java.saveTestJavaSource(testClass);
+    }
 
-   private JavaResource createTest(Project project, JavaClassSource classUnderTest, boolean enableJPA, ArchiveType type)
-           throws IOException
-   {
-      final TestFrameworkFacet testFrameworkFacet = project.getFacet(TestFrameworkFacet.class);
-      final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
+    private JavaResource createTest(Project project, JavaClassSource classUnderTest, boolean enableJPA, ArchiveType type)
+        throws IOException {
+        final TestFrameworkFacet testFrameworkFacet = project.getFacet(TestFrameworkFacet.class);
+        final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
 
-      final Template template = getTemplateFor(testFrameworkFacet.getTemplateLocation());
+        final Template template = getTemplateFor(testFrameworkFacet.getTemplateLocation());
 
-      final Map<String, Object> context = initializeFreeMarkerContext(enableJPA, type, classUnderTest);
-      final JavaSource<?> testClass = Roaster.parse(JavaSource.class, template.process(context));
-      return java.saveTestJavaSource(testClass);
-   }
+        final Map<String, Object> context = initializeFreeMarkerContext(enableJPA, type, classUnderTest);
+        final JavaSource<?> testClass = Roaster.parse(JavaSource.class, template.process(context));
+        return java.saveTestJavaSource(testClass);
+    }
 
-   private Template getTemplateFor(String name)
-   {
-      final Resource<URL> resource = resourceFactory.create(getClass().getResource(name));
-      return templateFactory.create(resource, FreemarkerTemplate.class);
-   }
+    private Template getTemplateFor(String name) {
+        final Resource<URL> resource = resourceFactory.create(getClass().getResource(name));
+        return templateFactory.create(resource, FreemarkerTemplate.class);
+    }
 
-   private boolean isStandalone(Project project)
-   {
-      final DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
+    private boolean isStandalone(Project project) {
+        final DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
 
-      return dependencyFacet.getDependencies().stream()
-              .map(dependency -> dependency.getCoordinate())
-              .anyMatch(coordinate ->
-                      "org.arquillian.universe".equals(coordinate.getGroupId()) &&
-                              coordinate.getArtifactId().contains("standalone"));
+        return dependencyFacet.getDependencies().stream()
+            .map(dependency -> dependency.getCoordinate())
+            .anyMatch(coordinate ->
+                "org.arquillian.universe".equals(coordinate.getGroupId()) &&
+                    coordinate.getArtifactId().contains("standalone"));
 
-   }
+    }
 
-   private Map<String, Object> initializeFreeMarkerContext(boolean enableJPA, ArchiveType type, JavaSource<?> javaSource)
-   {
-      final Map<String, Object> context = new HashMap<>();
-      context.put("package", javaSource.getPackage());
-      context.put("ClassToTest", javaSource.getName());
-      context.put("classToTest", inflector.lowerCamelCase(javaSource.getName()));
-      context.put("packageImport", javaSource.getPackage());
-      context.put("enableJPA", enableJPA);
-      context.put("archiveType", type);
-      context.put("asClient", asClient.getValue());
-      return context;
-   }
+    private Map<String, Object> initializeFreeMarkerContext(boolean enableJPA, ArchiveType type, JavaSource<?> javaSource) {
+        final Map<String, Object> context = new HashMap<>();
+        context.put("package", javaSource.getPackage());
+        context.put("ClassToTest", javaSource.getName());
+        context.put("classToTest", inflector.lowerCamelCase(javaSource.getName()));
+        context.put("packageImport", javaSource.getPackage());
+        context.put("enableJPA", enableJPA);
+        context.put("archiveType", type);
+        context.put("asClient", asClient.getValue());
+        return context;
+    }
 
-   private Map<String, Object> initializeFreeMarkerContextForStandalone(String targetPackage, String testName)
-   {
-      final Map<String, Object> context = new HashMap<>();
-      context.put("package", targetPackage);
-      context.put("ClassToTest", testName);
-      return context;
-   }
+    private Map<String, Object> initializeFreeMarkerContextForStandalone(String targetPackage, String testName) {
+        final Map<String, Object> context = new HashMap<>();
+        context.put("package", targetPackage);
+        context.put("ClassToTest", testName);
+        return context;
+    }
 }

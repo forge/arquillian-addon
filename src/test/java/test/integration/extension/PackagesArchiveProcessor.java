@@ -30,6 +30,6 @@ public class PackagesArchiveProcessor implements ApplicationArchiveProcessor {
 
     private boolean canEnhanceWithPackages(Archive<?> applicationArchive, TestClass testClass) {
         return (applicationArchive instanceof ClassContainer)
-                && testClass.getJavaClass().getAnnotationsByType(AddPackage.class).length > 0;
+            && testClass.getJavaClass().getAnnotationsByType(AddPackage.class).length > 0;
     }
 }

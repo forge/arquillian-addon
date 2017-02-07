@@ -32,8 +32,8 @@ public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
     public void should_generate_testng_test_with_as_client_mode() throws Exception {
 
         shell().execute("java-new-class --named Bean --target-package org.superbiz")
-                .execute("arquillian-setup --container-adapter glassfish-embedded --test-framework testng")
-                .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean --as-client ");
+            .execute("arquillian-setup --container-adapter glassfish-embedded --test-framework testng")
+            .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean --as-client ");
 
         assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng").withType("pom").withScope("test");
@@ -48,8 +48,8 @@ public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
     @Test
     public void should_generate_testng_test_setup() throws Exception {
         shell().execute("java-new-class --named Bean --target-package org.superbiz")
-                .execute("arquillian-setup --container-adapter glassfish-embedded --container-version 3.1.2 --test-framework testng")
-                .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean");
+            .execute("arquillian-setup --container-adapter glassfish-embedded --container-version 3.1.2 --test-framework testng")
+            .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean");
 
         assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng").withType("pom").withScope("test");
@@ -64,8 +64,8 @@ public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
     @Test
     public void should_generate_testng_test_setup_in_standalone_mode() throws Exception {
         shell().execute("java-new-class --named Bean --target-package org.superbiz")
-                .execute("arquillian-setup  --standalone --test-framework testng")
-                .execute("arquillian-create-test --target-package org.superbiz --named BeanTest");
+            .execute("arquillian-setup  --standalone --test-framework testng")
+            .execute("arquillian-create-test --target-package org.superbiz --named BeanTest");
 
         assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng-standalone").withType("pom").withScope("test");

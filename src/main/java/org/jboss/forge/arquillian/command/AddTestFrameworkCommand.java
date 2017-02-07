@@ -29,120 +29,119 @@ import java.util.Collections;
 
 public class AddTestFrameworkCommand extends AbstractProjectCommand implements UIWizard {
 
-   @Inject
-   private ProjectFactory projectFactory;
-   
-   @Inject
-   private FacetFactory facetFactory;
+    @Inject
+    private ProjectFactory projectFactory;
 
-   @Inject
-   @Any
-   private Event<TestFrameworkInstallEvent> installEvent;
+    @Inject
+    private FacetFactory facetFactory;
 
-   @Inject
-   @WithAttributes(shortName = 't', label = "Test Framework", type = InputType.DROPDOWN)
-   private UISelectOne<TestFrameworkFacet> testFramework;
+    @Inject
+    @Any
+    private Event<TestFrameworkInstallEvent> installEvent;
 
-   @Inject
-   @WithAttributes(shortName = 'n', label = "Test Framework Version", type = InputType.DROPDOWN)
-   private UISelectOne<String> testFrameworkVersion;
+    @Inject
+    @WithAttributes(shortName = 't', label = "Test Framework", type = InputType.DROPDOWN)
+    private UISelectOne<TestFrameworkFacet> testFramework;
 
-   @Inject
-   @WithAttributes(shortName = 's', label = "Standalone", type = InputType.CHECKBOX)
-   private UIInput<Boolean> standalone;
+    @Inject
+    @WithAttributes(shortName = 'n', label = "Test Framework Version", type = InputType.DROPDOWN)
+    private UISelectOne<String> testFrameworkVersion;
 
-   @Override
-   public UICommandMetadata getMetadata(UIContext context) {
-      return Metadata.from(super.getMetadata(context), getClass())
+    @Inject
+    @WithAttributes(shortName = 's', label = "Standalone", type = InputType.CHECKBOX)
+    private UIInput<Boolean> standalone;
+
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Arquillian"))
             .name("Arquillian: Add TestFramework")
             .description("This addon will help you setup a Test Framework for Arquillian");
-   }
-   
-   @Override
-   public void initializeUI(final UIBuilder builder) throws Exception {
-      builder.add(testFramework)
-             .add(testFrameworkVersion)
-             .add(standalone);
+    }
 
-      testFramework.setEnabled(true);
-      testFramework.setItemLabelConverter(source -> {
-         if(source == null) {
+    @Override
+    public void initializeUI(final UIBuilder builder) throws Exception {
+        builder.add(testFramework)
+            .add(testFrameworkVersion)
+            .add(standalone);
+
+        testFramework.setEnabled(true);
+        testFramework.setItemLabelConverter(source -> {
+            if (source == null) {
+                return null;
+            }
+            if (builder.getUIContext().getProvider().isGUI()) {
+                return source.getFrameworkName();
+            }
+            return source.getFrameworkName().toLowerCase();
+        });
+        testFramework.setRequired(() -> true); // check if already installed
+
+        testFrameworkVersion.setRequired(() -> true);
+        testFrameworkVersion.setEnabled(() -> testFramework.hasValue());
+        testFrameworkVersion.setValueChoices(() -> {
+            if (testFrameworkVersion.isEnabled()) {
+                return testFramework.getValue().getAvailableVersions();
+            }
+            return Collections.emptyList();
+        });
+        testFrameworkVersion.setDefaultValue(() -> {
+            if (testFrameworkVersion.isEnabled()) {
+                return testFrameworkVersion.isEnabled() ? testFramework.getValue().getDefaultVersion() : null;
+            }
             return null;
-         }
-         if(builder.getUIContext().getProvider().isGUI()) {
-            return source.getFrameworkName();
-         }
-         return source.getFrameworkName().toLowerCase();
-      });
-      testFramework.setRequired(() -> true); // check if already installed
+        });
 
-      testFrameworkVersion.setRequired(() -> true);
-      testFrameworkVersion.setEnabled(() -> testFramework.hasValue());
-      testFrameworkVersion.setValueChoices(() -> {
-         if(testFrameworkVersion.isEnabled()) {
-            return testFramework.getValue().getAvailableVersions();
-         }
-         return Collections.emptyList();
-      });
-      testFrameworkVersion.setDefaultValue(() -> {
-         if(testFrameworkVersion.isEnabled()) {
-            return testFrameworkVersion.isEnabled() ? testFramework.getValue().getDefaultVersion():null;
-         }
-         return null;
-      });
+        standalone.setEnabled(true);
+        standalone.setDefaultValue(false);
 
-      standalone.setEnabled(true);
-      standalone.setDefaultValue(false);
+    }
 
-   }
+    @Override
+    public Result execute(UIExecutionContext context) throws Exception {
+        TestFrameworkFacet selectedTestFramework = testFramework.getValue();
+        try {
+            selectedTestFramework.setStandalone(standalone.getValue());
+            selectedTestFramework.setVersion(testFrameworkVersion.getValue());
+            facetFactory.install(getSelectedProject(context), selectedTestFramework);
+            installEvent.fire(new TestFrameworkInstallEvent(selectedTestFramework));
 
-   @Override
-   public Result execute(UIExecutionContext context) throws Exception {
-      TestFrameworkFacet selectedTestFramework = testFramework.getValue();
-      try {
-         selectedTestFramework.setStandalone(standalone.getValue());
-         selectedTestFramework.setVersion(testFrameworkVersion.getValue());
-         facetFactory.install(getSelectedProject(context), selectedTestFramework);
-         installEvent.fire(new TestFrameworkInstallEvent(selectedTestFramework));
+            return Results.success("Installed " + selectedTestFramework.getFrameworkName());
+        } catch (Exception e) {
+            return Results.fail("Could not install Test Framework " + selectedTestFramework.getFrameworkName(), e);
+        }
+    }
 
-         return Results.success("Installed " + selectedTestFramework.getFrameworkName());
-      } catch(Exception e) {
-         return Results.fail("Could not install Test Framework " + selectedTestFramework.getFrameworkName(), e);
-      }
-   }
+    @Override
+    @SuppressWarnings("unchecked")
+    public NavigationResult next(UINavigationContext context) throws Exception {
+        if (isNotStandalone()) {
+            return Results.navigateTo(ContainerSetupWizard.class);
+        }
 
-   @Override
-   @SuppressWarnings("unchecked")
-   public NavigationResult next(UINavigationContext context) throws Exception {
-      if (isNotStandalone())
-      {
-         return Results.navigateTo(ContainerSetupWizard.class);
-      }
+        return null;
+    }
 
-      return null;
-   }
+    private boolean isNotStandalone() {
+        return !this.standalone.getValue();
+    }
 
-   private boolean isNotStandalone() {
-      return !this.standalone.getValue();
-   }
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
 
-   @Override
-   protected boolean isProjectRequired() {
-      return true;
-   }
+    @Override
+    public boolean isEnabled(UIContext context) {
+        Boolean parent = super.isEnabled(context);
+        if (parent) {
+            return getSelectedProject(context).hasFacet(ArquillianFacet.class);
+        }
+        return parent;
+    }
 
-   @Override
-   public boolean isEnabled(UIContext context) {
-      Boolean parent = super.isEnabled(context);
-      if(parent) {
-         return getSelectedProject(context).hasFacet(ArquillianFacet.class);
-      }
-      return parent;
-   }
-
-   @Override
-   protected ProjectFactory getProjectFactory() {
-      return projectFactory;
-   }
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 }
