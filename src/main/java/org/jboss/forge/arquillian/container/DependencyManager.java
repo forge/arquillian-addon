@@ -15,7 +15,7 @@ public class DependencyManager {
         Model pom = facet.getModel();
         if (!isInstalled(project)) {
             pom.getDependencies().add(
-                    new MavenDependencyAdapter(DependencyBuilder.create(createChameleonDep())));
+                new MavenDependencyAdapter(DependencyBuilder.create(createChameleonDep())));
         }
 
         facet.setModel(pom);
@@ -23,7 +23,7 @@ public class DependencyManager {
 
     public DependencyBuilder createChameleonDep() {
         return DependencyBuilder.create().setGroupId("org.arquillian.universe")
-                .setArtifactId("arquillian-chameleon").setScopeType("test").setPackaging("pom");
+            .setArtifactId("arquillian-chameleon").setScopeType("test").setPackaging("pom");
     }
 
     private boolean isInstalled(Project project) {

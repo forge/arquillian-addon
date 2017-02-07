@@ -18,34 +18,34 @@ import org.jboss.arquillian.testng.Arquillian;
 
 public class ${ClassToTest}Test extends Arquillian {
 
-    <#if asClient>
-    @ArquillianResource
-    private URL applicationUrl;
-    <#else>
-    @Inject
-    private ${ClassToTest} ${classToTest};
-    </#if>
+<#if asClient>
+@ArquillianResource
+private URL applicationUrl;
+<#else>
+@Inject
+private ${ClassToTest} ${classToTest};
+</#if>
 
-    <#if asClient>
-    @Deployment(testable = false)
-    <#else>
-    @Deployment
-    </#if>
-    public static ${archiveType.simpleClassName} createDeployment() {
-        return ShrinkWrap.create(${archiveType.simpleClassName}.class)
-                .addClass(${ClassToTest}.class)
-                <#if enableJPA>
-                .addAsManifestResource("META-INF/persistence.xml", "persistence.xml")
-                </#if>
-                .${archiveType.beansXmlLocationAdder}(EmptyAsset.INSTANCE, "beans.xml");
-    }
+<#if asClient>
+@Deployment(testable = false)
+<#else>
+@Deployment
+</#if>
+public static ${archiveType.simpleClassName} createDeployment() {
+return ShrinkWrap.create(${archiveType.simpleClassName}.class)
+.addClass(${ClassToTest}.class)
+<#if enableJPA>
+.addAsManifestResource("META-INF/persistence.xml", "persistence.xml")
+</#if>
+.${archiveType.beansXmlLocationAdder}(EmptyAsset.INSTANCE, "beans.xml");
+}
 
-    @Test
-    public void should_be_deployed() {
-        <#if asClient>
-        Assert.assertNotNull(applicationUrl);
-        <#else>
-        Assert.assertNotNull(${classToTest});
-        </#if>
-    }
+@Test
+public void should_be_deployed() {
+<#if asClient>
+Assert.assertNotNull(applicationUrl);
+<#else>
+Assert.assertNotNull(${classToTest});
+</#if>
+}
 }

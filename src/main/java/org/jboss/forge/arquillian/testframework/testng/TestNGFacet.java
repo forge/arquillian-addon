@@ -12,58 +12,51 @@ import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 /**
  * @author <a href="mailto:bartosz.majsak@gmail.com">Bartosz Majsak</a>
  */
-public class TestNGFacet extends TestFrameworkFacet
-{
-   @Override
-   public String getFrameworkName()
-   {
-      return "testng";
-   }
+public class TestNGFacet extends TestFrameworkFacet {
+    @Override
+    public String getFrameworkName() {
+        return "testng";
+    }
 
-   @Override
-   public String getTemplateLocation()
-   {
-      return "/TestNGTest.ftl";
-   }
+    @Override
+    public String getTemplateLocation() {
+        return "/TestNGTest.ftl";
+    }
 
-   @Override
-   public String getTemplateStandaloneLocation() {
-      return "/TestNGStandaloneTest.ftl";
-   }
+    @Override
+    public String getTemplateStandaloneLocation() {
+        return "/TestNGStandaloneTest.ftl";
+    }
 
-   @Override
-   public String getVersionPropertyName()
-   {
-      return "version.testng";
-   }
+    @Override
+    public String getVersionPropertyName() {
+        return "version.testng";
+    }
 
 
-   @Override
-   public DependencyBuilder createFrameworkDependency()
-   {
-      return DependencyBuilder.create()
+    @Override
+    public DependencyBuilder createFrameworkDependency() {
+        return DependencyBuilder.create()
             .setGroupId("org.testng")
             .setArtifactId("testng")
             .setScopeType("test");
-   }
+    }
 
-   @Override
-   public DependencyBuilder createArquillianDependency()
-   {
-      return DependencyBuilder.create()
+    @Override
+    public DependencyBuilder createArquillianDependency() {
+        return DependencyBuilder.create()
             .setGroupId("org.arquillian.universe")
             .setArtifactId("arquillian-testng")
             .setScopeType("test")
             .setPackaging("pom");
-   }
+    }
 
-   @Override
-   public DependencyBuilder createArquillianStandaloneDependency()
-   {
-      return DependencyBuilder.create()
-              .setGroupId("org.arquillian.universe")
-              .setArtifactId("arquillian-testng-standalone")
-              .setScopeType("test")
-              .setPackaging("pom");
-   }
+    @Override
+    public DependencyBuilder createArquillianStandaloneDependency() {
+        return DependencyBuilder.create()
+            .setGroupId("org.arquillian.universe")
+            .setArtifactId("arquillian-testng-standalone")
+            .setScopeType("test")
+            .setPackaging("pom");
+    }
 }

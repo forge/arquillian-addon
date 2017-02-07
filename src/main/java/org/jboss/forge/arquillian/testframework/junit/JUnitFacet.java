@@ -12,56 +12,50 @@ import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 /**
  * @author <a href="mailto:bartosz.majsak@gmail.com">Bartosz Majsak</a>
  */
-public class JUnitFacet extends TestFrameworkFacet
-{
-   @Override
-   public String getFrameworkName()
-   {
-      return "junit";
-   }
+public class JUnitFacet extends TestFrameworkFacet {
+    @Override
+    public String getFrameworkName() {
+        return "junit";
+    }
 
-   @Override
-   public String getTemplateLocation()
-   {
-      return "/JUnitTest.ftl";
-   }
+    @Override
+    public String getTemplateLocation() {
+        return "/JUnitTest.ftl";
+    }
 
-   @Override
-   public String getTemplateStandaloneLocation() {
-      return "/JUnitStandaloneTest.ftl";
-   }
+    @Override
+    public String getTemplateStandaloneLocation() {
+        return "/JUnitStandaloneTest.ftl";
+    }
 
-   @Override
-   public String getVersionPropertyName()
-   {
-      return "version.junit";
-   }
+    @Override
+    public String getVersionPropertyName() {
+        return "version.junit";
+    }
 
-   @Override
-   public DependencyBuilder createFrameworkDependency()
-   {
-      return DependencyBuilder.create()
-                              .setGroupId("junit")
-                              .setArtifactId("junit")
-                              .setScopeType("test");
-   }
+    @Override
+    public DependencyBuilder createFrameworkDependency() {
+        return DependencyBuilder.create()
+            .setGroupId("junit")
+            .setArtifactId("junit")
+            .setScopeType("test");
+    }
 
-   @Override
-   public DependencyBuilder createArquillianDependency()
-   {
-      return DependencyBuilder.create()
-                              .setGroupId("org.arquillian.universe")
-                              .setArtifactId("arquillian-junit")
-                              .setScopeType("test")
-                              .setPackaging("pom");
-   }
+    @Override
+    public DependencyBuilder createArquillianDependency() {
+        return DependencyBuilder.create()
+            .setGroupId("org.arquillian.universe")
+            .setArtifactId("arquillian-junit")
+            .setScopeType("test")
+            .setPackaging("pom");
+    }
 
-   @Override
-   public DependencyBuilder createArquillianStandaloneDependency() {
-      return DependencyBuilder.create()
-              .setGroupId("org.arquillian.universe")
-              .setArtifactId("arquillian-junit-standalone")
-              .setScopeType("test")
-              .setPackaging("pom");
-   }
+    @Override
+    public DependencyBuilder createArquillianStandaloneDependency() {
+        return DependencyBuilder.create()
+            .setGroupId("org.arquillian.universe")
+            .setArtifactId("arquillian-junit-standalone")
+            .setScopeType("test")
+            .setPackaging("pom");
+    }
 }

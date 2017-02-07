@@ -25,104 +25,93 @@ import javax.inject.Inject;
 import java.util.Collections;
 
 @FacetConstraint(ArquillianFacet.class)
-public class ContainerConfigurationCommand extends AbstractProjectCommand implements UICommand
-{
+public class ContainerConfigurationCommand extends AbstractProjectCommand implements UICommand {
 
-   @Inject
-   private ProjectFactory projectFactory;
+    @Inject
+    private ProjectFactory projectFactory;
 
-   @Inject
-   private ProfileManager profileManager;
+    @Inject
+    private ProfileManager profileManager;
 
-   @Inject
-   @WithAttributes(shortName = 'c', label = "Container", type = InputType.DROPDOWN)
-   private UISelectOne<String> container;
+    @Inject
+    @WithAttributes(shortName = 'c', label = "Container", type = InputType.DROPDOWN)
+    private UISelectOne<String> container;
 
-   @Inject
-   @WithAttributes(shortName = 'o', label = "Container Configuration Option", type = InputType.DROPDOWN, required = true)
-   private UISelectOne<Configuration> containerOption;
+    @Inject
+    @WithAttributes(shortName = 'o', label = "Container Configuration Option", type = InputType.DROPDOWN, required = true)
+    private UISelectOne<Configuration> containerOption;
 
-   @Inject
-   @WithAttributes(shortName = 'v', label = "Container Configuration Value")
-   private UIInput<String> containerValue;
+    @Inject
+    @WithAttributes(shortName = 'v', label = "Container Configuration Value")
+    private UIInput<String> containerValue;
 
-   @Override
-   public UICommandMetadata getMetadata(UIContext context)
-   {
-      return Metadata.from(super.getMetadata(context), getClass())
-               .category(Categories.create("Arquillian"))
-               .name("Arquillian: Container Configuration")
-               .description("This addon will help you configure the Container for Arquillian");
-   }
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.from(super.getMetadata(context), getClass())
+            .category(Categories.create("Arquillian"))
+            .name("Arquillian: Container Configuration")
+            .description("This addon will help you configure the Container for Arquillian");
+    }
 
-   @Override
-   public void initializeUI(final UIBuilder builder) throws Exception
-   {
-      builder.add(container)
-               .add(containerOption)
-               .add(containerValue);
+    @Override
+    public void initializeUI(final UIBuilder builder) throws Exception {
+        builder.add(container)
+            .add(containerOption)
+            .add(containerValue);
 
-      container.setValueChoices(() -> profileManager.getArquillianProfiles(getSelectedProject(builder.getUIContext())));
-      container.setDefaultValue(() -> {
-         Iterable<String> profiles = container.getValueChoices();
-         if (profiles != null && profiles.iterator().hasNext())
-         {
-            return profiles.iterator().next();
-         }
-         return null;
-      });
-      containerOption.setEnabled(() -> container.hasValue());
-      containerOption.setItemLabelConverter(source -> {
-         if (source == null)
-         {
-            return null;
-         }
-         return source.getName();
-      });
-      containerOption.setValueChoices(() -> {
-         if (containerOption.isEnabled())
-         {
-            Iterable<Configuration> config = profileManager.getContainer(container.getValue()).getConfigurations();
-            if (config != null)
-            {
-               return config;
+        container.setValueChoices(() -> profileManager.getArquillianProfiles(getSelectedProject(builder.getUIContext())));
+        container.setDefaultValue(() -> {
+            Iterable<String> profiles = container.getValueChoices();
+            if (profiles != null && profiles.iterator().hasNext()) {
+                return profiles.iterator().next();
             }
-         }
-         return Collections.emptyList();
-      });
-      containerValue.setEnabled(() -> containerOption.hasValue());
-      containerValue.setDefaultValue(() -> {
-         if (containerValue.isEnabled())
-         {
-            return containerOption.getValue().getDefault();
-         }
-         return null;
-      });
-      containerValue.setRequired(() -> !containerValue.isEnabled() || containerOption.getValue().getDefault() != null);
-   }
+            return null;
+        });
+        containerOption.setEnabled(() -> container.hasValue());
+        containerOption.setItemLabelConverter(source -> {
+            if (source == null) {
+                return null;
+            }
+            return source.getName();
+        });
+        containerOption.setValueChoices(() -> {
+            if (containerOption.isEnabled()) {
+                Iterable<Configuration> config = profileManager.getContainer(container.getValue()).getConfigurations();
+                if (config != null) {
+                    return config;
+                }
+            }
+            return Collections.emptyList();
+        });
+        containerValue.setEnabled(() -> containerOption.hasValue());
+        containerValue.setDefaultValue(() -> {
+            if (containerValue.isEnabled()) {
+                return containerOption.getValue().getDefault();
+            }
+            return null;
+        });
+        containerValue.setRequired(() -> !containerValue.isEnabled() || containerOption.getValue().getDefault() != null);
+    }
 
-   @Override
-   public Result execute(UIExecutionContext context) throws Exception
-   {
-      ArquillianFacet arquillian = getSelectedProject(context).getFacet(ArquillianFacet.class);
-      ArquillianConfig config = arquillian.getConfig();
-      config.addContainerProperty(
-               container.getValue(),
-               containerOption.getValue().getName(),
-               containerValue.getValue());
-      arquillian.setConfig(config);
-      return Results.success();
-   }
+    @Override
+    public Result execute(UIExecutionContext context) throws Exception {
+        ArquillianFacet arquillian = getSelectedProject(context).getFacet(ArquillianFacet.class);
+        ArquillianConfig config = arquillian.getConfig();
+        config.addContainerProperty(
+            container.getValue(),
+            containerOption.getValue().getName(),
+            containerValue.getValue());
+        arquillian.setConfig(config);
+        return Results.success();
+    }
 
-   @Override
-   protected boolean isProjectRequired()
-   {
-      return true;
-   }
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
 
-   @Override
-   protected ProjectFactory getProjectFactory()
-   {
-      return projectFactory;
-   }
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 }

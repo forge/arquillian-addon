@@ -6,54 +6,51 @@
  */
 package org.jboss.forge.arquillian.container;
 
+import org.jboss.forge.arquillian.container.index.ContainerDirectoryParser;
+import org.jboss.forge.arquillian.container.model.Container;
+import org.jboss.forge.arquillian.container.model.ContainerType;
+
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import org.jboss.forge.arquillian.container.index.ContainerDirectoryParser;
-import org.jboss.forge.arquillian.container.model.Container;
-import org.jboss.forge.arquillian.container.model.ContainerType;
-
 
 /**
  * @Author Paul Bakker - paul.bakker.nl@gmail.com
  */
-public class ContainerResolver 
-{
-   @Inject
-   private ContainerDirectoryParser parser;
+public class ContainerResolver {
+    @Inject
+    private ContainerDirectoryParser parser;
 
-   public Iterable<Container> getContainers() {
-      return getContainers(null);
-   }
+    public Iterable<Container> getContainers() {
+        return getContainers(null);
+    }
 
-   public Iterable<Container> getContainers(ContainerType type) {
-      List<Container> availableContainers = null;
-      try {
-         availableContainers = new ArrayList<>(parser.getContainers());
-         Collections.sort(availableContainers);
+    public Iterable<Container> getContainers(ContainerType type) {
+        List<Container> availableContainers = null;
+        try {
+            availableContainers = new ArrayList<>(parser.getContainers());
+            Collections.sort(availableContainers);
 
-         if (type == null) {
-            return availableContainers;
-         }
+            if (type == null) {
+                return availableContainers;
+            }
 
-         return filterByType(availableContainers, type);
-      }
-      catch (IOException e) {
-         throw new RuntimeException(e);
-      }
-   }
+            return filterByType(availableContainers, type);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-   private Iterable<Container> filterByType(List<Container> containers, ContainerType containerType) {
-      List<Container> filtered = new ArrayList<>();
-      for (Container container : containers) {
-         if (containerType.equals(container.getContainerType())) {
-            filtered.add(container);
-         }
-      }
-      return filtered;
-   }
+    private Iterable<Container> filterByType(List<Container> containers, ContainerType containerType) {
+        List<Container> filtered = new ArrayList<>();
+        for (Container container : containers) {
+            if (containerType.equals(container.getContainerType())) {
+                filtered.add(container);
+            }
+        }
+        return filtered;
+    }
 }

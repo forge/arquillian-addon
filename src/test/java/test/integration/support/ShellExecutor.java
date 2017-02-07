@@ -10,21 +10,21 @@ import java.util.concurrent.TimeoutException;
 
 public class ShellExecutor {
 
-   private final ShellTest shellTest;
-   private final int timeOut;
-   private final TimeUnit unit;
+    private final ShellTest shellTest;
+    private final int timeOut;
+    private final TimeUnit unit;
 
-   public ShellExecutor(ShellTest shellTest, int timeOut, TimeUnit unit) {
-      this.shellTest = shellTest;
-      this.timeOut = timeOut;
-      this.unit = unit;
-   }
+    public ShellExecutor(ShellTest shellTest, int timeOut, TimeUnit unit) {
+        this.shellTest = shellTest;
+        this.timeOut = timeOut;
+        this.unit = unit;
+    }
 
-   public ShellExecutor execute(final String command) throws TimeoutException {
-      final Result result = shellTest.execute(command, 30, TimeUnit.SECONDS);
-      if (result instanceof Failed) {
-         Assertions.fail(result.getMessage(), ((Failed) result).getException());
-      }
-      return this;
-   }
+    public ShellExecutor execute(final String command) throws TimeoutException {
+        final Result result = shellTest.execute(command, 30, TimeUnit.SECONDS);
+        if (result instanceof Failed) {
+            Assertions.fail(result.getMessage(), ((Failed) result).getException());
+        }
+        return this;
+    }
 }

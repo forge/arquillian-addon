@@ -32,17 +32,17 @@ public class ContainerInstaller {
             List<org.jboss.forge.addon.dependencies.Dependency> allDependencies = new ArrayList<>();
 
             DependencyBuilder containerDependency = container.asDependency()
-                    .setVersion(version)
-                    .setScopeType("test");
+                .setVersion(version)
+                .setScopeType("test");
             allDependencies.add(containerDependency);
 
             if (dependencies != null) {
                 for (Map.Entry<Dependency, String> dependencyEntry : dependencies.entrySet()) {
                     allDependencies.add(
-                            DependencyBuilder.create(
-                                    dependencyEntry.getKey().asDependency()
-                                            .setVersion(dependencyEntry.getValue())
-                                            .setScopeType("test")));
+                        DependencyBuilder.create(
+                            dependencyEntry.getKey().asDependency()
+                                .setVersion(dependencyEntry.getValue())
+                                .setScopeType("test")));
                 }
             }
             profileManager.addProfile(project, container, allDependencies);

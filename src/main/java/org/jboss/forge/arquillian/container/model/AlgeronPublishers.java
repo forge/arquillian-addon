@@ -7,17 +7,15 @@ import org.jboss.forge.arquillian.command.algeron.AddAlgeronUrlPublisher;
 
 public enum AlgeronPublishers {
 
-   FOLDER(AddAlgeronFolderPublisher.class), URL(AddAlgeronUrlPublisher.class), GIT(AddAlgeronGitPublisher.class);
+    FOLDER(AddAlgeronFolderPublisher.class), URL(AddAlgeronUrlPublisher.class), GIT(AddAlgeronGitPublisher.class);
 
-   private Class<? extends UICommand> implementingCommand;
+    private Class<? extends UICommand> implementingCommand;
 
-   AlgeronPublishers(Class<? extends UICommand> implementingCommand)
-   {
-      this.implementingCommand = implementingCommand;
-   }
+    AlgeronPublishers(Class<? extends UICommand> implementingCommand) {
+        this.implementingCommand = implementingCommand;
+    }
 
-   public Class<? extends UICommand> getImplementingCommand()
-   {
-      return implementingCommand;
-   }
+    public Class<? extends UICommand> getImplementingCommand() {
+        return implementingCommand;
+    }
 }

@@ -4,6 +4,6 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 public interface AlgeronConsumerTestSetup {
 
-   JavaClassSource updateTest(JavaClassSource test, String consumer, String provider, String fragmentName);
+    JavaClassSource updateTest(JavaClassSource test, String consumer, String provider, String fragmentName);
 
 }

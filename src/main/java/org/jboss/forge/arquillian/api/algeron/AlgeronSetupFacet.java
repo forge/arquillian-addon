@@ -15,85 +15,83 @@ import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 @FacetConstraint(DependencyFacet.class)
 public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
 
-   public static final String CONTRACT_TYPE = "contractType";
+    public static final String CONTRACT_TYPE = "contractType";
 
-   public abstract DependencyBuilder createContractLibraryDependency();
-   public abstract DependencyBuilder createAlgeronDependency();
-   public abstract String getVersionPropertyName();
-   public abstract String getContractType();
+    public abstract DependencyBuilder createContractLibraryDependency();
 
-   @Override
-   protected Coordinate getVersionedCoordinate() {
-      return createContractLibraryDependency().getCoordinate();
-   }
+    public abstract DependencyBuilder createAlgeronDependency();
 
-   @Override
-   public boolean install() {
-      if(getVersion() != null) {
-         installDependencies();
-         configureForge();
-         return true;
-      }
-      return false;
-   }
+    public abstract String getVersionPropertyName();
 
-   private void configureForge() {
-      // stores which kind of contract is been installed so it can be used by isInstalled method.
-      // it is done in this way because AlgeronSetupFacet is recreated every time, so variables values are lost.
+    public abstract String getContractType();
 
-      final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
-      final Configuration configuration = configurationFacet.getConfiguration();
+    @Override
+    protected Coordinate getVersionedCoordinate() {
+        return createContractLibraryDependency().getCoordinate();
+    }
 
-      configuration.setProperty(CONTRACT_TYPE, getContractType());
-   }
+    @Override
+    public boolean install() {
+        if (getVersion() != null) {
+            installDependencies();
+            configureForge();
+            return true;
+        }
+        return false;
+    }
 
-   private void installDependencies()
-   {
-      installContractLibrary(createContractLibraryDependency());
-      installAlgeron(createAlgeronDependency());
-   }
+    private void configureForge() {
+        // stores which kind of contract is been installed so it can be used by isInstalled method.
+        // it is done in this way because AlgeronSetupFacet is recreated every time, so variables values are lost.
 
-   private void installContractLibrary(DependencyBuilder contractsDependency) {
-      if (hasEffectiveDependency(contractsDependency)) {
-         return;
-      }
+        final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
+        final Configuration configuration = configurationFacet.getConfiguration();
 
-      final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
-      final MetadataFacet metadataFacet = getFaceted().getFacet(MetadataFacet.class);
+        configuration.setProperty(CONTRACT_TYPE, getContractType());
+    }
 
-      metadataFacet.setDirectProperty(getVersionPropertyName(), getVersion());
-      dependencyFacet.addDirectDependency(contractsDependency.setVersion(wrap(getVersionPropertyName())));
-   }
+    private void installDependencies() {
+        installContractLibrary(createContractLibraryDependency());
+        installAlgeron(createAlgeronDependency());
+    }
 
-   private void installAlgeron(DependencyBuilder algeronDependency)
-   {
-      if (hasEffectiveDependency(algeronDependency))
-      {
-         return;
-      }
+    private void installContractLibrary(DependencyBuilder contractsDependency) {
+        if (hasEffectiveDependency(contractsDependency)) {
+            return;
+        }
 
-      // version of Algeron is not required because it is provided by universe.
-      final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
-      dependencyFacet.addDirectDependency(algeronDependency);
+        final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
+        final MetadataFacet metadataFacet = getFaceted().getFacet(MetadataFacet.class);
 
-   }
+        metadataFacet.setDirectProperty(getVersionPropertyName(), getVersion());
+        dependencyFacet.addDirectDependency(contractsDependency.setVersion(wrap(getVersionPropertyName())));
+    }
 
-   @Override
-   public boolean isInstalled() {
-      final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
-      final Configuration configuration = configurationFacet.getConfiguration();
-      final String contractType = configuration.getString(CONTRACT_TYPE);
-      return contractType != null && ! contractType.isEmpty();
-   }
+    private void installAlgeron(DependencyBuilder algeronDependency) {
+        if (hasEffectiveDependency(algeronDependency)) {
+            return;
+        }
 
-   private boolean hasEffectiveDependency(DependencyBuilder frameworkDependency)
-   {
-      final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
-      return dependencyFacet.hasEffectiveDependency(frameworkDependency);
-   }
+        // version of Algeron is not required because it is provided by universe.
+        final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
+        dependencyFacet.addDirectDependency(algeronDependency);
 
-   private String wrap(String versionPropertyName)
-   {
-      return "${" + versionPropertyName + "}";
-   }
+    }
+
+    @Override
+    public boolean isInstalled() {
+        final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
+        final Configuration configuration = configurationFacet.getConfiguration();
+        final String contractType = configuration.getString(CONTRACT_TYPE);
+        return contractType != null && !contractType.isEmpty();
+    }
+
+    private boolean hasEffectiveDependency(DependencyBuilder frameworkDependency) {
+        final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
+        return dependencyFacet.hasEffectiveDependency(frameworkDependency);
+    }
+
+    private String wrap(String versionPropertyName) {
+        return "${" + versionPropertyName + "}";
+    }
 }

@@ -14,7 +14,7 @@ public class DependencyAssert extends AbstractAssert<DependencyAssert, Dependenc
     private String classifier;
     private String scope;
 
-    public DependencyAssert(Dependency actual){
+    public DependencyAssert(Dependency actual) {
         super(actual, DependencyAssert.class);
     }
 
@@ -44,7 +44,7 @@ public class DependencyAssert extends AbstractAssert<DependencyAssert, Dependenc
     }
 
     public DependencyAssert withType(String type) {
-       final String actualType = actual.getType();
+        final String actualType = actual.getType();
         Assertions.assertThat(actualType).isNotNull();
         Assertions.assertThat(actualType).isEqualTo(type);
         return this;

@@ -17,22 +17,13 @@ public enum Identifier {
 
     private static final String AS = " AS ";
     private static final String DOMAIN = "Domain";
-    private static final String EAP =  " EAP ";
-    private static final String EAP_DOMAIN =  EAP + DOMAIN;
-    private static final String AS_DOMAIN =  AS + DOMAIN;
-
-    public String getArtifactID() {
-        return artifactID;
-    }
-
+    private static final String EAP = " EAP ";
+    private static final String EAP_DOMAIN = EAP + DOMAIN;
+    private static final String AS_DOMAIN = AS + DOMAIN;
     private String artifactID;
 
     Identifier(String artifactID) {
         this.artifactID = artifactID;
-    }
-
-    public String getName() {
-       return this.name().replace("_", " ").toLowerCase();
     }
 
     public static String getNameForChameleon(Container container) {
@@ -59,5 +50,13 @@ public enum Identifier {
         }
 
         return "";
+    }
+
+    public String getArtifactID() {
+        return artifactID;
+    }
+
+    public String getName() {
+        return this.name().replace("_", " ").toLowerCase();
     }
 }

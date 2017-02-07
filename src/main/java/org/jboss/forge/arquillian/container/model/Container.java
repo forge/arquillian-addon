@@ -41,6 +41,30 @@ public class Container implements Comparable<Container> {
     private Dependency download;
     private List<Configuration> configurations;
 
+    public static String idForDisplayName(String displayName) {
+        return abbr(displayName.replaceAll("_", "-").toLowerCase());
+    }
+
+    public static String expandAbbr(String id) {
+        for (Map.Entry<String, String> abbr : ABBREVIATIONS.entrySet()) {
+            if (id.contains(abbr.getKey())) {
+                id = id.replace(abbr.getKey(), abbr.getValue());
+            }
+        }
+
+        return id;
+    }
+
+    public static String abbr(String id) {
+        for (Map.Entry<String, String> abbr : ABBREVIATIONS.entrySet()) {
+            if (id.contains(abbr.getValue())) {
+                id = id.replace(abbr.getValue(), abbr.getKey());
+            }
+        }
+
+        return id;
+    }
+
     public String getGroupId() {
         return groupId;
     }
@@ -116,9 +140,9 @@ public class Container implements Comparable<Container> {
         // using chameleon & if it doesn't have unique artifact ID.
 
         if (Identifier.WILDFLY.getArtifactID().equals(getArtifactId()) ||
-                Identifier.TOMCAT.getArtifactID().equals(getArtifactId()) ||
-                Identifier.GLASSFISH.getArtifactID().equals(getArtifactId()) ||
-                Identifier.PAYARA.getArtifactID().equals(getArtifactId())) {
+            Identifier.TOMCAT.getArtifactID().equals(getArtifactId()) ||
+            Identifier.GLASSFISH.getArtifactID().equals(getArtifactId()) ||
+            Identifier.PAYARA.getArtifactID().equals(getArtifactId())) {
             id = getName().toLowerCase().replaceAll("arquillian (?:container )?", "");
             id = id.replaceAll(" ", "-");
         } else if (Identifier.JBOSS_AS.getArtifactID().equals(getArtifactId())) {
@@ -135,40 +159,14 @@ public class Container implements Comparable<Container> {
 
     public DependencyBuilder asDependency() {
         return DependencyBuilder.create()
-                .setGroupId(getGroupId())
-                .setArtifactId(getArtifactId());
+            .setGroupId(getGroupId())
+            .setArtifactId(getArtifactId());
     }
 
     @Override
     public String toString() {
         return getDisplayName();
     }
-
-    public static String idForDisplayName(String displayName) {
-        return abbr(displayName.replaceAll("_", "-").toLowerCase());
-    }
-
-    public static String expandAbbr(String id) {
-        for (Map.Entry<String, String> abbr : ABBREVIATIONS.entrySet()) {
-            if (id.contains(abbr.getKey())) {
-                id = id.replace(abbr.getKey(), abbr.getValue());
-            }
-        }
-
-        return id;
-    }
-
-    public static String abbr(String id) {
-        for (Map.Entry<String, String> abbr : ABBREVIATIONS.entrySet()) {
-            if (id.contains(abbr.getValue())) {
-                id = id.replace(abbr.getValue(), abbr.getKey());
-            }
-        }
-
-        return id;
-    }
-
-
 
     public String getChameleonTarget(String version) {
         return Identifier.getNameForChameleon(this) + ":" + version + ":" + getContainerType();
@@ -209,8 +207,8 @@ public class Container implements Comparable<Container> {
 
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
             List<String> namesAndExpsLines = buffer.lines().
-                    filter(s -> s.contains(nameToMatch) || s.contains(versionExprtoMatch)).
-                    collect(Collectors.toList());
+                filter(s -> s.contains(nameToMatch) || s.contains(versionExprtoMatch)).
+                collect(Collectors.toList());
             String name = null;
             for (String line : namesAndExpsLines) {
                 if (line.contains(nameToMatch)) {

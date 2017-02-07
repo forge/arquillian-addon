@@ -1,4 +1,3 @@
-
 package org.jboss.forge.arquillian.command;
 
 import org.jboss.forge.addon.facets.FacetFactory;
@@ -23,64 +22,64 @@ import org.jboss.forge.arquillian.extension.ExtensionResolver;
 
 import javax.inject.Inject;
 
-public class AddArquillianExtensionCommand  extends AbstractProjectCommand implements UICommand {
+public class AddArquillianExtensionCommand extends AbstractProjectCommand implements UICommand {
 
-   @Inject
-   private ProjectFactory projectFactory;
+    @Inject
+    private ProjectFactory projectFactory;
 
-   @Inject
-   private FacetFactory facetFactory;
+    @Inject
+    private FacetFactory facetFactory;
 
-   @Inject
-   private ArquillianExtensionFacet facet;
-   
-   @Inject
-   private ExtensionResolver resolver;
-   
-   @Inject
-   @WithAttributes(shortName = 'e', label = "Arquillian Extension", type = InputType.DROPDOWN)
-   private UISelectOne<Extension> arquillianExtension;
+    @Inject
+    private ArquillianExtensionFacet facet;
 
-   @Override
-   public UICommandMetadata getMetadata(UIContext context) {
-      return Metadata.from(super.getMetadata(context), getClass())
+    @Inject
+    private ExtensionResolver resolver;
+
+    @Inject
+    @WithAttributes(shortName = 'e', label = "Arquillian Extension", type = InputType.DROPDOWN)
+    private UISelectOne<Extension> arquillianExtension;
+
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Arquillian"))
             .name("Arquillian: Add Extension")
             .description("This addon will help you setup the base Arquillian");
-   }
+    }
 
-   @Override
-   public void initializeUI(UIBuilder builder) throws Exception {
-      builder.add(arquillianExtension);
-      
-      arquillianExtension.setValueChoices(() -> resolver.getAvailableExtensions(getSelectedProject(builder.getUIContext())));
-      arquillianExtension.setItemLabelConverter(Extension::getName);
-   }
+    @Override
+    public void initializeUI(UIBuilder builder) throws Exception {
+        builder.add(arquillianExtension);
 
-   @Override
-   public Result execute(UIExecutionContext context) throws Exception {
-      facetFactory.install(getSelectedProject(context), facet);
-      facet.install(arquillianExtension.getValue());
-      
-      return Results.success("Installed Arquillian Extension " + arquillianExtension.getValue());
-   }
+        arquillianExtension.setValueChoices(() -> resolver.getAvailableExtensions(getSelectedProject(builder.getUIContext())));
+        arquillianExtension.setItemLabelConverter(Extension::getName);
+    }
 
-   @Override
-   protected boolean isProjectRequired() {
-      return true;
-   }
-   
-   @Override
-   public boolean isEnabled(UIContext context) {
-      Boolean parent = super.isEnabled(context);
-      if(parent) {
-         return getSelectedProject(context).hasFacet(ArquillianFacet.class);
-      }
-      return parent;
-   }
-   
-   @Override
-   protected ProjectFactory getProjectFactory() {
-      return projectFactory;
-   }
+    @Override
+    public Result execute(UIExecutionContext context) throws Exception {
+        facetFactory.install(getSelectedProject(context), facet);
+        facet.install(arquillianExtension.getValue());
+
+        return Results.success("Installed Arquillian Extension " + arquillianExtension.getValue());
+    }
+
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled(UIContext context) {
+        Boolean parent = super.isEnabled(context);
+        if (parent) {
+            return getSelectedProject(context).hasFacet(ArquillianFacet.class);
+        }
+        return parent;
+    }
+
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 }

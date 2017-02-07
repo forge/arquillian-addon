@@ -26,60 +26,59 @@ import java.util.Arrays;
 import java.util.Map;
 
 @FacetConstraint(AlgeronConsumer.class)
-public class AlgeronPublisherWizard extends AbstractProjectCommand implements UIWizard
-{
+public class AlgeronPublisherWizard extends AbstractProjectCommand implements UIWizard {
 
-   static final String PUBLISH_CONTRACTS = "publish-contracts";
+    static final String PUBLISH_CONTRACTS = "publish-contracts";
 
-   @Inject
-   private ProjectFactory projectFactory;
+    @Inject
+    private ProjectFactory projectFactory;
 
-   @Inject
-   @WithAttributes(shortName = 'p', label = "Publisher", type = InputType.DROPDOWN, required = true)
-   private UISelectOne<AlgeronPublishers> publisher;
+    @Inject
+    @WithAttributes(shortName = 'p', label = "Publisher", type = InputType.DROPDOWN, required = true)
+    private UISelectOne<AlgeronPublishers> publisher;
 
-   @Inject
-   @WithAttributes(shortName = 'l', label = "Publish Contracts")
-   private UIInput<String> publishContracts;
+    @Inject
+    @WithAttributes(shortName = 'l', label = "Publish Contracts")
+    private UIInput<String> publishContracts;
 
-   @Override
-   public UICommandMetadata getMetadata(UIContext context) {
-      return Metadata.from(super.getMetadata(context), getClass())
-              .category(Categories.create("Algeron"))
-              .name("Arquillian Algeron: Setup Publisher")
-              .description("This wizard registers a Publisher for Algeron");
-   }
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.from(super.getMetadata(context), getClass())
+            .category(Categories.create("Algeron"))
+            .name("Arquillian Algeron: Setup Publisher")
+            .description("This wizard registers a Publisher for Algeron");
+    }
 
-   @Override
-   protected boolean isProjectRequired() {
-      return true;
-   }
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
 
-   @Override
-   protected ProjectFactory getProjectFactory() {
-      return projectFactory;
-   }
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 
-   @Override
-   public void initializeUI(UIBuilder builder) throws Exception {
-      builder.add(publisher).add(publishContracts);
+    @Override
+    public void initializeUI(UIBuilder builder) throws Exception {
+        builder.add(publisher).add(publishContracts);
 
-      publisher.setValueChoices(Arrays.asList(AlgeronPublishers.values()));
-      publisher.setItemLabelConverter(element -> element.name().toLowerCase());
+        publisher.setValueChoices(Arrays.asList(AlgeronPublishers.values()));
+        publisher.setItemLabelConverter(element -> element.name().toLowerCase());
 
-      publishContracts.setDefaultValue("${env.publishcontracts:false}");
+        publishContracts.setDefaultValue("${env.publishcontracts:false}");
 
-   }
+    }
 
-   @Override
-   public Result execute(UIExecutionContext context) throws Exception {
-      return Results.success("Installed Algeron Publisher.");
-   }
+    @Override
+    public Result execute(UIExecutionContext context) throws Exception {
+        return Results.success("Installed Algeron Publisher.");
+    }
 
-   @Override
-   public NavigationResult next(UINavigationContext context) throws Exception {
-      Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
-      ctx.put(PUBLISH_CONTRACTS, publishContracts.getValue());
-      return Results.navigateTo(publisher.getValue().getImplementingCommand());
-   }
+    @Override
+    public NavigationResult next(UINavigationContext context) throws Exception {
+        Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
+        ctx.put(PUBLISH_CONTRACTS, publishContracts.getValue());
+        return Results.navigateTo(publisher.getValue().getImplementingCommand());
+    }
 }

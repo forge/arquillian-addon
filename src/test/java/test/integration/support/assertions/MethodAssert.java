@@ -9,17 +9,17 @@ import java.lang.annotation.Annotation;
 
 public class MethodAssert extends AbstractAssert<MethodAssert, MethodSource> {
 
-   public MethodAssert(MethodSource actual) {
-      super(actual, MethodAssert.class);
-   }
+    public MethodAssert(MethodSource actual) {
+        super(actual, MethodAssert.class);
+    }
 
-   public static MethodAssert assertThat(MethodSource source) {
-      return new MethodAssert(source);
-   }
+    public static MethodAssert assertThat(MethodSource source) {
+        return new MethodAssert(source);
+    }
 
-   public AnnotationAssert withAnnotation(Class<? extends Annotation> annotation) {
-      final AnnotationSource annotationSource = actual.getAnnotation(annotation);
-      Assertions.assertThat(annotationSource).isNotNull();
-      return new AnnotationAssert(annotationSource);
-   }
+    public AnnotationAssert withAnnotation(Class<? extends Annotation> annotation) {
+        final AnnotationSource annotationSource = actual.getAnnotation(annotation);
+        Assertions.assertThat(annotationSource).isNotNull();
+        return new AnnotationAssert(annotationSource);
+    }
 }

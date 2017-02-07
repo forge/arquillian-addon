@@ -14,6 +14,7 @@ public @interface AddDependencies {
 
     /**
      * List of maven artifact coordinates in the format of groupId:artifactId:version.
+     *
      * @return
      */
     String[] value();

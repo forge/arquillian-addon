@@ -21,12 +21,11 @@ import static java.util.Arrays.asList;
 
 public abstract class ShellTestTemplate {
 
+    public static final String PACKAGE_NAME = "test.integration.support";
+    protected Project project;
     @ArquillianResource
     URL url;
-
-    public static final String PACKAGE_NAME = "test.integration.support";
     private ShellTest shellTest;
-    protected Project project;
     private ProjectFactory projectFactory;
 
     @Before
@@ -55,12 +54,11 @@ public abstract class ShellTestTemplate {
 
     protected JavaClassSource extractClass(Project project, String className) throws java.io.FileNotFoundException {
         return (JavaClassSource) project.getFacet(JavaSourceFacet.class)
-                .getTestJavaResource(className)
-                .getJavaType();
+            .getTestJavaResource(className)
+            .getJavaType();
     }
 
-    protected FileResource<?> extractTestResource(Project project, String filename)
-    {
+    protected FileResource<?> extractTestResource(Project project, String filename) {
         ResourcesFacet resources = project.getFacet(ResourcesFacet.class);
         return resources.getTestResource(filename);
     }
