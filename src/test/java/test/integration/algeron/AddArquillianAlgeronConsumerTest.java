@@ -29,8 +29,9 @@ public class AddArquillianAlgeronConsumerTest extends ShellTestTemplate {
     public void should_add_arquillian_algeron_consumer_and_provider_dependencies() throws Exception {
 
         shell().execute("arquillian-setup --standalone --test-framework junit")
-            .execute("arquillian-algeron-setup-consumer --contracts-library pact")
-            .execute("arquillian-algeron-setup-provider --contracts-library pact");
+            .execute("arquillian-algeron-setup-consumer --contracts-library pact");
+
+        shell().execute("arquillian-algeron-setup-provider --contracts-library pact");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-pact-consumer").withType("pom").withScope("test");
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-pact-provider").withType("pom").withScope("test");

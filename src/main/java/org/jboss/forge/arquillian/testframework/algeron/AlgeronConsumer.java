@@ -23,6 +23,11 @@ public class AlgeronConsumer extends AlgeronSetupFacet {
     }
 
     @Override
+    public boolean isInstalled() {
+        return super.isConsumerDependenciesInstalled();
+    }
+
+    @Override
     public String getVersionPropertyName() {
         return contractLibrary.getVersionPropertyName();
     }

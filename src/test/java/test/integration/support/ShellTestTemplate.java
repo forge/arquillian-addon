@@ -26,7 +26,7 @@ public abstract class ShellTestTemplate {
     @ArquillianResource
     URL url;
     private ShellTest shellTest;
-    private ProjectFactory projectFactory;
+    protected ProjectFactory projectFactory;
 
     @Before
     public void setUp() throws Exception {

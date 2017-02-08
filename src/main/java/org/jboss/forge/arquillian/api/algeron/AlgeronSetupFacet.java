@@ -46,15 +46,38 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
         // stores which kind of contract is been installed so it can be used by isInstalled method.
         // it is done in this way because AlgeronSetupFacet is recreated every time, so variables values are lost.
 
+        addConfigurationProperty(CONTRACT_TYPE, getContractType());
+    }
+
+    private void addConfigurationProperty(String key, String value) {
         final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
         final Configuration configuration = configurationFacet.getConfiguration();
 
-        configuration.setProperty(CONTRACT_TYPE, getContractType());
+        configuration.addProperty(key, value);
     }
 
     private void installDependencies() {
+        final DependencyBuilder dependency = createAlgeronDependency();
         installContractLibrary(createContractLibraryDependency());
-        installAlgeron(createAlgeronDependency());
+        installAlgeron(dependency);
+
+        final String propertyName = getPropertyName(dependency);
+        if (!propertyName.isEmpty()) {
+            addConfigurationProperty(propertyName, "true");
+        }
+    }
+
+    private String getPropertyName(DependencyBuilder dependencyBuilder) {
+        String[] strings = dependencyBuilder.getCoordinate().getArtifactId().split("-");
+        String type = "";
+        if (strings.length > 3) {
+            type = strings[3];
+        }
+        if (!type.isEmpty()) {
+            return "is" + type.substring(0, 1).toUpperCase() + type.substring(1);
+        }
+
+        return type;
     }
 
     private void installContractLibrary(DependencyBuilder contractsDependency) {
@@ -80,18 +103,40 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
 
     }
 
-    @Override
-    public boolean isInstalled() {
-        return hasEffectiveDependency(createAlgeronDependency()) && hasEffectiveDependency(createContractLibraryDependency());
-    }
 
-    public boolean isForgeConfigurationInstalled() {
+    private boolean isForgeConfigurationInstalled() {
         final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
         final Configuration configuration = configurationFacet.getConfiguration();
-        final String contractType = configuration.getString(CONTRACT_TYPE);
+
+        final String contractType = getStringProperty(configuration.getProperty(CONTRACT_TYPE));
         return contractType != null && !contractType.isEmpty();
     }
 
+    protected boolean isConsumerDependenciesInstalled() {
+        final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
+        final Configuration configuration = configurationFacet.getConfiguration();
+        final String contractType = getStringProperty(configuration.getProperty("isConsumer"));
+
+        return contractType != null && !contractType.isEmpty();
+    }
+
+    protected boolean isProviderDependenciesInstalled() {
+        final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
+        final Configuration configuration = configurationFacet.getConfiguration();
+        final String contractType = getStringProperty(configuration.getProperty("isProvider"));
+
+        return contractType != null && !contractType.isEmpty();
+    }
+
+    private String getStringProperty(Object property) {
+        String propertyName = null;
+
+        if (property instanceof String) {
+            propertyName = (String) property;
+        }
+
+        return propertyName;
+    }
     private boolean hasEffectiveDependency(DependencyBuilder frameworkDependency) {
         final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
         return dependencyFacet.hasEffectiveDependency(frameworkDependency);

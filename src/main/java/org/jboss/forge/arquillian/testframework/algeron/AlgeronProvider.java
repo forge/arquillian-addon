@@ -24,6 +24,11 @@ public class AlgeronProvider extends AlgeronSetupFacet {
     }
 
     @Override
+    public boolean isInstalled() {
+        return super.isProviderDependenciesInstalled();
+    }
+
+    @Override
     public String getVersionPropertyName() {
         return contractLibrary.getVersionPropertyName();
     }
