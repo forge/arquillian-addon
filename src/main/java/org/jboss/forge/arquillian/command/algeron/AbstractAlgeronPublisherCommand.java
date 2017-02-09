@@ -2,6 +2,7 @@ package org.jboss.forge.arquillian.command.algeron;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.FacetFactory;
+import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.ui.command.UICommand;
@@ -67,21 +68,20 @@ public abstract class AbstractAlgeronPublisherCommand extends AbstractProjectCom
         return parent;
     }
 
-
     @Override
     public Result execute(UIExecutionContext context) throws Exception {
+        final Project selectedProject = getSelectedProject(context);
 
-        Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
+        final Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
         final String publishContracts = (String) ctx.get(AlgeronPublisherWizard.PUBLISH_CONTRACTS);
-
-        AlgeronPublisherFacet algeronPublisherFacet = facetFactory.create(getSelectedProject(context), AlgeronPublisherFacet.class);
+        final AlgeronPublisherFacet algeronPublisherFacet = facetFactory.create(selectedProject, AlgeronPublisherFacet.class);
         algeronPublisherFacet.setConfigurationParameters(getParameters());
         algeronPublisherFacet.setPublishContracts(publishContracts);
         algeronPublisherFacet.setPublisherDependency(getPublisherDependency());
+        facetFactory.install(selectedProject, algeronPublisherFacet);
 
-        facetFactory.install(getSelectedProject(context), algeronPublisherFacet);
+
         return Results.success("Installed Arquillian Algeron " + getName() + " Publisher.");
-
     }
 
 }

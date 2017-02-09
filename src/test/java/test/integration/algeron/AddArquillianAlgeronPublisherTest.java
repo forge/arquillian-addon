@@ -22,10 +22,8 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate {
     @Test
     public void should_register_folder_publisher() throws TimeoutException {
         shell().execute("arquillian-setup --standalone --test-framework junit")
-            .execute("arquillian-algeron-setup-consumer --contracts-library pact");
-
-        projectFactory.invalidateCaches();
-        shell().execute("arquillian-algeron-setup-publisher --publisher folder --output-folder /tmp/pacts");
+            .execute("arquillian-algeron-setup-consumer --contracts-library pact")
+            .execute("arquillian-algeron-setup-publisher --publisher folder --output-folder /tmp/pacts");
 
         final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
         assertThat(arquillianXml.exists()).isTrue();
@@ -41,10 +39,8 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate {
     @Test
     public void should_register_url_publisher() throws TimeoutException {
         shell().execute("arquillian-setup --standalone --test-framework junit")
-            .execute("arquillian-algeron-setup-consumer --contracts-library pact");
-
-        projectFactory.invalidateCaches();
-        shell().execute("arquillian-algeron-setup-publisher --publisher url --url http://localhost");
+            .execute("arquillian-algeron-setup-consumer --contracts-library pact")
+            .execute("arquillian-algeron-setup-publisher --publisher url --url http://localhost");
 
         final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
         assertThat(arquillianXml.exists()).isTrue();
@@ -59,12 +55,10 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate {
     }
 
     @Test
-    public void should_register_git_publisher() throws TimeoutException {
+    public void should_register_git_publisher() throws Exception {
         shell().execute("arquillian-setup --standalone --test-framework junit")
-            .execute("arquillian-algeron-setup-consumer --contracts-library pact");
-
-        projectFactory.invalidateCaches();
-        shell().execute("arquillian-algeron-setup-publisher --publisher git --url http://localhost --comment newcomment");
+            .execute("arquillian-algeron-setup-consumer --contracts-library pact")
+            .execute("arquillian-algeron-setup-publisher --publisher git --url http://localhost --comment newcomment");
 
         final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
         assertThat(arquillianXml.exists()).isTrue();
@@ -87,7 +81,6 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate {
         shell().execute("arquillian-setup --standalone --test-framework junit")
             .execute("arquillian-algeron-setup-consumer --contracts-library pact");
 
-        projectFactory.invalidateCaches();
         shell().execute("arquillian-algeron-setup-publisher --publisher folder --output-folder /tmp/pacts");
 
         final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");

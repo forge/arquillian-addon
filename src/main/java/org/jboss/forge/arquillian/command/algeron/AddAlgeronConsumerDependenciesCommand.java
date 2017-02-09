@@ -43,7 +43,6 @@ public class AddAlgeronConsumerDependenciesCommand extends AbstractAlgeronComman
         contractsLibrary.setValueChoices(Arrays.asList(ContractConsumerLibrary.values()));
         contractsLibrary.setItemLabelConverter(element -> element.name().toLowerCase());
         contractsLibrary.setDefaultValue(ContractConsumerLibrary.PACT);
-
     }
 
     @Override

@@ -21,7 +21,11 @@ public class ShellExecutor {
     }
 
     public ShellExecutor execute(final String command) throws TimeoutException {
-        final Result result = shellTest.execute(command, 30, TimeUnit.SECONDS);
+        return execute(command, 30);
+    }
+
+    public ShellExecutor execute(String command, int timeout) throws TimeoutException {
+        final Result result = shellTest.execute(command, timeout, TimeUnit.SECONDS);
         if (result instanceof Failed) {
             Assertions.fail(result.getMessage(), ((Failed) result).getException());
         }

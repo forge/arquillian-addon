@@ -8,6 +8,9 @@ import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.shell.test.ShellTest;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
+import org.jboss.forge.arquillian.api.algeron.AlgeronPublisherFacet;
+import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
+import org.jboss.forge.arquillian.testframework.algeron.AlgeronProvider;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -22,10 +25,14 @@ import static java.util.Arrays.asList;
 public abstract class ShellTestTemplate {
 
     public static final String PACKAGE_NAME = "test.integration.support";
+
     protected Project project;
+
     @ArquillianResource
-    URL url;
+    private URL url;
+
     private ShellTest shellTest;
+
     protected ProjectFactory projectFactory;
 
     @Before
@@ -33,7 +40,7 @@ public abstract class ShellTestTemplate {
         final AddonRegistry addonRegistry = Furnace.instance(getClass().getClassLoader()).getAddonRegistry();
         projectFactory = addonRegistry.getServices(ProjectFactory.class).get();
         shellTest = addonRegistry.getServices(ShellTest.class).get();
-        project = projectFactory.createTempProject(asList(ArquillianFacet.class, JavaSourceFacet.class));
+        project = projectFactory.createTempProject(asList(JavaSourceFacet.class, ArquillianFacet.class, AlgeronProvider.class, AlgeronConsumer.class, AlgeronPublisherFacet.class));
         shellTest.getShell().setCurrentResource(project.getRoot());
     }
 
@@ -45,7 +52,6 @@ public abstract class ShellTestTemplate {
         if (projectFactory != null) {
             projectFactory.invalidateCaches();
         }
-
     }
 
     protected ShellExecutor shell() {

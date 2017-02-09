@@ -8,11 +8,9 @@ import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.arquillian.api.AbstractVersionedFacet;
-import org.jboss.forge.arquillian.api.TestFrameworkFacet;
+import org.jboss.forge.arquillian.api.ArquillianFacet;
 
-@FacetConstraint(TestFrameworkFacet.class)
-@FacetConstraint(MetadataFacet.class)
-@FacetConstraint(DependencyFacet.class)
+@FacetConstraint(ArquillianFacet.class)
 public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
 
     public static final String CONTRACT_TYPE = "contractType";
