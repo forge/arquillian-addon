@@ -20,6 +20,7 @@ import static test.integration.support.assertions.ForgeAssertions.assertThat;
 @AddDependencies({"org.assertj:assertj-core", "org.arquillian.algeron:arquillian-algeron-pact-consumer-spi", "au.com.dius:pact-jvm-consumer_2.11"})
 @AddPackage(containing = ShellTestTemplate.class)
 public class AddArquillianAlgeronContractFragmentTest extends ShellTestTemplate {
+
     @Test
     public void should_create_contract_fragment() throws TimeoutException, FileNotFoundException {
         shell().execute("arquillian-setup --standalone --test-framework junit")

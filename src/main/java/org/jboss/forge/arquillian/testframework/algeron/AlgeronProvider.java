@@ -1,30 +1,31 @@
 package org.jboss.forge.arquillian.testframework.algeron;
 
+
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
-import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
+import org.jboss.forge.arquillian.container.model.ContractProviderLibrary;
 
-public class AlgeronConsumer extends AlgeronSetupFacet {
+public class AlgeronProvider extends AlgeronSetupFacet {
 
-    private ContractConsumerLibrary contractLibrary;
+    private ContractProviderLibrary contractLibrary;
 
     @Override
     public DependencyBuilder createContractLibraryDependency() {
-        final DependencyBuilder contractConsumer = contractLibrary.getContractConsumer();
+        final DependencyBuilder contractProvider = contractLibrary.getContractProvider();
         // Creates a new copy of object since enum ContractLibrary creation happens only once and for Forge this instance is not immutable
-        return DependencyBuilder.create(contractConsumer);
+        return DependencyBuilder.create(contractProvider);
     }
 
     @Override
     public DependencyBuilder createAlgeronDependency() {
-        final DependencyBuilder algeronConsumer = contractLibrary.getAlgeronConsumer();
+        final DependencyBuilder algeronProvider = contractLibrary.getAlgeronProvider();
         // Creates a new copy of object since enum ContractLibrary creation happens only once and for Forge this instance is not immutable
-        return DependencyBuilder.create(algeronConsumer);
+        return DependencyBuilder.create(algeronProvider);
     }
 
     @Override
     public boolean isInstalled() {
-        return super.isConsumerDependenciesInstalled();
+        return super.isProviderDependenciesInstalled();
     }
 
     @Override
@@ -37,7 +38,7 @@ public class AlgeronConsumer extends AlgeronSetupFacet {
         return contractLibrary.name();
     }
 
-    public void setContractLibrary(ContractConsumerLibrary contractLibrary) {
+    public void setContractLibrary(ContractProviderLibrary contractLibrary) {
         this.contractLibrary = contractLibrary;
     }
 }

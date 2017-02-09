@@ -13,9 +13,7 @@ import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
 
 import java.util.Map;
 
-@FacetConstraint(ArquillianFacet.class)
 @FacetConstraint(AlgeronConsumer.class)
-@FacetConstraint(DependencyFacet.class)
 public class AlgeronPublisherFacet extends AbstractFacet<Project> implements ProjectFacet {
 
     public static final String PUBLISHER_EXTENSION_NAME = "algeron-consumer";
