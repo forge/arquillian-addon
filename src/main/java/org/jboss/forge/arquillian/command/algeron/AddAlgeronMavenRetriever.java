@@ -58,31 +58,31 @@ public class AddAlgeronMavenRetriever extends AbstractAlgeronRetrieverCommand
               .setArtifactId("arquillian-algeron-maven-retriever").setPackaging("pom").setScopeType("test");
    }
 
-   @Override
-   protected Map<String, String> getParameters() {
-      final Map<String, String> parameters = new LinkedHashMap<>();
-      parameters.put("provider", "maven");
-      parameters.put("coordinates", mavenCoordinates.getValue());
+    @Override
+    protected Map<String, String> getParameters() {
+        final Map<String, String> parameters = new LinkedHashMap<>();
+        parameters.put("provider", "maven");
+        parameters.put("coordinates", mavenCoordinates.getValue());
 
-      if (offline.hasValue()) {
-         parameters.put("offline", Boolean.toString(offline.getValue()));
-      }
+        if (offline.hasValue()) {
+            parameters.put("offline", Boolean.toString(offline.getValue()));
+        }
 
-      if (customSettings.hasValue()) {
-         parameters.put("customSettings", customSettings.getValue());
-      }
+        if (customSettings.hasValue()) {
+            parameters.put("customSettings", customSettings.getValue());
+        }
 
-      if (remoteRepository.hasValue()) {
-         parameters.put("remoteRepository", remoteRepository.getValue());
-      }
+        if (remoteRepository.hasValue()) {
+            parameters.put("remoteRepository", remoteRepository.getValue());
+        }
 
-      return parameters;
+        return parameters;
 
-   }
+    }
 
-   @Override
-   protected String getName() {
-      return "Maven";
-   }
+    @Override
+    protected String getName() {
+        return "Maven";
+    }
 
 }

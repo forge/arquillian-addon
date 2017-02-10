@@ -22,51 +22,50 @@ import javax.inject.Inject;
 import java.util.Arrays;
 
 //@FacetConstraint(AlgeronConsumer.class)
-public class AlgeronRetrieverWizard extends AbstractProjectCommand implements UIWizard
-{
+public class AlgeronRetrieverWizard extends AbstractProjectCommand implements UIWizard {
 
-   @Inject
-   private ProjectFactory projectFactory;
+    @Inject
+    private ProjectFactory projectFactory;
 
-   @Inject
-   @WithAttributes(shortName = 'p', label = "Retriever", type = InputType.DROPDOWN, required = true)
-   private UISelectOne<AlgeronRetriever> retriever;
+    @Inject
+    @WithAttributes(shortName = 'p', label = "Retriever", type = InputType.DROPDOWN, required = true)
+    private UISelectOne<AlgeronRetriever> retriever;
 
 
-   @Override
-   public UICommandMetadata getMetadata(UIContext context) {
-      return Metadata.from(super.getMetadata(context), getClass())
-              .category(Categories.create("Algeron"))
-              .name("Arquillian Algeron: Setup Retriever")
-              .description("This wizard registers a Retriever for Algeron");
-   }
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.from(super.getMetadata(context), getClass())
+            .category(Categories.create("Algeron"))
+            .name("Arquillian Algeron: Setup Retriever")
+            .description("This wizard registers a Retriever for Algeron");
+    }
 
-   @Override
-   protected boolean isProjectRequired() {
-      return true;
-   }
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
 
-   @Override
-   protected ProjectFactory getProjectFactory() {
-      return projectFactory;
-   }
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 
-   @Override
-   public void initializeUI(UIBuilder builder) throws Exception {
-      builder.add(retriever);
+    @Override
+    public void initializeUI(UIBuilder builder) throws Exception {
+        builder.add(retriever);
 
-      retriever.setValueChoices(Arrays.asList(AlgeronRetriever.values()));
-      retriever.setItemLabelConverter(element -> element.name().toLowerCase());
-   }
+        retriever.setValueChoices(Arrays.asList(AlgeronRetriever.values()));
+        retriever.setItemLabelConverter(element -> element.name().toLowerCase());
+    }
 
-   @Override
-   public Result execute(UIExecutionContext context) throws Exception {
-      return Results.success("Installed Algeron Retriever.");
-   }
+    @Override
+    public Result execute(UIExecutionContext context) throws Exception {
+        return Results.success("Installed Algeron Retriever.");
+    }
 
-   @Override
-   public NavigationResult next(UINavigationContext context) throws Exception {
-      return Results.navigateTo(retriever.getValue().getImplementingCommand());
-   }
+    @Override
+    public NavigationResult next(UINavigationContext context) throws Exception {
+        return Results.navigateTo(retriever.getValue().getImplementingCommand());
+    }
 
 }

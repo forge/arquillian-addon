@@ -45,6 +45,16 @@
         <version>${version.arquillian.algeron}</version>
       </dependency>
       <dependency>
+        <groupId>org.arquillian.algeron</groupId>
+        <artifactId>arquillian-algeron-pact-provider-spi</artifactId>
+        <version>${version.arquillian.algeron}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.arquillian.algeron</groupId>
+        <artifactId>arquillian-algeron-pact-provider-core</artifactId>
+        <version>${version.arquillian.algeron}</version>
+      </dependency>
+      <dependency>
         <groupId>au.com.dius</groupId>
         <artifactId>pact-jvm-consumer_2.11</artifactId>
         <version>${version.pact}</version>
@@ -72,6 +82,14 @@
     <dependency>
       <groupId>org.arquillian.algeron</groupId>
       <artifactId>arquillian-algeron-pact-consumer-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.arquillian.algeron</groupId>
+      <artifactId>arquillian-algeron-pact-provider-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.arquillian.algeron</groupId>
+      <artifactId>arquillian-algeron-pact-provider-core</artifactId>
     </dependency>
     <dependency>
       <groupId>au.com.dius</groupId>

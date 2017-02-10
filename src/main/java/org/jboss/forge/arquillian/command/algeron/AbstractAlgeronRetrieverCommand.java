@@ -14,70 +14,67 @@ import org.jboss.forge.arquillian.api.algeron.AlgeronRetrieverFacet;
 import javax.inject.Inject;
 import java.util.Map;
 
-public abstract class AbstractAlgeronRetrieverCommand extends AbstractProjectCommand implements UICommand
-{
-   public static final DependencyBuilder NO_DEPENDENCY = null;
+public abstract class AbstractAlgeronRetrieverCommand extends AbstractProjectCommand implements UICommand {
+    public static final DependencyBuilder NO_DEPENDENCY = null;
 
-   @Inject
-   protected ProjectFactory projectFactory;
+    @Inject
+    protected ProjectFactory projectFactory;
 
-   @Inject
-   protected FacetFactory facetFactory;
+    @Inject
+    protected FacetFactory facetFactory;
 
-   /**
-    * Method that returns the parameters to add as YAML in retrieverConfiguration section
-    * @return
-    */
-   protected abstract Map<String, String> getParameters();
+    /**
+     * Method that returns the parameters to add as YAML in retrieverConfiguration section
+     *
+     * @return
+     */
+    protected abstract Map<String, String> getParameters();
 
-   /**
-    * Name of the retriever to print it correctly in logs
-    * @return
-    */
-   protected abstract String getName();
+    /**
+     * Name of the retriever to print it correctly in logs
+     *
+     * @return
+     */
+    protected abstract String getName();
 
-   /**
-    * Method that can be overridden by implementations if retriever requires a new dependency
-    * @return
-    */
-   protected DependencyBuilder getRetrieverDependency()
-   {
-      return NO_DEPENDENCY;
-   }
+    /**
+     * Method that can be overridden by implementations if retriever requires a new dependency
+     *
+     * @return
+     */
+    protected DependencyBuilder getRetrieverDependency() {
+        return NO_DEPENDENCY;
+    }
 
-   @Override
-   protected boolean isProjectRequired()
-   {
-      return true;
-   }
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
 
-   @Override
-   protected ProjectFactory getProjectFactory()
-   {
-      return projectFactory;
-   }
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
 
-   @Override
-   public boolean isEnabled(UIContext context)
-   {
-      Boolean parent = super.isEnabled(context);
-      if(parent) {
-         //return getSelectedProject(context).hasFacet(AlgeronProvider.class);
-      }
-      return parent;
-   }
+    @Override
+    public boolean isEnabled(UIContext context) {
+        Boolean parent = super.isEnabled(context);
+        if (parent) {
+            //return getSelectedProject(context).hasFacet(AlgeronProvider.class);
+        }
+        return parent;
+    }
 
-   @Override
-   public Result execute(UIExecutionContext context) throws Exception
-   {
+    @Override
+    public Result execute(UIExecutionContext context) throws Exception {
 
-      AlgeronRetrieverFacet algeronRetrieverFacet = facetFactory.create(getSelectedProject(context), AlgeronRetrieverFacet.class);
-      algeronRetrieverFacet.setConfigurationParameters(getParameters());
-      algeronRetrieverFacet.setRetrieverDependency(getRetrieverDependency());
+        AlgeronRetrieverFacet algeronRetrieverFacet = facetFactory.create(getSelectedProject(context), AlgeronRetrieverFacet.class);
+        algeronRetrieverFacet.setConfigurationParameters(getParameters());
+        algeronRetrieverFacet.setRetrieverDependency(getRetrieverDependency());
 
-      facetFactory.install(getSelectedProject(context), algeronRetrieverFacet);
-      return Results.success("Installed Arquillian Algeron "+ getName() +" Retriever.");
+        facetFactory.install(getSelectedProject(context), algeronRetrieverFacet);
+        return Results.success("Installed Arquillian Algeron " + getName() + " Retriever.");
 
-   }
+    }
 
 }

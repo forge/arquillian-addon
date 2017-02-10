@@ -12,41 +12,36 @@ import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AddAlgeronFolderRetriever extends AbstractAlgeronRetrieverCommand
-{
+public class AddAlgeronFolderRetriever extends AbstractAlgeronRetrieverCommand {
 
-   @Inject
-   @WithAttributes(shortName = 'c', label = "Contracts Folder")
-   private UIInput<String> contractFolder;
+    @Inject
+    @WithAttributes(shortName = 'c', label = "Contracts Folder")
+    private UIInput<String> contractFolder;
 
-   @Override
-   public UICommandMetadata getMetadata(UIContext context)
-   {
-      return Metadata.from(super.getMetadata(context), getClass())
-              .category(Categories.create("Algeron"))
-              .name("Arquillian Algeron: Add Folder Retriever")
-              .description("This command registers a Folder Retriever for Algeron");
-   }
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.from(super.getMetadata(context), getClass())
+            .category(Categories.create("Algeron"))
+            .name("Arquillian Algeron: Add Folder Retriever")
+            .description("This command registers a Folder Retriever for Algeron");
+    }
 
-   @Override
-   public void initializeUI(UIBuilder builder) throws Exception
-   {
-      builder.add(contractFolder);
-      contractFolder.setDefaultValue("target/pacts");
-   }
+    @Override
+    public void initializeUI(UIBuilder builder) throws Exception {
+        builder.add(contractFolder);
+        contractFolder.setDefaultValue("target/pacts");
+    }
 
-   @Override
-   protected Map<String, String> getParameters()
-   {
-      Map<String, String> parameters = new LinkedHashMap<>();
-      parameters.put("provider", "folder");
-      parameters.put("contractsFolder", contractFolder.getValue());
-      return parameters;
-   }
+    @Override
+    protected Map<String, String> getParameters() {
+        Map<String, String> parameters = new LinkedHashMap<>();
+        parameters.put("provider", "folder");
+        parameters.put("contractsFolder", contractFolder.getValue());
+        return parameters;
+    }
 
-   @Override
-   protected String getName()
-   {
-      return "Folder";
-   }
+    @Override
+    protected String getName() {
+        return "Folder";
+    }
 }
