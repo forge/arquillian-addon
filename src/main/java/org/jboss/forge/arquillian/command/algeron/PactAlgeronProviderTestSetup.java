@@ -1,7 +1,7 @@
 package org.jboss.forge.arquillian.command.algeron;
 
-import org.arquillian.algeron.pact.provider.core.httptarget.Target;
 import org.arquillian.algeron.pact.provider.spi.Provider;
+import org.arquillian.algeron.pact.provider.spi.Target;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -13,11 +13,13 @@ import java.util.function.Function;
 public class PactAlgeronProviderTestSetup implements AlgeronProviderTestSetup {
 
     @Override
-    public void updateTest(JavaClassSource test, String provider, Function<JavaClassSource, String> testBody) {
+    public JavaClassSource updateTest(JavaClassSource test, String provider, Function<JavaClassSource, String> testBody) {
         addImports(test);
         annotateTestClass(test, provider);
         createEnrichments(test);
         createTestMethod(test, testBody);
+
+        return test;
     }
 
     private void createTestMethod(JavaClassSource test, Function<JavaClassSource, String> testBody) {

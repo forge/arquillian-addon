@@ -1,5 +1,6 @@
 package org.jboss.forge.arquillian.command.algeron;
 
+import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
@@ -17,11 +18,12 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
 import org.jboss.forge.arquillian.container.model.AlgeronRetriever;
+import org.jboss.forge.arquillian.testframework.algeron.AlgeronProvider;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 
-//@FacetConstraint(AlgeronConsumer.class)
+@FacetConstraint(AlgeronProvider.class)
 public class AlgeronRetrieverWizard extends AbstractProjectCommand implements UIWizard {
 
     @Inject
