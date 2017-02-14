@@ -19,8 +19,8 @@
     <version.junit>4.12</version.junit>
     <version.shrinkwrap-maven-resolver>2.2.5</version.shrinkwrap-maven-resolver>
     <version.assertj>3.6.2</version.assertj>
-    <version.arquillian.algeron>1.0.0.Alpha5</version.arquillian.algeron>
-    <version.pact>3.5.0-beta.2</version.pact>
+    <version.arquillian.algeron>1.0.0.Alpha6</version.arquillian.algeron>
+    <version.pact>3.5.0-beta.3</version.pact>
     <version.chameleon.container.model>1.0.0.Beta1</version.chameleon.container.model>
   </properties>
   <dependencyManagement>
@@ -42,6 +42,11 @@
       <dependency>
         <groupId>org.arquillian.algeron</groupId>
         <artifactId>arquillian-algeron-pact-consumer-spi</artifactId>
+        <version>${version.arquillian.algeron}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.arquillian.algeron</groupId>
+        <artifactId>arquillian-algeron-pact-provider-spi</artifactId>
         <version>${version.arquillian.algeron}</version>
       </dependency>
       <dependency>
@@ -72,6 +77,10 @@
     <dependency>
       <groupId>org.arquillian.algeron</groupId>
       <artifactId>arquillian-algeron-pact-consumer-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.arquillian.algeron</groupId>
+      <artifactId>arquillian-algeron-pact-provider-spi</artifactId>
     </dependency>
     <dependency>
       <groupId>au.com.dius</groupId>

@@ -2,6 +2,8 @@ package org.jboss.forge.arquillian.container.model;
 
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
+import org.jboss.forge.arquillian.command.algeron.AlgeronProviderTestSetup;
+import org.jboss.forge.arquillian.command.algeron.PactAlgeronProviderTestSetup;
 
 public enum ContractProviderLibrary {
 
@@ -15,7 +17,13 @@ public enum ContractProviderLibrary {
             .setGroupId("au.com.dius")
             .setArtifactId("pact-jvm-provider_2.11")
             .setScopeType("test")
-    );
+    )
+        {
+            @Override
+            public AlgeronProviderTestSetup getAlgeronProviderTestSetup() {
+                return new PactAlgeronProviderTestSetup();
+            }
+        };
 
     private String versionPropertyName;
     private DependencyBuilder algeronProvider;
@@ -26,6 +34,8 @@ public enum ContractProviderLibrary {
         this.algeronProvider = algeronProvider;
         this.contractProvider = contractProvider;
     }
+
+    public abstract AlgeronProviderTestSetup getAlgeronProviderTestSetup();
 
     public String getVersionPropertyName() {
         return versionPropertyName;

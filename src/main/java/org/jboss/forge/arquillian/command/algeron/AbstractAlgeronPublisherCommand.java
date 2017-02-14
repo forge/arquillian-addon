@@ -18,7 +18,7 @@ import java.util.Map;
 
 public abstract class AbstractAlgeronPublisherCommand extends AbstractProjectCommand implements UICommand {
 
-    public static final DependencyBuilder NO_DEPENDENCY = null;
+    public static final DependencyBuilder NO_DEPENDENCY = DependencyBuilder.create();
 
     @Inject
     protected ProjectFactory projectFactory;
@@ -77,7 +77,12 @@ public abstract class AbstractAlgeronPublisherCommand extends AbstractProjectCom
         final AlgeronPublisherFacet algeronPublisherFacet = facetFactory.create(selectedProject, AlgeronPublisherFacet.class);
         algeronPublisherFacet.setConfigurationParameters(getParameters());
         algeronPublisherFacet.setPublishContracts(publishContracts);
-        algeronPublisherFacet.setPublisherDependency(getPublisherDependency());
+
+        final DependencyBuilder publisherDependency = getPublisherDependency();
+        if (publisherDependency != NO_DEPENDENCY) {
+            algeronPublisherFacet.setPublisherDependency(publisherDependency);
+        }
+
         facetFactory.install(selectedProject, algeronPublisherFacet);
 
 
