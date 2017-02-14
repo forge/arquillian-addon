@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import java.util.Map;
 
 public abstract class AbstractAlgeronRetrieverCommand extends AbstractProjectCommand implements UICommand {
-    public static final DependencyBuilder NO_DEPENDENCY = null;
+    public static final DependencyBuilder NO_DEPENDENCY = DependencyBuilder.create();
 
     @Inject
     protected ProjectFactory projectFactory;
@@ -71,7 +71,10 @@ public abstract class AbstractAlgeronRetrieverCommand extends AbstractProjectCom
 
         AlgeronRetrieverFacet algeronRetrieverFacet = facetFactory.create(getSelectedProject(context), AlgeronRetrieverFacet.class);
         algeronRetrieverFacet.setConfigurationParameters(getParameters());
-        algeronRetrieverFacet.setRetrieverDependency(getRetrieverDependency());
+        final DependencyBuilder retrieverDependency = getRetrieverDependency();
+        if (retrieverDependency != NO_DEPENDENCY) {
+            algeronRetrieverFacet.setRetrieverDependency(retrieverDependency);
+        }
 
         facetFactory.install(getSelectedProject(context), algeronRetrieverFacet);
         return Results.success("Installed Arquillian Algeron " + getName() + " Retriever.");

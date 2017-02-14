@@ -7,6 +7,7 @@ import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
+import org.jboss.forge.arquillian.util.URLUIValidator;
 
 import javax.inject.Inject;
 import java.util.LinkedHashMap;
@@ -27,6 +28,7 @@ public class AddAlgeronUrlRetriever extends AbstractAlgeronRetrieverCommand {
 
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
+        url.addValidator(new URLUIValidator());
         builder.add(url);
     }
 

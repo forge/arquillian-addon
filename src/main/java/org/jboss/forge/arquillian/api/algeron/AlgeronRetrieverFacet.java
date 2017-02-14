@@ -13,9 +13,7 @@ import org.jboss.forge.arquillian.testframework.algeron.AlgeronProvider;
 
 import java.util.Map;
 
-@FacetConstraint(ArquillianFacet.class)
 @FacetConstraint(AlgeronProvider.class)
-@FacetConstraint(DependencyFacet.class)
 public class AlgeronRetrieverFacet extends AbstractFacet<Project> implements ProjectFacet {
 
     public static final String RETRIEVER_EXTENSION_NAME = "algeron-provider";
