@@ -2,10 +2,12 @@ package org.jboss.forge.arquillian.api;
 
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.DependencyResolver;
+import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFacet;
+import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.arquillian.util.DependencyUtil;
 
 import javax.inject.Inject;
@@ -42,4 +44,13 @@ public abstract class AbstractVersionedFacet extends AbstractFacet<Project> impl
     }
 
     protected abstract Coordinate getVersionedCoordinate();
+
+    protected boolean hasEffectiveDependency(DependencyBuilder dependency) {
+        final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
+        return dependencyFacet.hasEffectiveDependency(dependency);
+    }
+
+    protected String wrap(String versionPropertyName) {
+        return "${" + versionPropertyName + "}";
+    }
 }
