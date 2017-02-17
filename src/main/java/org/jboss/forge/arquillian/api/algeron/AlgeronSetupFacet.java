@@ -125,5 +125,5 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
 
         return contractType != null && !contractType.isEmpty();
     }
-    
+
 }

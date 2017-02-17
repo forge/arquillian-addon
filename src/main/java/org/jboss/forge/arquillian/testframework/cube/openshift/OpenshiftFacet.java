@@ -16,7 +16,18 @@ public class OpenshiftFacet extends CubeSetupFacet {
     }
 
     @Override
+    public String getQualifierForExtension() {
+        return getType().toLowerCase();
+    }
+
+    @Override
     public String getType() {
         return "Openshift";
     }
+
+    @Override
+    public String getKeyForFileLocation() {
+        return "definitionsFile";
+    }
+
 }

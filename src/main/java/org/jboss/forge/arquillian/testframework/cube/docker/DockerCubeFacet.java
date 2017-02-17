@@ -16,4 +16,13 @@ public abstract class DockerCubeFacet extends CubeSetupFacet {
             .setScopeType("test");
     }
 
+    @Override
+    public String getQualifierForExtension() {
+        return "docker";
+    }
+
+    @Override
+    public String getKeyForFileLocation() {
+        return "dockerContainersFile";
+    }
 }

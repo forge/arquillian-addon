@@ -22,7 +22,8 @@ public class AddArquillianAlgeronProviderTest extends ShellTestTemplate {
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-pact-provider").withType("pom").withScope("test");
         assertThat(project).hasDirectDependency("au.com.dius:pact-jvm-provider_2.11").withScope("test");
-
+        assertThat(project).hasConfiguration().withProperty("isProvider", "true");
+        assertThat(project).hasConfiguration().withProperty("contractType", "PACT");
     }
 
     @Test
@@ -36,6 +37,9 @@ public class AddArquillianAlgeronProviderTest extends ShellTestTemplate {
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-pact-provider").withType("pom").withScope("test");
         assertThat(project).hasDirectDependency("au.com.dius:pact-jvm-consumer_2.11").withScope("test");
         assertThat(project).hasDirectDependency("au.com.dius:pact-jvm-provider_2.11").withScope("test");
+        assertThat(project).hasConfiguration().withProperty("isProvider", "true");
+        assertThat(project).hasConfiguration().withProperty("isConsumer", "true");
+        assertThat(project).hasConfiguration().withProperty("contractType", "PACT");
 
     }
 

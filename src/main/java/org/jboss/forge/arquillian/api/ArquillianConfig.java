@@ -4,6 +4,7 @@ import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;
 
 import java.io.InputStream;
+import java.util.Map;
 
 public class ArquillianConfig {
 
@@ -39,6 +40,14 @@ public class ArquillianConfig {
         xml.getOrCreate("extension@qualifier=" + qualifier)
             .getOrCreate("property@name=" + key)
             .text(value);
+        return true;
+    }
+
+    public boolean addExtensionProperty(String qualifier, Map<String, String> map) {
+        final Node node = xml.getOrCreate("extension@qualifier=" + qualifier);
+        map.forEach(
+            (key, value) -> node.getOrCreate("property@name=" + key).text(value)
+        );
         return true;
     }
 
