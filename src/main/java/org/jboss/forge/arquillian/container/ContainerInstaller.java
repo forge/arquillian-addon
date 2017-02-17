@@ -25,8 +25,9 @@ public class ContainerInstaller {
     private ProfileManager profileManager;
 
     public void installContainer(Project project, Container container, String version, Map<Dependency, String> dependencies) throws Exception {
+        boolean activatedByDefault = profileManager.isAnyProfileRegistered(project) ? false : true;
         if (container.isSupportedByChameleon(version)) {
-            profileManager.addProfile(project, container, version);
+            profileManager.addProfile(project, container, version, activatedByDefault);
         } else {
 
             List<org.jboss.forge.addon.dependencies.Dependency> allDependencies = new ArrayList<>();
@@ -45,7 +46,7 @@ public class ContainerInstaller {
                                 .setScopeType("test")));
                 }
             }
-            profileManager.addProfile(project, container, allDependencies);
+            profileManager.addProfile(project, container, activatedByDefault, allDependencies);
         }
     }
 }
