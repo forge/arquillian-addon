@@ -39,7 +39,7 @@ public class ProfileManager {
 
     public boolean isAnyProfileRegistered(Project project) {
         MavenFacet mavenCoreFacet = project.getFacet(MavenFacet.class);
-        return mavenCoreFacet.getModel().getProfiles().size() != 0;
+        return ! mavenCoreFacet.getModel().getProfiles().isEmpty();
     }
 
     public void addProfile(Project project, Container container, boolean activatedByDefault, List<Dependency> dependencies) {
