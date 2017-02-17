@@ -1,5 +1,6 @@
 package org.jboss.forge.arquillian.container;
 
+import org.apache.maven.model.Activation;
 import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -36,15 +37,20 @@ public class ProfileManager {
         return profiles;
     }
 
-    public void addProfile(Project project, Container container, List<Dependency> dependencies) {
-        Dependency[] deps = new Dependency[dependencies.size()];
-        addProfile(project, container, dependencies.toArray(deps));
+    public boolean isAnyProfileRegistered(Project project) {
+        MavenFacet mavenCoreFacet = project.getFacet(MavenFacet.class);
+        return mavenCoreFacet.getModel().getProfiles().size() != 0;
     }
 
-    public void addProfile(Project project, Container container, String chameleonTargetVersion) {
+    public void addProfile(Project project, Container container, boolean activatedByDefault, List<Dependency> dependencies) {
+        Dependency[] deps = new Dependency[dependencies.size()];
+        addProfile(project, container, activatedByDefault, dependencies.toArray(deps));
+    }
+
+    public void addProfile(Project project, Container container, String chameleonTargetVersion, boolean activatedByDefault) {
         MavenFacet facet = project.getFacet(MavenFacet.class);
 
-        Profile profile = createProfile(container);
+        Profile profile = createProfile(container, activatedByDefault);
 
         addBuildBaseToProfile(profile, container, chameleonTargetVersion);
 
@@ -52,10 +58,10 @@ public class ProfileManager {
         facet.setModel(pom);
     }
 
-    public void addProfile(Project project, Container container, Dependency... dependencies) {
+    public void addProfile(Project project, Container container, boolean activatedByDefault, Dependency... dependencies) {
         MavenFacet facet = project.getFacet(MavenFacet.class);
 
-        Profile profile = createProfile(container);
+        Profile profile = createProfile(container, activatedByDefault);
 
         addBuildBaseToProfile(profile, container, null);
         addDependencyToProfile(profile, dependencies);
@@ -103,9 +109,15 @@ public class ProfileManager {
         }
     }
 
-    private Profile createProfile(Container container) {
+    private Profile createProfile(Container container, boolean activatedByDefault) {
         Profile profile = new Profile();
         profile.setId(container.getProfileId());
+
+        if (activatedByDefault) {
+            Activation activation = new Activation();
+            activation.setActiveByDefault(true);
+            profile.setActivation(activation);
+        }
 
         return profile;
     }
