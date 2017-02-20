@@ -3,7 +3,9 @@ package org.jboss.forge.arquillian.command.cube;
 
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.ProjectFactory;
+import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
+import org.jboss.forge.addon.resource.FileOperations;
 import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
@@ -48,7 +50,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
 
     @Inject
     @WithAttributes(shortName = 'f', label = "File", required = true)
-    private UIInput<String> file;
+    private UIInput<String> filePath;
 
     @Inject
     @WithAttributes(shortName = 'm', label = "Docker Machine", type = InputType.CHECKBOX)
@@ -67,7 +69,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
     public void initializeUI(UIBuilder builder) throws Exception {
         builder
             .add(type)
-            .add(file)
+            .add(filePath)
             .add(dockerMachine)
             .add(machineName)
             .add(dockerFileName);
@@ -86,7 +88,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
 
         type.setRequired(() -> true);
 
-        file.setEnabled(true);
+        filePath.setEnabled(true);
 
         dockerMachine.setEnabled(this::isDockerOrDockerCompose);
         dockerMachine.setRequired(this::isDockerOrDockerCompose);
@@ -114,7 +116,8 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
             return Results.fail(msg);
         }
 
-        selectedTypeFacet.setConfigurationParameters(getParametersForExtensionCongiguration());
+        selectedTypeFacet.setConfigurationParameters(getParametersForExtensionCongiguration(context));
+
         try {
             facetFactory.install(getSelectedProject(context), selectedTypeFacet);
 
@@ -123,7 +126,6 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
             return Results.fail("Could not install Cube" + selectedTypeFacet.getType(), e);
         }
     }
-
 
     @Override
     protected boolean isProjectRequired() {
@@ -149,18 +151,23 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
             .anyMatch(x -> x.equals("Docker"));
     }
 
-    private Map<String, String> getParametersForExtensionCongiguration() throws IOException {
+    private boolean isKubernetes() {
+        return type.hasValue() && Stream.of(type.getValue().getType())
+            .anyMatch(x -> x.equals("Kubernetes"));
+    }
+
+    private Map<String, String> getParametersForExtensionCongiguration(UIExecutionContext context) throws IOException {
         Map<String, String> parameters = new LinkedHashMap<>();
 
-        if (file.hasValue()) {
+        if (filePath.hasValue()) {
             if (isDocker()) {
-                final String yamlSnippet = System.lineSeparator() + YamlGenerator.getYaml(getConfigParametersForDocker()).replaceAll("(?m)^", "\t\t");
-
-                parameters.put("definitionFormat", "CUBE");
-                parameters.put(type.getValue().getKeyForFileLocation(), yamlSnippet);
-
+                addDockerParameters(parameters);
             } else {
-                parameters.put(type.getValue().getKeyForFileLocation(), file.getValue());
+                if (isKubernetes()) {
+                    addKubernetesParameters(parameters, context);
+                } else {
+                    parameters.put(type.getValue().getKeyForFileLocation(), filePath.getValue());
+                }
             }
         }
 
@@ -171,11 +178,48 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
         return parameters;
     }
 
+    private void addKubernetesParameters(Map<String, String> parameters, UIExecutionContext context) {
+        final String filePathValue = filePath.getValue();
+
+        if (Strings.isURL(filePathValue)) {
+            parameters.put(type.getValue().getKeyForFileLocation(), filePathValue);
+        } else {
+            final String fileName = classPathResource(context);
+            if (fileName != null) {
+                parameters.put("env.config.resource.name", fileName);
+            }
+        }
+    }
+
+    private String classPathResource(UIExecutionContext context) {
+        final String filePathValue = filePath.getValue();
+        final String[] path = filePathValue.split(File.separator);
+        final String fileName = path[path.length - 1];
+        final ResourcesFacet facet = getSelectedProject(context).getFacet(ResourcesFacet.class);
+
+        if (facet.getTestResource(fileName).exists()) {
+            final String fileNameWOExtesion = fileName.substring(0, fileName.indexOf("."));
+
+            if (!fileNameWOExtesion.equals("kubernetes")) {
+                return fileName;
+            }
+        }
+
+        return null;
+    }
+
+    private void addDockerParameters(Map<String, String> parameters) {
+        final String yamlSnippet = System.lineSeparator() + YamlGenerator.getYaml(getConfigParametersForDocker()).replaceAll("(?m)^", "    ");
+
+        parameters.put("definitionFormat", "CUBE");
+        parameters.put(type.getValue().getKeyForFileLocation(), yamlSnippet);
+    }
+
     private Map<String, Object> getConfigParametersForDocker() {
         Map<String, Object> params = new LinkedHashMap<>();
         Map<String, String> build = new LinkedHashMap<>();
 
-        String imageParams = "dockerfileLocation: " + file.getValue() + System.lineSeparator() +
+        String imageParams = "dockerfileLocation: " + filePath.getValue() + System.lineSeparator() +
             "noCache: true" + System.lineSeparator() +
             "remove: true";
 
@@ -189,31 +233,33 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
     }
 
     private String checkResourcesExists(UIExecutionContext context) throws IOException {
-        if (file.hasValue()) {
-            String fileNameOrUrl = file.getValue();
-            if (!Strings.isURL(fileNameOrUrl)) {
+        if (filePath.hasValue()) {
+            String filePath = this.filePath.getValue();
+            if (!Strings.isURL(filePath)) {
 
-                //If dockerFileName provided.
                 if (dockerFileName.hasValue()) {
                     String dockerfileName = dockerFileName.getValue();
-                    if (!fileNameOrUrl.contains(dockerfileName)) {
-                        fileNameOrUrl += dockerfileName;
+                    if (!filePath.contains(dockerfileName)) {
+                        if (!filePath.endsWith(File.separator)) {
+                            filePath += File.separator;
+                        }
+                        filePath += dockerfileName;
                     }
                 }
 
-                final File file = new File(fileNameOrUrl);
-//                final ResourcesFacet facet = getSelectedProject(context).getFacet(ResourcesFacet.class);
-//                final FileResource<?> resource = facet.getResource(fileNameOrUrl);
-//                if (!resource.exists()) {
-//                    return "Could not find provided file: " + fileNameOrUrl;
-//                }
-
-                if (!resourceFactory.getFileOperations().fileExists(file)) {
-                    return "Could not find provided file: " + fileNameOrUrl;
+                if (!fileExistsAndisNotDir(context, filePath)) {
+                    return "Could not find provided filePath: " + filePath + " or it is directory which is not allowed.";
                 }
             }
         }
         return null;
     }
 
+    private boolean fileExistsAndisNotDir(UIExecutionContext context, String fileName) {
+        final String relativePath = getSelectedProject(context).getRoot().getFullyQualifiedName() + File.separator + fileName;
+        final File file = new File(relativePath);
+
+        final FileOperations fileOperations = resourceFactory.getFileOperations();
+        return fileOperations.fileExists(file) && !file.isDirectory();
+    }
 }

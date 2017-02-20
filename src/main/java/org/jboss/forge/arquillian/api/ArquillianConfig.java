@@ -86,11 +86,18 @@ public class ArquillianConfig {
         return container;
     }
 
+    public Node getNode(String qualifier) {
+        return xml.get("extension").stream()
+            .filter(node -> node.getAttribute("qualifier").equals(qualifier))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Extension with qaulifier: " + qualifier + " not found."));
+    }
+
     public boolean isExtensionRegistered(String qualifier) {
         return xml.get("extension")
             .stream()
             .map(n -> n.getAttribute("qualifier"))
-            .filter(q -> qualifier.equals(q))
+            .filter(qualifier::equals)
             .findAny().isPresent();
     }
 

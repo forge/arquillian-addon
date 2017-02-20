@@ -7,6 +7,7 @@ import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.shell.test.ShellTest;
+
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.After;
 import org.junit.Before;
