@@ -26,7 +26,6 @@ import static test.integration.support.assertions.ForgeAssertions.assertThat;
  * @Author Paul Bakker - paul.bakker.nl@gmail.com
  */
 @RunWith(Arquillian.class)
-@AddDependencies("org.assertj:assertj-core")
 @AddPackage(ShellTestTemplate.PACKAGE_NAME)
 public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
 

@@ -7,20 +7,15 @@ import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.shell.test.ShellTest;
-import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.arquillian.api.algeron.AlgeronPublisherFacet;
-import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
-import org.jboss.forge.arquillian.testframework.algeron.AlgeronProvider;
-import org.jboss.forge.furnace.Furnace;
-import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.After;
 import org.junit.Before;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 public abstract class ShellTestTemplate {
 
@@ -31,27 +26,22 @@ public abstract class ShellTestTemplate {
     @ArquillianResource
     private URL url;
 
+    @Inject
     private ShellTest shellTest;
 
+    @Inject
     protected ProjectFactory projectFactory;
 
     @Before
     public void setUp() throws Exception {
-        final AddonRegistry addonRegistry = Furnace.instance(getClass().getClassLoader()).getAddonRegistry();
-        projectFactory = addonRegistry.getServices(ProjectFactory.class).get();
-        shellTest = addonRegistry.getServices(ShellTest.class).get();
-        project = projectFactory.createTempProject(asList(JavaSourceFacet.class, ArquillianFacet.class, AlgeronProvider.class, AlgeronConsumer.class, AlgeronPublisherFacet.class));
+        project = projectFactory.createTempProject(singletonList(JavaSourceFacet.class));
         shellTest.getShell().setCurrentResource(project.getRoot());
     }
 
     @After
     public void tearDown() throws Exception {
-        if (shellTest != null) {
-            shellTest.close();
-        }
-        if (projectFactory != null) {
-            projectFactory.invalidateCaches();
-        }
+        shellTest.close();
+        projectFactory.invalidateCaches();
     }
 
     protected ShellExecutor shell() {

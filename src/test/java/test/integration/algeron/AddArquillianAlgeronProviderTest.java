@@ -11,7 +11,6 @@ import test.integration.support.ShellTestTemplate;
 import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
-@AddDependencies("org.assertj:assertj-core")
 @AddPackage(containing = ShellTestTemplate.class)
 public class AddArquillianAlgeronProviderTest extends ShellTestTemplate {
 

@@ -5,7 +5,6 @@ import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.arquillian.api.ArquillianConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import test.integration.extension.AddDependencies;
 import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
 import test.integration.support.assertions.ForgeAssertions;
@@ -15,7 +14,6 @@ import java.util.concurrent.TimeoutException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Arquillian.class)
-@AddDependencies("org.assertj:assertj-core")
 @AddPackage(containing = ShellTestTemplate.class)
 public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate {
 

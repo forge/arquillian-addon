@@ -9,6 +9,7 @@ package org.jboss.forge.arquillian.api;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
+import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 
@@ -16,6 +17,7 @@ import org.jboss.forge.addon.projects.facets.MetadataFacet;
  * @author <a href="mailto:bartosz.majsak@gmail.com">Bartosz Majsak</a>
  */
 @FacetConstraint(ArquillianFacet.class)
+@FacetConstraint(JavaSourceFacet.class)
 public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
 
     private boolean standalone = false;
@@ -44,7 +46,7 @@ public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
             installDependencies();
             return true;
         }
-        return false;
+        return isInstalled();
     }
 
     @Override

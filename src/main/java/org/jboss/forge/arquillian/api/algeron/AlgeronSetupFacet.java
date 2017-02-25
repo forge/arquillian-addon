@@ -11,6 +11,7 @@ import org.jboss.forge.arquillian.api.AbstractVersionedFacet;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 
 @FacetConstraint(ArquillianFacet.class)
+@FacetConstraint(ConfigurationFacet.class)
 public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
 
     public static final String CONTRACT_TYPE = "contractType";
@@ -35,9 +36,8 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
             if (!isForgeConfigurationInstalled()) {
                 configureForge();
             }
-            return true;
         }
-        return false;
+        return isInstalled();
     }
 
     private void configureForge() {
@@ -106,14 +106,14 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
         final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
         final Configuration configuration = configurationFacet.getConfiguration();
 
-        final String contractType = getStringProperty(configuration.getProperty(CONTRACT_TYPE));
+        final String contractType = configuration.getString(CONTRACT_TYPE);
         return contractType != null && !contractType.isEmpty();
     }
 
     protected boolean isConsumerDependenciesInstalled() {
         final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
         final Configuration configuration = configurationFacet.getConfiguration();
-        final String contractType = getStringProperty(configuration.getProperty("isConsumer"));
+        final String contractType = configuration.getString("isConsumer");
 
         return contractType != null && !contractType.isEmpty();
     }
@@ -121,20 +121,11 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
     protected boolean isProviderDependenciesInstalled() {
         final ConfigurationFacet configurationFacet = getFaceted().getFacet(ConfigurationFacet.class);
         final Configuration configuration = configurationFacet.getConfiguration();
-        final String contractType = getStringProperty(configuration.getProperty("isProvider"));
+        final String contractType = configuration.getString("isProvider");
 
         return contractType != null && !contractType.isEmpty();
     }
 
-    private String getStringProperty(Object property) {
-        String propertyName = null;
-
-        if (property instanceof String) {
-            propertyName = (String) property;
-        }
-
-        return propertyName;
-    }
     private boolean hasEffectiveDependency(DependencyBuilder frameworkDependency) {
         final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
         return dependencyFacet.hasEffectiveDependency(frameworkDependency);

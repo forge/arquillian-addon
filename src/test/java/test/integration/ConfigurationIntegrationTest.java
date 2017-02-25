@@ -13,7 +13,6 @@ import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 
 @RunWith(Arquillian.class)
-@AddDependencies("org.assertj:assertj-core")
 @AddPackage(ShellTestTemplate.PACKAGE_NAME)
 public class ConfigurationIntegrationTest extends ShellTestTemplate {
 

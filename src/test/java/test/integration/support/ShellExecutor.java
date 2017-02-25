@@ -21,7 +21,7 @@ public class ShellExecutor {
     }
 
     public ShellExecutor execute(final String command) throws TimeoutException {
-        return execute(command, 30);
+        return execute(command, 15);
     }
 
     public ShellExecutor execute(String command, int timeout) throws TimeoutException {
