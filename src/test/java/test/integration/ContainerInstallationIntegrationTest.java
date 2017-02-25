@@ -14,7 +14,6 @@ import org.jboss.forge.addon.resource.FileResource;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import test.integration.extension.AddDependencies;
 import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
 
@@ -22,9 +21,6 @@ import java.util.concurrent.TimeoutException;
 
 import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
-/**
- * @Author Paul Bakker - paul.bakker.nl@gmail.com
- */
 @RunWith(Arquillian.class)
 @AddPackage(ShellTestTemplate.PACKAGE_NAME)
 public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
@@ -34,7 +30,6 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
         installContainerAssertProfileAndDependencies("openejb-embedded-3.1",
             "org.jboss.arquillian.container:arquillian-openejb-embedded-3.1",
             "org.apache.openejb:openejb-core");
-
     }
 
     @Test
@@ -140,7 +135,6 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
         installContainerAssertProfileAndDependencies("jboss-as-embedded-7");
     }
 
-
     @Test
     public void should_install_wildfly_managed_container() throws Exception {
         installContainerAssertProfileAndDependencies("wildfly-managed");
@@ -203,13 +197,11 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     @Test
     public void should_install_tomcat_remote_container() throws Exception {
         installContainerAssertProfileAndDependencies("tomcat-remote");
-
     }
 
     @Test
     public void should_install_tomcat_managed_container() throws Exception {
         installContainerAssertProfileAndDependencies("tomcat-managed");
-
     }
 
     @Test
@@ -251,7 +243,6 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
         }
 
         assertJunitAndUniverseDependency();
-
         assertContainerOrPropertyFromArquillianConfig("<container qualifier=\"" + profileId + "\"/>");
     }
 
@@ -271,12 +262,11 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     }
 
     private void executeCmd(String container) throws TimeoutException {
-        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit");
+        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 60);
     }
 
     private Profile getProfile() {
-        MavenFacet mavenFacet = project.getFacet(MavenFacet.class);
-
+        final MavenFacet mavenFacet = project.getFacet(MavenFacet.class);
         return mavenFacet.getModel().getProfiles().get(0);
     }
 
@@ -288,8 +278,8 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     }
 
     private void assertJunitAndUniverseDependency() {
-        assertThat(project).hasDirectDependency("junit:junit").withType("jar").withScope("test");
-        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit").withType("pom").withScope("test");
         assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit").withType("pom").withScope("test");
+        assertThat(project).hasEffectiveDependency("junit:junit").withType("jar").withScope("test");
     }
 }

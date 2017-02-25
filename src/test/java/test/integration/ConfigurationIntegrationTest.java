@@ -5,45 +5,37 @@ import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.FileResource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import test.integration.extension.AddDependencies;
 import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
 
 import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
-
 @RunWith(Arquillian.class)
 @AddPackage(ShellTestTemplate.PACKAGE_NAME)
 public class ConfigurationIntegrationTest extends ShellTestTemplate {
 
-
     @Test
     public void should_configure_container() throws Exception {
-        final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
-        FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
-
         shell().execute("arquillian-setup --container-adapter tomcat-embedded-6 --test-framework junit");
 
+        final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
+        FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
         assertThat(arquillianXML.getContents()).contains("<container qualifier=\"arquillian-tomcat-embedded-6\"/>");
     }
 
     @Test
     public void should_configure_container_with_chameleon_if_chameleon_supported() throws Exception {
-
         shell().execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
 
         final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
         FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
-
         assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">${chameleon.target}</property>");
-
     }
 
     @Test
     public void should_override_chameleon_target_if_chameleon_supported() throws Exception {
-
         shell().execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
@@ -60,13 +52,11 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
 
     @Test
     public void should_override_configuration_options() throws Exception {
+        shell().execute("arquillian-setup --container-adapter tomcat-embedded-6 --test-framework junit");
+        shell().execute("arquillian-container-configuration --container arquillian-tomcat-embedded-6 --container-option bindHttpPort");
 
         final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
         FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
-
-        shell().execute("arquillian-setup --container-adapter tomcat-embedded-6 --test-framework junit");
-
-        shell().execute("arquillian-container-configuration --container arquillian-tomcat-embedded-6 --container-option bindHttpPort");
         assertThat(arquillianXML.getContents()).contains("<property name=\"bindHttpPort\">9090</property>");
 
         shell().execute("arquillian-container-configuration --container arquillian-tomcat-embedded-6 --container-option bindHttpPort --container-value 8081");
@@ -76,7 +66,6 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
 
     @Test
     public void should_create_arquillian_xml_on_setup() throws Exception {
-
         shell().execute("arquillian-setup --container-adapter wildfly-remote --test-framework junit");
 
         final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
