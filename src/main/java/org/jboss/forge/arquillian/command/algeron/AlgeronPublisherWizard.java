@@ -70,22 +70,6 @@ public class AlgeronPublisherWizard extends AbstractProjectCommand implements UI
 
     }
 
-/*    @Override
-    public boolean isEnabled(UIContext context) {
-        System.out.println(containsProject(context));
-        System.out.println(constraintsSatisfied(context));
-        return true;
-    }
-
-    private boolean constraintsSatisfied(UIContext context) {
-        Class<?> type = getMetadata(context).getType();
-        Project project = getSelectedProject(context);
-        Set<Class<ProjectFacet>> facets = FacetInspector.getRequiredFacets(type);
-        Set<Class<ProjectFacet>> stackFacets = StackInspector.getAllRelatedFacets(type);
-        return FacetInspector.isConstraintSatisfied(project, facets)
-            && StackInspector.isConstraintSatisfied(project, stackFacets);
-    }*/
-
     @Override
     public Result execute(UIExecutionContext context) throws Exception {
         return Results.success("Installed Algeron Publisher.");
