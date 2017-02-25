@@ -262,7 +262,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     }
 
     private void executeCmd(String container) throws TimeoutException {
-        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 60);
+        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 180);
     }
 
     private Profile getProfile() {
