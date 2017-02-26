@@ -231,7 +231,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     private void installContainerAssertProfileAndDependencies(final String container, String... dependencies) throws Exception {
         executeCmd(container);
 
-        final Profile profile = getProfile();
+        final Profile profile = getFirstProfile();
         final String profileId = "arquillian-" + container;
 
         assertThat(profile).hasId(profileId);
@@ -249,7 +249,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     private void installContainerAssertProfileAndDependencies(final String container) throws TimeoutException {
         executeCmd(container);
 
-        Profile profile = getProfile();
+        Profile profile = getFirstProfile();
         final String profileId = "arquillian-" + container;
 
         assertThat(profile).hasId(profileId);
@@ -262,10 +262,10 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     }
 
     private void executeCmd(String container) throws TimeoutException {
-        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 180);
+        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 300);
     }
 
-    private Profile getProfile() {
+    private Profile getFirstProfile() {
         final MavenFacet mavenFacet = project.getFacet(MavenFacet.class);
         return mavenFacet.getModel().getProfiles().get(0);
     }
