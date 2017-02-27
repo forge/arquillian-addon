@@ -17,11 +17,6 @@ public enum CubeConfiguration {
         this.keyForFileLocation = keyForFileLocation;
     }
 
-//    private static final String C_DOCKER = "Docker";
-//    private static final String C_DOCKER_COMPOSE = "Docker Compose";
-//    private static final String C_KUBERNETES = "Kubernetes";
-//    private static final String C_OPENSHIFT = "Openshift";
-
     public DependencyBuilder getDependency() {
         return dependency;
     }

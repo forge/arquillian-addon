@@ -35,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.jboss.forge.arquillian.util.StringUtil.getStringForCLIDisplay;
 
@@ -172,23 +171,19 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
     }
 
     private boolean isDocker() {
-        return type.hasValue() && Stream.of(getStringForCLIDisplay(type.getValue()))
-            .anyMatch(x -> x.equals("docker"));
+        return type.hasValue() && "docker".equals(getStringForCLIDisplay(type.getValue()));
     }
 
     private boolean isKubernetes() {
-        return type.hasValue() && Stream.of(getStringForCLIDisplay(type.getValue()))
-            .anyMatch(x -> x.equals("kubernetes"));
+        return type.hasValue() && "kubernetes".equals(getStringForCLIDisplay(type.getValue()));
     }
 
     private boolean isDockerCompose() {
-        return type.hasValue() && Stream.of(getStringForCLIDisplay(type.getValue()))
-            .anyMatch(x -> x.equals("docker-compose"));
+        return type.hasValue() && "docker-compose".equals(getStringForCLIDisplay(type.getValue()));
     }
 
     private boolean isOpenshift() {
-        return type.hasValue() && Stream.of(getStringForCLIDisplay(type.getValue()))
-            .anyMatch(x -> x.equals("openshift"));
+        return type.hasValue() && "openshift".equals(getStringForCLIDisplay(type.getValue()));
     }
 
     @Override
