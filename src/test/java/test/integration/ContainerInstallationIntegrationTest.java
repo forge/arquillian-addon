@@ -70,36 +70,42 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     }
 
     @Test
+    @Ignore("Very slow - needs to be investigated")
     public void should_install_jboss_as_5_1_managed_container() throws Exception {
         installContainerAssertProfileAndDependencies("jbossas-managed-5.1",
             "org.jboss.arquillian.container:arquillian-jbossas-managed-5.1");
     }
 
     @Test
+    @Ignore("Very slow - needs to be investigated")
     public void should_install_jboss_as_5_1_remote_container() throws Exception {
         installContainerAssertProfileAndDependencies("jbossas-remote-5.1",
             "org.jboss.arquillian.container:arquillian-jbossas-remote-5.1");
     }
 
     @Test
+    @Ignore("Very slow - needs to be investigated")
     public void should_install_jboss_as_5_remote_container() throws Exception {
         installContainerAssertProfileAndDependencies("jbossas-remote-5",
             "org.jboss.arquillian.container:arquillian-jbossas-remote-5");
     }
 
     @Test
+    @Ignore("Very slow - needs to be investigated")
     public void should_install_jboss_as_6_embedded_container() throws Exception {
         installContainerAssertProfileAndDependencies("jbossas-embedded-6",
             "org.jboss.arquillian.container:arquillian-jbossas-embedded-6");
     }
 
     @Test
+    @Ignore("Very slow - needs to be investigated")
     public void should_install_jboss_as_6_managed_container() throws Exception {
         installContainerAssertProfileAndDependencies("jbossas-managed-6",
             "org.jboss.arquillian.container:arquillian-jbossas-managed-6");
     }
 
     @Test
+    @Ignore("Very slow - needs to be investigated")
     public void should_install_jboss_as_6_remote_container() throws Exception {
         installContainerAssertProfileAndDependencies("jbossas-remote-6",
             "org.jboss.arquillian.container:arquillian-jbossas-remote-6");
