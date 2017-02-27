@@ -5,7 +5,6 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import test.integration.extension.AddDependencies;
 import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
 
@@ -15,14 +14,13 @@ import java.util.concurrent.TimeoutException;
 import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
-@AddDependencies({"org.assertj:assertj-core", "org.arquillian.algeron:arquillian-algeron-pact-provider-spi", "au.com.dius:pact-jvm-consumer_2.11"})
-@AddPackage(containing = ShellTestTemplate.class)
+@AddPackage(ShellTestTemplate.PACKAGE_NAME)
 public class CubeCreateTestCommandTest extends ShellTestTemplate{
 
     @Test
     public void should_create_test_for_kubernetes() throws TimeoutException, FileNotFoundException {
 
-        shell().execute("echo kubernetes > src/test/resources/kubernetes.yml");
+        shell().execute("mkdir src/test/resources").execute("touch src/test/resources/kubernetes.yml");
 
         shell().execute("arquillian-setup --standalone --test-framework junit")
             .execute("arquillian-cube-setup --type kubernetes --file-path src/test/resources/kubernetes.yml");
@@ -42,7 +40,7 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate{
     @Test
     public void should_create_test_for_docker() throws TimeoutException, FileNotFoundException {
 
-        shell().execute("echo dockerfile > src/test/resources/Dockerfile");
+        shell().execute("mkdir src/test/resources").execute("touch src/test/resources/Dockerfile");
 
         shell().execute("arquillian-setup --standalone --test-framework junit")
             .execute("arquillian-cube-setup --type docker --file-path src/test/resources/Dockerfile");
@@ -62,7 +60,7 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate{
     @Test
     public void should_create_test_for_docker_compose() throws TimeoutException, FileNotFoundException {
 
-        shell().execute("echo docker-compose.yml > docker-compose.yml");
+        shell().execute("touch docker-compose.yml");
 
         shell().execute("arquillian-setup --standalone --test-framework junit")
             .execute("arquillian-cube-setup --type docker-compose --file-path docker-compose.yml");
@@ -82,12 +80,12 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate{
     @Test
     public void should_create_test_for_openshift() throws TimeoutException, FileNotFoundException {
 
-        shell().execute("echo kubernetes > src/test/resources/hello-pod.yml");
+        shell().execute("mkdir src/test/resources").execute("touch src/test/resources/hello-pod.yml");
 
         shell().execute("arquillian-setup --standalone --test-framework junit")
             .execute("arquillian-cube-setup --type kubernetes --file-path src/test/resources/hello-pod.yml");
 
-        shell().execute("arquillian-create-test --named MyKubernetesTest --target-package org.cube.openshift")
+        shell().execute("arquillian-create-test --named MyOpenshiftTest --target-package org.cube.openshift")
             .execute("arquillian-cube-create-test --test-class org.cube.openshift.MyOpenshiftTest");
 
         final JavaClassSource testClass = extractClass(project, "org.cube.openshift.MyOpenshiftTest");

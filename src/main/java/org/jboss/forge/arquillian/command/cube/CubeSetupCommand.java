@@ -7,6 +7,7 @@ import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.resource.FileOperations;
 import org.jboss.forge.addon.resource.ResourceFactory;
+import org.jboss.forge.addon.ui.command.UICommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
@@ -19,7 +20,6 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
-import org.jboss.forge.addon.ui.wizard.UIWizard;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 import org.jboss.forge.arquillian.api.YamlGenerator;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 import static org.jboss.forge.arquillian.util.StringUtil.getStringForCLIDisplay;
 
-public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard {
+public class CubeSetupCommand extends AbstractProjectCommand implements UICommand {
 
     private CubeSetupFacet cubeSetupFacet;
 
@@ -210,7 +210,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
 
         if (filePath.hasValue()) {
             if (isDocker()) {
-                addDockerParameters(parameters);
+                addDockerParameters(parameters, context);
             } else {
                 if (isKubernetes()) {
                     addKubernetesParameters(parameters, context);
@@ -257,18 +257,20 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
         return null;
     }
 
-    private void addDockerParameters(Map<String, String> parameters) {
-        final String yamlSnippet = System.lineSeparator() + YamlGenerator.getYaml(getConfigParametersForDocker()).replaceAll("(?m)^", "    ");
+    private void addDockerParameters(Map<String, String> parameters, UIExecutionContext context) {
+        final String yamlSnippet = System.lineSeparator() + YamlGenerator.getYaml(getConfigParametersForDocker(context)).replaceAll("(?m)^", "    ");
 
         parameters.put("definitionFormat", "CUBE");
         parameters.put(cubeSetupFacet.getCubeConfiguration().getKeyForFileLocation(), yamlSnippet);
     }
 
-    private Map<String, Object> getConfigParametersForDocker() {
+    private Map<String, Object> getConfigParametersForDocker(UIExecutionContext context) {
         Map<String, Object> params = new LinkedHashMap<>();
         Map<String, String> build = new LinkedHashMap<>();
 
-        String imageParams = "dockerfileLocation: " + filePath.getValue() + System.lineSeparator() +
+        final String dirPath = getDockerDirectoryPath(context);
+
+        String imageParams = "dockerfileLocation: " + dirPath + System.lineSeparator() +
             "noCache: true" + System.lineSeparator() +
             "remove: true";
 
@@ -279,6 +281,26 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
         build.put("buildImage", imageParams);
         params.put("containerName", build);
         return params;
+    }
+
+    private String getDockerDirectoryPath(UIExecutionContext context) {
+        String dirPath = filePath.getValue();
+        String fileName = dockerFileName.getValue();
+        final int dirPathLength = dirPath.length();
+        if (dirPath.endsWith("Dockerfile")) {
+            dirPath = dirPath.substring(0, dirPathLength - "Dockerfile".length());
+        } else if (dockerFileName.hasValue() && dirPath.endsWith(fileName)) {
+            dirPath = dirPath.substring(0, dirPathLength - fileName.length());
+        } else if (dirPath.endsWith(File.separator)) {
+            dirPath = dirPath.substring(0, dirPathLength - 1);
+        }
+        final String fullyQualifiedName = getSelectedProject(context).getRoot().getFullyQualifiedName();
+        final File file = new File(fullyQualifiedName + File.separator +  dirPath);
+
+        if (file.isFile()) {
+                dirPath = dirPath.substring(0, dirPathLength - file.getName().length() -1);
+        }
+        return dirPath;
     }
 
     private String checkResourcesExists(UIExecutionContext context) throws IOException {
