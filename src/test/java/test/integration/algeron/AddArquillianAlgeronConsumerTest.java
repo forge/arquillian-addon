@@ -10,7 +10,6 @@ import test.integration.support.ShellTestTemplate;
 import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
-@AddDependencies("org.assertj:assertj-core")
 @AddPackage(containing = ShellTestTemplate.class)
 public class AddArquillianAlgeronConsumerTest extends ShellTestTemplate {
 
@@ -22,7 +21,6 @@ public class AddArquillianAlgeronConsumerTest extends ShellTestTemplate {
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-pact-consumer").withType("pom").withScope("test");
         assertThat(project).hasDirectDependency("au.com.dius:pact-jvm-consumer_2.11").withScope("test");
-
     }
 
     @Test

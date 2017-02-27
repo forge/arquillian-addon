@@ -15,7 +15,6 @@ import java.util.concurrent.TimeoutException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Arquillian.class)
-@AddDependencies("org.assertj:assertj-core")
 @AddPackage(containing = ShellTestTemplate.class)
 public class AddArquillianAlgeronRetrieverTest extends ShellTestTemplate {
 

@@ -14,11 +14,10 @@
   <name>Arquillian Forge Addon</name>
   <properties>
     <version.arquillian_core>1.1.12.Final</version.arquillian_core>
-    <version.forge>3.4.0.Final</version.forge>
+    <version.forge>3.5.1.Final</version.forge>
     <version.jackson>1.9.1</version.jackson>
     <version.junit>4.12</version.junit>
     <version.shrinkwrap-maven-resolver>2.2.5</version.shrinkwrap-maven-resolver>
-    <version.assertj>3.6.2</version.assertj>
     <version.arquillian.algeron>1.0.0.Alpha6</version.arquillian.algeron>
     <version.pact>3.5.0-beta.3</version.pact>
     <version.chameleon.container.model>1.0.0.Beta1</version.chameleon.container.model>
@@ -157,15 +156,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${version.junit}</version>
+      <groupId>org.jboss.forge.addon</groupId>
+      <artifactId>assertj</artifactId>
+      <classifier>forge-addon</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${version.assertj}</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${version.junit}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -41,7 +41,7 @@ public class ArquillianFacet extends AbstractVersionedFacet {
             installArquillianBom(getVersion());
             return true;
         }
-        return false;
+        return isInstalled();
     }
 
     @Override

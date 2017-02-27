@@ -30,7 +30,7 @@ public class AlgeronPublisherFacet extends AbstractFacet<Project> implements Pro
 
         updateArquillianConfig();
 
-        return true;
+        return isInstalled();
     }
 
     private void installPublisherDependency() {

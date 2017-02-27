@@ -5,20 +5,19 @@ import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 
-public class ManagedDependencyAssert extends DependencyAssert<ManagedDependencyAssert> {
+public class EffectiveDependencyAssert extends DependencyAssert<EffectiveDependencyAssert> {
 
-    public ManagedDependencyAssert(Project project, String gav) {
-        super(DependencyBuilder.create(gav), project.getFacet(DependencyFacet.class), ManagedDependencyAssert.class);
+    public EffectiveDependencyAssert(Project project, String gav) {
+        super(DependencyBuilder.create(gav), project.getFacet(DependencyFacet.class), EffectiveDependencyAssert.class);
     }
 
     @Override
     public Dependency getDependency(DependencyBuilder dependencyBuilder) {
-        return dependencyFacet.getDirectManagedDependency(dependencyBuilder);
+        return dependencyFacet.getEffectiveDependency(dependencyBuilder);
     }
 
     @Override
     public boolean hasDependency(DependencyBuilder dependencyBuilder) {
-        return dependencyFacet.hasDirectManagedDependency(dependencyBuilder);
+        return dependencyFacet.hasEffectiveDependency(dependencyBuilder);
     }
-
 }

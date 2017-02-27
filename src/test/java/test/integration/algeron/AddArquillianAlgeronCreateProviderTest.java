@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
-@AddDependencies({"org.assertj:assertj-core", "org.arquillian.algeron:arquillian-algeron-pact-provider-spi", "au.com.dius:pact-jvm-consumer_2.11"})
+@AddDependencies({"org.arquillian.algeron:arquillian-algeron-pact-provider-spi", "au.com.dius:pact-jvm-consumer_2.11"})
 @AddPackage(containing = ShellTestTemplate.class)
 public class AddArquillianAlgeronCreateProviderTest extends ShellTestTemplate {
 

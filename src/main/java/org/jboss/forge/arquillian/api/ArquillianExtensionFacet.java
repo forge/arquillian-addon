@@ -29,7 +29,7 @@ public class ArquillianExtensionFacet extends AbstractVersionedFacet {
 
     @Override
     public boolean install() {
-        return true;
+        return isInstalled();
     }
 
     @Override

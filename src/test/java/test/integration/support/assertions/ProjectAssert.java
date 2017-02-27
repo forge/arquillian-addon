@@ -13,8 +13,12 @@ public class ProjectAssert extends AbstractAssert<ProjectAssert, Project> {
         return new ProjectAssert(project);
     }
 
-    public DependencyAssert hasDirectDependency(String gav) {
-        return new DependencyAssert(actual, gav);
+    public DirectDependencyAssert hasDirectDependency(String gav) {
+        return new DirectDependencyAssert(actual, gav);
+    }
+
+    public EffectiveDependencyAssert hasEffectiveDependency(String gav) {
+        return new EffectiveDependencyAssert(actual, gav);
     }
 
     public ManagedDependencyAssert hasDirectManagedDependency(String gav) {

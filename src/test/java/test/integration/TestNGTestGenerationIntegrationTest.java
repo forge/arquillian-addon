@@ -13,7 +13,6 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import test.integration.extension.AddDependencies;
 import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
 import test.integration.support.assertions.ProjectAssert;
@@ -23,7 +22,6 @@ import javax.inject.Inject;
 import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
-@AddDependencies("org.assertj:assertj-core")
 @AddPackage(value = ShellTestTemplate.PACKAGE_NAME, recursive = false)
 @AddPackage(containing = ProjectAssert.class)
 public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
@@ -35,9 +33,9 @@ public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
             .execute("arquillian-setup --container-adapter glassfish-embedded --test-framework testng")
             .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean --as-client ");
 
-        assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
-        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng").withType("pom").withScope("test");
         assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng").withType("pom").withScope("test");
+        assertThat(project).hasEffectiveDependency("org.testng:testng").withType("jar").withScope("test");
 
         final JavaClassSource testClass = extractClass(project, "org.superbiz.BeanTest");
         assertThat(testClass).extendsClass("org.jboss.arquillian.testng.Arquillian");
@@ -51,9 +49,9 @@ public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
             .execute("arquillian-setup --container-adapter glassfish-embedded --container-version 3.1.2 --test-framework testng")
             .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean");
 
-        assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
-        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng").withType("pom").withScope("test");
         assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng").withType("pom").withScope("test");
+        assertThat(project).hasEffectiveDependency("org.testng:testng").withType("jar").withScope("test");
 
         final JavaClassSource testClass = extractClass(project, "org.superbiz.BeanTest");
         assertThat(testClass).extendsClass("org.jboss.arquillian.testng.Arquillian");
@@ -67,9 +65,9 @@ public class TestNGTestGenerationIntegrationTest extends ShellTestTemplate {
             .execute("arquillian-setup  --standalone --test-framework testng")
             .execute("arquillian-create-test --target-package org.superbiz --named BeanTest");
 
-        assertThat(project).hasDirectDependency("org.testng:testng").withType("jar").withScope("test");
-        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng-standalone").withType("pom").withScope("test");
         assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-testng-standalone").withType("pom").withScope("test");
+        assertThat(project).hasEffectiveDependency("org.testng:testng").withType("jar").withScope("test");
 
         final JavaClassSource testClass = extractClass(project, "org.superbiz.BeanTest");
         assertThat(testClass).extendsClass("org.jboss.arquillian.testng.Arquillian");

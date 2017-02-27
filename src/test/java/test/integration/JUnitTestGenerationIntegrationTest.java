@@ -12,7 +12,6 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import test.integration.extension.AddDependencies;
 import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
 
@@ -21,7 +20,6 @@ import javax.inject.Inject;
 import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
-@AddDependencies("org.assertj:assertj-core")
 @AddPackage(ShellTestTemplate.PACKAGE_NAME)
 public class JUnitTestGenerationIntegrationTest extends ShellTestTemplate {
 
@@ -32,9 +30,9 @@ public class JUnitTestGenerationIntegrationTest extends ShellTestTemplate {
             .execute("arquillian-setup --container-adapter glassfish-embedded --test-framework junit")
             .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean --as-client ");
 
-        assertThat(project).hasDirectDependency("junit:junit").withType("jar").withScope("test");
-        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit").withType("pom").withScope("test");
         assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit").withType("pom").withScope("test");
+        assertThat(project).hasEffectiveDependency("junit:junit").withType("jar").withScope("test");
 
         final JavaClassSource testClass = extractClass(project, "org.superbiz.BeanTest");
         assertThat(testClass).hasAnnotation(RunWith.class).withValue("org.jboss.arquillian.junit.Arquillian");
@@ -48,9 +46,9 @@ public class JUnitTestGenerationIntegrationTest extends ShellTestTemplate {
             .execute("arquillian-setup --container-adapter glassfish-embedded --container-version 3.1.2 --test-framework junit")
             .execute("arquillian-create-test --target-package org.superbiz --named BeanTest --targets org.superbiz.Bean");
 
-        assertThat(project).hasDirectDependency("junit:junit").withType("jar").withScope("test");
-        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit").withType("pom").withScope("test");
         assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit").withType("pom").withScope("test");
+        assertThat(project).hasEffectiveDependency("junit:junit").withType("jar").withScope("test");
 
         final JavaClassSource testClass = extractClass(project, "org.superbiz.BeanTest");
         assertThat(testClass).hasAnnotation(RunWith.class).withValue("org.jboss.arquillian.junit.Arquillian");
@@ -64,9 +62,9 @@ public class JUnitTestGenerationIntegrationTest extends ShellTestTemplate {
             .execute("arquillian-setup  --standalone --test-framework junit")
             .execute("arquillian-create-test --target-package org.superbiz --named BeanTest");
 
-        assertThat(project).hasDirectDependency("junit:junit").withType("jar").withScope("test");
-        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit-standalone").withType("pom").withScope("test");
         assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit-standalone").withType("pom").withScope("test");
+        assertThat(project).hasEffectiveDependency("junit:junit").withType("jar").withScope("test");
 
         final JavaClassSource testClass = extractClass(project, "org.superbiz.BeanTest");
         assertThat(testClass).hasAnnotation(RunWith.class).withValue("org.jboss.arquillian.junit.Arquillian");
