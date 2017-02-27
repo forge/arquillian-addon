@@ -20,20 +20,28 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
+import org.jboss.forge.arquillian.api.ArquillianFacet;
+import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 import org.jboss.forge.arquillian.api.YamlGenerator;
 import org.jboss.forge.arquillian.api.cube.CubeSetupFacet;
+import org.jboss.forge.arquillian.container.model.CubeConfiguration;
 import org.jboss.forge.furnace.util.Strings;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.jboss.forge.arquillian.util.StringUtil.getStringForCLIDisplay;
 
 public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard {
+
+    private CubeSetupFacet cubeSetupFacet;
 
     @Inject
     private ProjectFactory projectFactory;
@@ -46,7 +54,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
 
     @Inject
     @WithAttributes(shortName = 't', label = "Type", type = InputType.DROPDOWN)
-    private UISelectOne<CubeSetupFacet> type;
+    private UISelectOne<String> type;
 
     @Inject
     @WithAttributes(shortName = 'f', label = "File", required = true)
@@ -74,19 +82,22 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
             .add(machineName)
             .add(dockerFileName);
 
-        type.setEnabled(true);
+        final List<String> types = Arrays.stream(CubeConfiguration.values())
+            .map(CubeConfiguration::getType)
+            .collect(Collectors.toList());
 
+        type.setValueChoices(types);
+        type.setEnabled(true);
+        type.setRequired(() -> true);
         type.setItemLabelConverter(source -> {
             if (source == null) {
                 return null;
             }
             if (builder.getUIContext().getProvider().isGUI()) {
-                return source.getType();
+                return source;
             }
-            return getStringForCLIDisplay(source.getType());
+            return getStringForCLIDisplay(source);
         });
-
-        type.setRequired(() -> true);
 
         filePath.setEnabled(true);
 
@@ -97,7 +108,6 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
         machineName.setRequired(this::isDockerMachine);
 
         dockerFileName.setEnabled(this::isDocker);
-
     }
 
     @Override
@@ -110,21 +120,75 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
 
     @Override
     public Result execute(UIExecutionContext context) throws Exception {
-        CubeSetupFacet selectedTypeFacet = type.getValue();
+
         final String msg = checkResourcesExists(context);
+
+        if (type.hasValue()) {
+            setCubeSetupFacet();
+            setCubeConfigurationParamteres(context);
+        }
+
         if (msg != null) {
             return Results.fail(msg);
         }
 
-        selectedTypeFacet.setConfigurationParameters(getParametersForExtensionCongiguration(context));
+        final CubeConfiguration cubeConfiguration = cubeSetupFacet.getCubeConfiguration();
 
         try {
-            facetFactory.install(getSelectedProject(context), selectedTypeFacet);
+            facetFactory.install(getSelectedProject(context), cubeSetupFacet);
 
-            return Results.success("Installed Cube" + selectedTypeFacet.getType());
+            return Results.success("Installed Cube " + cubeConfiguration.getType() + " & updated arquillian configuration.");
         } catch (Exception e) {
-            return Results.fail("Could not install Cube" + selectedTypeFacet.getType(), e);
+            return Results.fail("Could not install Cube " + cubeConfiguration.getType(), e);
         }
+    }
+
+    private void setCubeSetupFacet() {
+
+        CubeSetupFacet cubeSetupFacet = new CubeSetupFacet();
+        if (isKubernetes()) {
+            cubeSetupFacet.setCubeConfiguration(CubeConfiguration.KUBERNETES);
+        } else if (isDocker()) {
+            cubeSetupFacet.setCubeConfiguration(CubeConfiguration.DOCKER);
+        } else if (isDockerCompose()) {
+            cubeSetupFacet.setCubeConfiguration(CubeConfiguration.DOCKER_COMPOSE);
+        } else if (isOpenshift()) {
+            cubeSetupFacet.setCubeConfiguration(CubeConfiguration.OPENSHIFT);
+        }
+
+        this.cubeSetupFacet = cubeSetupFacet;
+    }
+
+    private void setCubeConfigurationParamteres(UIExecutionContext context) throws IOException {
+        cubeSetupFacet.setConfigurationParameters(getParametersForExtensionConfiguration(context));
+    }
+
+    private boolean isDockerMachine() {
+        return dockerMachine.hasValue() && dockerMachine.getValue();
+    }
+
+    private boolean isDockerOrDockerCompose() {
+        return isDocker() || isDockerCompose();
+    }
+
+    private boolean isDocker() {
+        return type.hasValue() && Stream.of(getStringForCLIDisplay(type.getValue()))
+            .anyMatch(x -> x.equals("docker"));
+    }
+
+    private boolean isKubernetes() {
+        return type.hasValue() && Stream.of(getStringForCLIDisplay(type.getValue()))
+            .anyMatch(x -> x.equals("kubernetes"));
+    }
+
+    private boolean isDockerCompose() {
+        return type.hasValue() && Stream.of(getStringForCLIDisplay(type.getValue()))
+            .anyMatch(x -> x.equals("docker-compose"));
+    }
+
+    private boolean isOpenshift() {
+        return type.hasValue() && Stream.of(getStringForCLIDisplay(type.getValue()))
+            .anyMatch(x -> x.equals("openshift"));
     }
 
     @Override
@@ -137,26 +201,16 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
         return projectFactory;
     }
 
-    private boolean isDockerMachine() {
-        return dockerMachine.hasValue() && dockerMachine.getValue();
+    @Override
+    public boolean isEnabled(UIContext context) {
+        Boolean parent = super.isEnabled(context);
+        if (parent) {
+            return getSelectedProject(context).hasAllFacets(ArquillianFacet.class, TestFrameworkFacet.class);
+        }
+        return parent;
     }
 
-    private boolean isDockerOrDockerCompose() {
-        return type.hasValue() && Stream.of(type.getValue().getType())
-            .anyMatch(x -> x.equals("Docker") || x.equals("Docker Compose"));
-    }
-
-    private boolean isDocker() {
-        return type.hasValue() && Stream.of(type.getValue().getType())
-            .anyMatch(x -> x.equals("Docker"));
-    }
-
-    private boolean isKubernetes() {
-        return type.hasValue() && Stream.of(type.getValue().getType())
-            .anyMatch(x -> x.equals("Kubernetes"));
-    }
-
-    private Map<String, String> getParametersForExtensionCongiguration(UIExecutionContext context) throws IOException {
+    private Map<String, String> getParametersForExtensionConfiguration(UIExecutionContext context) throws IOException {
         Map<String, String> parameters = new LinkedHashMap<>();
 
         if (filePath.hasValue()) {
@@ -166,7 +220,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
                 if (isKubernetes()) {
                     addKubernetesParameters(parameters, context);
                 } else {
-                    parameters.put(type.getValue().getKeyForFileLocation(), filePath.getValue());
+                    parameters.put(this.cubeSetupFacet.getCubeConfiguration().getKeyForFileLocation(), filePath.getValue());
                 }
             }
         }
@@ -182,7 +236,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
         final String filePathValue = filePath.getValue();
 
         if (Strings.isURL(filePathValue)) {
-            parameters.put(type.getValue().getKeyForFileLocation(), filePathValue);
+            parameters.put(cubeSetupFacet.getCubeConfiguration().getKeyForFileLocation(), filePathValue);
         } else {
             final String fileName = classPathResource(context);
             if (fileName != null) {
@@ -212,7 +266,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIWizard
         final String yamlSnippet = System.lineSeparator() + YamlGenerator.getYaml(getConfigParametersForDocker()).replaceAll("(?m)^", "    ");
 
         parameters.put("definitionFormat", "CUBE");
-        parameters.put(type.getValue().getKeyForFileLocation(), yamlSnippet);
+        parameters.put(cubeSetupFacet.getCubeConfiguration().getKeyForFileLocation(), yamlSnippet);
     }
 
     private Map<String, Object> getConfigParametersForDocker() {

@@ -35,7 +35,6 @@ public abstract class ShellTestTemplate {
 
     @Before
     public void setUp() throws Exception {
-        project = projectFactory.createTempProject(singletonList(JavaSourceFacet.class));
         shellTest.getShell().setCurrentResource(project.getRoot());
     }
 

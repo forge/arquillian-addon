@@ -2,31 +2,38 @@ package org.jboss.forge.arquillian.api.cube;
 
 
 import org.jboss.forge.addon.dependencies.Coordinate;
-import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.arquillian.api.AbstractVersionedFacet;
 import org.jboss.forge.arquillian.api.ArquillianConfig;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
+import org.jboss.forge.arquillian.container.model.CubeConfiguration;
 
+import java.util.Arrays;
 import java.util.Map;
 
 @FacetConstraint(ArquillianFacet.class)
-public abstract class CubeSetupFacet extends AbstractVersionedFacet {
+public class CubeSetupFacet extends AbstractVersionedFacet {
 
     private Map<String, String> configurationParameters;
 
-    public abstract DependencyBuilder createCubeDependency();
+    private CubeConfiguration cubeConfiguration;
 
-    public abstract String getQualifierForExtension();
+    public CubeConfiguration getCubeConfiguration() {
+        return cubeConfiguration;
+    }
 
-    public abstract String getType();
+    public void setCubeConfiguration(CubeConfiguration cubeConfiguration) {
+        this.cubeConfiguration = cubeConfiguration;
+    }
 
-    public abstract String getKeyForFileLocation();
+    public void setConfigurationParameters(Map<String, String> configurationParameters) {
+        this.configurationParameters = configurationParameters;
+    }
 
     @Override
     protected Coordinate getVersionedCoordinate() {
-        return createCubeDependency().getCoordinate();
+        return cubeConfiguration.getDependency().getCoordinate();
     }
 
     @Override
@@ -37,31 +44,29 @@ public abstract class CubeSetupFacet extends AbstractVersionedFacet {
         return true;
     }
 
-    public void setConfigurationParameters(Map<String, String> configurationParameters) {
-        this.configurationParameters = configurationParameters;
-    }
-
     private void updateArquillianConfiguration() {
         final ArquillianFacet arquillianFacet = getFaceted().getFacet(ArquillianFacet.class);
         final ArquillianConfig config = arquillianFacet.getConfig();
 
-        config.addExtensionProperty(getQualifierForExtension(), configurationParameters);
+        config.addExtensionProperty(cubeConfiguration.getQualifierForExtension(), configurationParameters);
 
         arquillianFacet.setConfig(config);
     }
 
     private void installDependencies() {
-        if (hasEffectiveDependency(createCubeDependency())) {
+        if (hasEffectiveDependency(cubeConfiguration.getDependency())) {
             return;
         }
 
         final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
-        dependencyFacet.addDirectDependency(createCubeDependency());
+        dependencyFacet.addDirectDependency(cubeConfiguration.getDependency());
     }
 
     @Override
     public boolean isInstalled() {
-        return hasEffectiveDependency(createCubeDependency());
+       return Arrays.stream(CubeConfiguration.values())
+            .map(CubeConfiguration::getDependency)
+            .anyMatch(this::hasEffectiveDependency);
     }
 
 }
