@@ -41,7 +41,7 @@ public class CubeSetupFacet extends AbstractVersionedFacet {
         installDependencies();
         updateArquillianConfiguration();
 
-        return true;
+        return isInstalled();
     }
 
     private void updateArquillianConfiguration() {

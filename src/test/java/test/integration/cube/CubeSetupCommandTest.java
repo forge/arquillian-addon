@@ -22,9 +22,8 @@ public class CubeSetupCommandTest extends ShellTestTemplate {
         final FileResource<?> dockerFile = extractTestResource(project, "dockerFile");
         dockerFile.setContents("");
 
-        shell().execute("arquillian-setup --standalone --test-framework junit");
-
-        shell().execute("arquillian-cube-setup --type docker --file-path src/test/resources/ --docker-file-name dockerFile");
+        shell().execute("arquillian-setup --standalone --test-framework junit")
+            .execute("arquillian-cube-setup --type docker --file-path src/test/resources/ --docker-file-name dockerFile");
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-cube-docker").withType("pom").withScope("test");
 
