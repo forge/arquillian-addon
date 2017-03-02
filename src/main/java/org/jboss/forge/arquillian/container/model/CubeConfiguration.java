@@ -10,6 +10,14 @@ public enum CubeConfiguration {
     KUBERNETES(Target.KUBERNETES.getDependencyBuilder(), "kubernetes", "Kubernetes", "env.config.url"),
     OPENSHIFT(Target.OPENSHIFT.getDependencyBuilder(), "openshift", "Openshift", "definitionsFile");
 
+    final private DependencyBuilder dependency;
+
+    final private String qualifierForExtension;
+
+    final private String type;
+
+    final private String keyForFileLocation;
+
     CubeConfiguration(DependencyBuilder dependency, String qualifierForExtension, String type, String keyForFileLocation) {
         this.dependency = dependency;
         this.qualifierForExtension = qualifierForExtension;
@@ -32,13 +40,5 @@ public enum CubeConfiguration {
     public String getKeyForFileLocation() {
         return keyForFileLocation;
     }
-
-    private DependencyBuilder dependency;
-
-    private String qualifierForExtension;
-
-    private String type;
-
-    private String keyForFileLocation;
 
 }

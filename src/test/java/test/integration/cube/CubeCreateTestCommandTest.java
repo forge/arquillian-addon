@@ -92,7 +92,9 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate{
 
         assertThat(testClass).hasAnnotation(RunWith.class).withValue("org.jboss.arquillian.junit.Arquillian");
 
-        // TODO: 2/27/17 Add Assertion after test logic is done. https://github.com/arquillian/arquillian-cube/issues/608
+        assertThat(testClass).hasMethod("serviceInstanceShouldNotBeNull");
+        assertThat(testClass).hasField("service").annotatedWith(ArquillianResource.class).ofType("io.fabric8.kubernetes.api.model.Service");
+        assertThat(testClass).hasField("service").annotatedWithStringValue("Named", "my-service");
     }
 
 }

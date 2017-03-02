@@ -2,10 +2,14 @@ package test.integration.support.assertions;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 import org.jboss.forge.arquillian.api.ArquillianConfig;
 import org.jboss.forge.parser.xml.Node;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ArquillianConfigAssert extends AbstractAssert<ArquillianConfigAssert, ArquillianConfig> {
 
@@ -30,14 +34,25 @@ public class ArquillianConfigAssert extends AbstractAssert<ArquillianConfigAsser
         }
 
         public NodeAssert withProperty(String key, String value) {
-            try {
 
-                final String contentOfNode = getContentOfNode(key, actual.getChildren());
-                Assertions.assertThat(contentOfNode.trim()).isEqualTo(value);
+            final String contentOfNode = getContentOfNode(key, actual.getChildren());
+            Assertions.assertThat(contentOfNode.trim()).isEqualTo(value);
 
-            } catch (IllegalStateException e) {
-                Assertions.fail("couldn't find property by name: " + key);
+            return this;
+        }
+
+        public NodeAssert withProperties(String... keyValuePairs) {
+
+            final Map<String, String> keyValue = Arrays.stream(keyValuePairs).map(keyValuePair -> keyValuePair.split(":")).
+                collect(Collectors.toMap(keyValuePair -> keyValuePair[0], keyValuePair -> keyValuePair[1]));
+
+            SoftAssertions softAssertions = new SoftAssertions();
+            for (Map.Entry<String, String> entry : keyValue.entrySet()) {
+                final String contentOfNode = getContentOfNode(entry.getKey(), actual.getChildren());
+                softAssertions.assertThat(contentOfNode.trim()).isEqualTo(entry.getValue());
             }
+
+            softAssertions.assertAll();
 
             return this;
         }

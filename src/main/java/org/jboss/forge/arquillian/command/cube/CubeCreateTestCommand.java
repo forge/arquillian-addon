@@ -29,8 +29,12 @@ import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CubeCreateTestCommand extends AbstractProjectCommand implements UICommand {
+
+    private static final Logger logger = Logger.getLogger(CubeCreateTestCommand.class.getName());
 
     @Inject
     private ProjectFactory projectFactory;
@@ -56,7 +60,7 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
                         sources.add((JavaClassSource) javaType);
                     }
                 } catch (FileNotFoundException e) {
-                    // Do nothing
+                    logger.log(Level.SEVERE,"an exception was thrown", e);
                 }
             }
         });
@@ -81,15 +85,13 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
             JavaClassSource updatedTest = this.testClass.getValue();
 
             CubeTestSetup cubeTestSetup = null;
-            if (isKubernetes(project)) {
+            if (isKubernetes(project) || isOpenshift(project)) {
                 cubeTestSetup = new KubernetesCubeTestSetup();
             } else if (isDocker(project)) {
                 cubeTestSetup = new DockerCubeTestSetup();
-            } else if (isOpenshift(project)) {
-                cubeTestSetup = new OpenshiftCubeTestSetup();
             }
             if (cubeTestSetup == null) {
-                return Results.fail("Could not find arquillian-cube-docker OR arquillian-cube-kuberneters OR arquilliaa-cube-openshift dependency in pom.xml. Please install it using `arquillian-cube-setup` command");
+                return Results.fail("Could not find arquillian-cube-docker OR arquillian-cube-kubernetes OR arquillian-cube-openshift dependency in pom.xml. Please install it using `arquillian-cube-setup` command");
             }
 
             cubeTestSetup.updateTest(updatedTest);

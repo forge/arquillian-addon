@@ -25,13 +25,13 @@ public class YamlGenerator {
             StringBuilder::toString));
     }
 
-    public static String getYaml(Map<String, Object> params) {
+    public static String toYml(Map<String, Object> params) {
         Yaml yaml = new Yaml();
         final String dump = yaml.dump(params);
 
         // If value contains line separator then generator string will contain ` |-`
-        // which we don't want in result.
-         return dump.replace(" |-", "");
+        // which we don't want in result as cube yaml parser is not able to parse it.
+         return dump.replace(" |-", "").replace(" |","").trim();
     }
 
 }

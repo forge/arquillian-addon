@@ -40,10 +40,13 @@ import static org.jboss.forge.arquillian.util.StringUtil.getStringForCLIDisplay;
 
 public class CubeSetupCommand extends AbstractProjectCommand implements UICommand {
 
-    private CubeSetupFacet cubeSetupFacet;
+    private static final String DOCKER_FILE = "Dockerfile";
 
     @Inject
     private ProjectFactory projectFactory;
+
+    @Inject
+    private CubeSetupFacet cubeSetupFacet;
 
     @Inject
     private FacetFactory facetFactory;
@@ -60,12 +63,8 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
     private UIInput<String> filePath;
 
     @Inject
-    @WithAttributes(shortName = 'm', label = "Docker Machine", type = InputType.CHECKBOX)
-    private UIInput<Boolean> dockerMachine;
-
-    @Inject
-    @WithAttributes(shortName = 'n', label = "Docker Machine Name")
-    private UIInput<String> machineName;
+    @WithAttributes(shortName = 'm', label = "Docker Machine Name")
+    private UIInput<String> dockerMachineName;
 
     @Inject
     @WithAttributes(shortName = 'd', label = "Docker File Name")
@@ -77,8 +76,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
         builder
             .add(type)
             .add(filePath)
-            .add(dockerMachine)
-            .add(machineName)
+            .add(dockerMachineName)
             .add(dockerFileName);
 
         final List<String> types = Arrays.stream(CubeConfiguration.values())
@@ -89,9 +87,6 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
         type.setEnabled(true);
         type.setRequired(() -> true);
         type.setItemLabelConverter(source -> {
-            if (source == null) {
-                return null;
-            }
             if (builder.getUIContext().getProvider().isGUI()) {
                 return source;
             }
@@ -100,13 +95,10 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
 
         filePath.setEnabled(true);
 
-        dockerMachine.setEnabled(this::isDockerOrDockerCompose);
-        dockerMachine.setRequired(this::isDockerOrDockerCompose);
-
-        machineName.setEnabled(this::isDockerMachine);
-        machineName.setRequired(this::isDockerMachine);
-
-        dockerFileName.setEnabled(this::isDocker);
+        if (type.hasValue()) {
+            dockerFileName.setEnabled(cubeSetupFacet.isDocker(type));
+            dockerMachineName.setEnabled(cubeSetupFacet.isDockerOrDockerCompose(type));
+        }
     }
 
     @Override
@@ -122,13 +114,13 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
 
         final String msg = checkResourcesExists(context);
 
-        if (type.hasValue()) {
-            setCubeSetupFacet();
-            setCubeConfigurationParamteres(context);
-        }
-
         if (msg != null) {
             return Results.fail(msg);
+        }
+
+        if (type.hasValue()) {
+            cubeSetupFacet.setCubeConfiguration(type);
+            setCubeConfigurationParameters(context);
         }
 
         final CubeConfiguration cubeConfiguration = cubeSetupFacet.getCubeConfiguration();
@@ -140,50 +132,6 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
         } catch (Exception e) {
             return Results.fail("Could not install Cube " + cubeConfiguration.getType(), e);
         }
-    }
-
-    private void setCubeSetupFacet() {
-
-        CubeSetupFacet cubeSetupFacet = new CubeSetupFacet();
-        if (isKubernetes()) {
-            cubeSetupFacet.setCubeConfiguration(CubeConfiguration.KUBERNETES);
-        } else if (isDocker()) {
-            cubeSetupFacet.setCubeConfiguration(CubeConfiguration.DOCKER);
-        } else if (isDockerCompose()) {
-            cubeSetupFacet.setCubeConfiguration(CubeConfiguration.DOCKER_COMPOSE);
-        } else if (isOpenshift()) {
-            cubeSetupFacet.setCubeConfiguration(CubeConfiguration.OPENSHIFT);
-        }
-
-        this.cubeSetupFacet = cubeSetupFacet;
-    }
-
-    private void setCubeConfigurationParamteres(UIExecutionContext context) throws IOException {
-        cubeSetupFacet.setConfigurationParameters(getParametersForExtensionConfiguration(context));
-    }
-
-    private boolean isDockerMachine() {
-        return dockerMachine.hasValue() && dockerMachine.getValue();
-    }
-
-    private boolean isDockerOrDockerCompose() {
-        return isDocker() || isDockerCompose();
-    }
-
-    private boolean isDocker() {
-        return type.hasValue() && "docker".equals(getStringForCLIDisplay(type.getValue()));
-    }
-
-    private boolean isKubernetes() {
-        return type.hasValue() && "kubernetes".equals(getStringForCLIDisplay(type.getValue()));
-    }
-
-    private boolean isDockerCompose() {
-        return type.hasValue() && "docker-compose".equals(getStringForCLIDisplay(type.getValue()));
-    }
-
-    private boolean isOpenshift() {
-        return type.hasValue() && "openshift".equals(getStringForCLIDisplay(type.getValue()));
     }
 
     @Override
@@ -205,14 +153,18 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
         return parent;
     }
 
+    private void setCubeConfigurationParameters(UIExecutionContext context) throws IOException {
+        cubeSetupFacet.setConfigurationParameters(getParametersForExtensionConfiguration(context));
+    }
+
     private Map<String, String> getParametersForExtensionConfiguration(UIExecutionContext context) throws IOException {
         Map<String, String> parameters = new LinkedHashMap<>();
 
         if (filePath.hasValue()) {
-            if (isDocker()) {
+            if (cubeSetupFacet.isDocker(type)) {
                 addDockerParameters(parameters, context);
             } else {
-                if (isKubernetes()) {
+                if (cubeSetupFacet.isKubernetes(type)) {
                     addKubernetesParameters(parameters, context);
                 } else {
                     parameters.put(this.cubeSetupFacet.getCubeConfiguration().getKeyForFileLocation(), filePath.getValue());
@@ -220,8 +172,8 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
             }
         }
 
-        if (machineName.hasValue()) {
-            parameters.put("machineName", machineName.getValue());
+        if (dockerMachineName.hasValue()) {
+            parameters.put("machineName", dockerMachineName.getValue());
         }
 
         return parameters;
@@ -258,10 +210,18 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
     }
 
     private void addDockerParameters(Map<String, String> parameters, UIExecutionContext context) {
-        final String yamlSnippet = System.lineSeparator() + YamlGenerator.getYaml(getConfigParametersForDocker(context)).replaceAll("(?m)^", "    ");
+        final String yamlSnippet = System.lineSeparator() + getYamlSnippetForDockerComposeV2(context);
 
-        parameters.put("definitionFormat", "CUBE");
         parameters.put(cubeSetupFacet.getCubeConfiguration().getKeyForFileLocation(), yamlSnippet);
+    }
+
+    private String getYamlSnippetForDockerComposeV2(UIExecutionContext context) {
+
+        Map<String, Object> compose = new LinkedHashMap<>();
+        compose.put("version", "2");
+        compose.put("services", YamlGenerator.toYml(getConfigParametersForDocker(context)));
+
+        return YamlGenerator.toYml(compose).replaceAll("(?m)^", "    ");
     }
 
     private Map<String, Object> getConfigParametersForDocker(UIExecutionContext context) {
@@ -270,15 +230,19 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
 
         final String dirPath = getDockerDirectoryPath(context);
 
-        String imageParams = "dockerfileLocation: " + dirPath + System.lineSeparator() +
-            "noCache: true" + System.lineSeparator() +
-            "remove: true";
+        String imageParams = "context: " + dirPath +System.lineSeparator();
 
-        if (dockerFileName.hasValue()) {
-            imageParams += System.lineSeparator() + "dockerfileName: " + dockerFileName.getValue();
+        final String dockerFileNameValue = dockerFileName.getValue();
+        if (dockerFileName.hasValue() && !dockerFileNameValue.equals(DOCKER_FILE)) {
+            imageParams +=  "dockerfile: " + dockerFileNameValue;
+        } else {
+            final String alternativeFileName = getAlternativeFileName(context);
+            if (alternativeFileName != null) {
+                imageParams +=  "dockerfile: " + alternativeFileName;
+            }
         }
 
-        build.put("buildImage", imageParams);
+        build.put("build", imageParams);
         params.put("containerName", build);
         return params;
     }
@@ -287,8 +251,8 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
         String dirPath = filePath.getValue();
         String fileName = dockerFileName.getValue();
         final int dirPathLength = dirPath.length();
-        if (dirPath.endsWith("Dockerfile")) {
-            dirPath = dirPath.substring(0, dirPathLength - "Dockerfile".length());
+        if (dirPath.endsWith(DOCKER_FILE)) {
+            dirPath = dirPath.substring(0, dirPathLength - DOCKER_FILE.length());
         } else if (dockerFileName.hasValue() && dirPath.endsWith(fileName)) {
             dirPath = dirPath.substring(0, dirPathLength - fileName.length());
         } else if (dirPath.endsWith(File.separator)) {
@@ -300,7 +264,19 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
         if (file.isFile()) {
                 dirPath = dirPath.substring(0, dirPathLength - file.getName().length() -1);
         }
+
         return dirPath;
+    }
+
+    private String getAlternativeFileName(UIExecutionContext context) {
+        final String fullyQualifiedName = getSelectedProject(context).getRoot().getFullyQualifiedName();
+        final File file = new File(fullyQualifiedName + File.separator +  filePath.getValue());
+
+        if (file.isFile() && !file.getName().equals(DOCKER_FILE)) {
+            return file.getName();
+        } else {
+            return null;
+        }
     }
 
     private String checkResourcesExists(UIExecutionContext context) throws IOException {
