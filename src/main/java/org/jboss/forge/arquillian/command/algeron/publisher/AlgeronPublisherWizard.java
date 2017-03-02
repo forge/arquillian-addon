@@ -18,7 +18,6 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
-import org.jboss.forge.arquillian.container.model.AlgeronPublishers;
 import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
 
 import javax.inject.Inject;
