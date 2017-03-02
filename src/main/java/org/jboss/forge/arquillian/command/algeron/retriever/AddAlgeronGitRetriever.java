@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command.algeron;
+package org.jboss.forge.arquillian.command.algeron.retriever;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.ui.context.UIBuilder;

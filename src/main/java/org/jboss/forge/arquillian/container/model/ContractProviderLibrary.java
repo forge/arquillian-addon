@@ -2,8 +2,8 @@ package org.jboss.forge.arquillian.container.model;
 
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.arquillian.command.algeron.AlgeronProviderTestSetup;
-import org.jboss.forge.arquillian.command.algeron.PactAlgeronProviderTestSetup;
+import org.jboss.forge.arquillian.command.algeron.provider.AlgeronProviderTestSetup;
+import org.jboss.forge.arquillian.command.algeron.provider.PactAlgeronProviderTestSetup;
 
 public enum ContractProviderLibrary {
 

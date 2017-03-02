@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command.algeron;
+package org.jboss.forge.arquillian.command.algeron.retriever;
 
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
@@ -12,11 +12,7 @@ import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AddAlgeronFolderPublisher extends AbstractAlgeronPublisherCommand {
-
-    @Inject
-    @WithAttributes(shortName = 'o', label = "Output Folder", required = true)
-    private UIInput<String> outputFolder;
+public class AddAlgeronFolderRetriever extends AbstractAlgeronRetrieverCommand {
 
     @Inject
     @WithAttributes(shortName = 'c', label = "Contracts Folder")
@@ -26,13 +22,13 @@ public class AddAlgeronFolderPublisher extends AbstractAlgeronPublisherCommand {
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Algeron"))
-            .name("Arquillian Algeron: Add Folder Publisher")
-            .description("This command registers a Folder Publisher for Algeron");
+            .name("Arquillian Algeron: Add Folder Retriever")
+            .description("This command registers a Folder Retriever for Algeron");
     }
 
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
-        builder.add(outputFolder).add(contractFolder);
+        builder.add(contractFolder);
         contractFolder.setDefaultValue("target/pacts");
     }
 
@@ -40,7 +36,6 @@ public class AddAlgeronFolderPublisher extends AbstractAlgeronPublisherCommand {
     protected Map<String, String> getParameters() {
         Map<String, String> parameters = new LinkedHashMap<>();
         parameters.put("provider", "folder");
-        parameters.put("outputFolder", outputFolder.getValue());
         parameters.put("contractsFolder", contractFolder.getValue());
         return parameters;
     }

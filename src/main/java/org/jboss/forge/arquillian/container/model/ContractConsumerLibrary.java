@@ -1,8 +1,8 @@
 package org.jboss.forge.arquillian.container.model;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.arquillian.command.algeron.AlgeronConsumerTestSetup;
-import org.jboss.forge.arquillian.command.algeron.PactAlgeronConsumerTestSetup;
+import org.jboss.forge.arquillian.command.algeron.consumer.AlgeronConsumerTestSetup;
+import org.jboss.forge.arquillian.command.algeron.consumer.PactAlgeronConsumerTestSetup;
 
 public enum ContractConsumerLibrary {
 

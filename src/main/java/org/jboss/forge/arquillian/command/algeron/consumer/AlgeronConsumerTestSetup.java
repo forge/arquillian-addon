@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command.algeron;
+package org.jboss.forge.arquillian.command.algeron.consumer;
 
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 

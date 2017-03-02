@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command.algeron;
+package org.jboss.forge.arquillian.command.algeron.provider;
 
 import org.jboss.forge.addon.configuration.Configuration;
 import org.jboss.forge.addon.configuration.facets.ConfigurationFacet;
@@ -22,8 +22,8 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
-import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
-import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
+import org.jboss.forge.arquillian.container.model.ContractProviderLibrary;
+import org.jboss.forge.arquillian.testframework.algeron.AlgeronProvider;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AlgeronConsumerCreateContractFragmentCommand extends AbstractProjectCommand implements UICommand {
+public class AlgeronProviderValidateContractCommand extends AbstractProjectCommand implements UICommand {
 
     @Inject
     private ProjectFactory projectFactory;
@@ -43,46 +43,26 @@ public class AlgeronConsumerCreateContractFragmentCommand extends AbstractProjec
     private UISelectOne<JavaClassSource> testClass;
 
     @Inject
-    @WithAttributes(shortName = 'c', label = "Consumer Name", required = true)
-    private UIInput<String> consumer;
-
-    @Inject
     @WithAttributes(shortName = 'p', label = "Provider Name", required = true)
     private UIInput<String> provider;
 
     @Inject
-    @WithAttributes(shortName = 'f', label = "Fragment Name", required = true)
-    private UIInput<String> fragment;
-
-    @Inject
     @WithAttributes(shortName = 't', label = "Contract Type", required = false, enabled = false)
-    private UISelectOne<ContractConsumerLibrary> contractType;
-
-    @Override
-    protected boolean isProjectRequired() {
-        return true;
-    }
-
-    @Override
-    protected ProjectFactory getProjectFactory() {
-        return projectFactory;
-    }
+    private UISelectOne<ContractProviderLibrary> contractType;
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Algeron"))
-            .name("Arquillian Algeron: Create Contract Fragment")
-            .description("This command creates skeleton for contract fragment on given test");
+            .name("Arquillian Algeron: Create Provider Test")
+            .description("This command creates skeleton for validating provider on given test");
     }
 
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
         builder.add(contractType)
             .add(testClass)
-            .add(consumer)
-            .add(provider)
-            .add(fragment);
+            .add(provider);
 
         final Project project = getSelectedProject(builder);
 
@@ -109,26 +89,16 @@ public class AlgeronConsumerCreateContractFragmentCommand extends AbstractProjec
 
         if (contractType != null && !contractType.isEmpty()) {
             if (!this.contractType.hasValue()) {
-                this.contractType.setValue(ContractConsumerLibrary.valueOf(contractType));
+                this.contractType.setValue(ContractProviderLibrary.valueOf(contractType));
             }
         } else {
-            this.contractType.setValueChoices(Arrays.asList(ContractConsumerLibrary.values()));
+            this.contractType.setValueChoices(Arrays.asList(ContractProviderLibrary.values()));
             this.contractType.setItemLabelConverter(element -> element.name().toLowerCase());
             this.contractType.setRequired(true);
             this.contractType.setEnabled(true);
         }
 
         this.testClass.setItemLabelConverter(JavaClassSource::getQualifiedName);
-
-    }
-
-    @Override
-    public boolean isEnabled(UIContext context) {
-        Boolean parent = super.isEnabled(context);
-        if (parent) {
-            return getSelectedProject(context).hasFacet(AlgeronConsumer.class);
-        }
-        return parent;
     }
 
     @Override
@@ -137,15 +107,32 @@ public class AlgeronConsumerCreateContractFragmentCommand extends AbstractProjec
         final Project project = getSelectedProject(context);
 
         final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
-        final AlgeronConsumerTestSetup algeronConsumerTestSetup = this.contractType.getValue().getAlgeronConsumerTestSetup();
+        final AlgeronProviderTestSetup algeronProviderTestSetup = this.contractType.getValue().getAlgeronProviderTestSetup();
 
-        JavaClassSource updatedTest = algeronConsumerTestSetup.updateTest(this.testClass.getValue(),
-            this.consumer.getValue(), this.provider.getValue(),
-            this.fragment.getValue());
+        final JavaClassSource updatedTest = algeronProviderTestSetup.updateTest(this.testClass.getValue(), this.provider.getValue(), null);
 
         java.saveTestJavaSource(updatedTest);
 
-        return Results.success(String.format("Contract Fragment %s added at %s test.",
-            this.fragment.getValue(), this.testClass.getValue().getName()));
+        return Results.success(String.format("Provider support added at %s test.", this.testClass.getValue().getName()));
     }
+
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
+
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
+
+    @Override
+    public boolean isEnabled(UIContext context) {
+        Boolean parent = super.isEnabled(context);
+        if (parent) {
+            return getSelectedProject(context).hasFacet(AlgeronProvider.class);
+        }
+        return parent;
+    }
+
 }

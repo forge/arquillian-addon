@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command.algeron;
+package org.jboss.forge.arquillian.command.algeron.consumer;
 
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.PactFragment;

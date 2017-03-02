@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command.algeron;
+package org.jboss.forge.arquillian.command.algeron.provider;
 
 import org.arquillian.algeron.pact.provider.spi.Provider;
 import org.arquillian.algeron.pact.provider.spi.Target;

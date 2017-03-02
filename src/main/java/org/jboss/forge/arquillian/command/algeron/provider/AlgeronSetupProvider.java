@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command.algeron;
+package org.jboss.forge.arquillian.command.algeron.provider;
 
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.ui.context.UIBuilder;
@@ -13,49 +13,49 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.TestFrameworkFacet;
-import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
-import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
+import org.jboss.forge.arquillian.command.algeron.AbstractAlgeronCommand;
+import org.jboss.forge.arquillian.container.model.ContractProviderLibrary;
+import org.jboss.forge.arquillian.testframework.algeron.AlgeronProvider;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 
-public class AddAlgeronConsumerDependenciesCommand extends AbstractAlgeronCommand {
+public class AlgeronSetupProvider extends AbstractAlgeronCommand {
 
     @Inject
     private FacetFactory facetFactory;
 
     @Inject
     @WithAttributes(shortName = 'l', label = "Contracts Library", type = InputType.DROPDOWN)
-    private UISelectOne<ContractConsumerLibrary> contractsLibrary;
+    private UISelectOne<ContractProviderLibrary> contractsLibrary;
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Algeron"))
-            .name("Arquillian Algeron: Setup Consumer")
-            .description("This addon will help you setup Arquillian Algeron for Consumer side");
+            .name("Arquillian Algeron: Setup Provider")
+            .description("This addon will help you setup Arquillian Algeron for Provider side");
     }
 
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
         builder.add(contractsLibrary);
 
-        contractsLibrary.setValueChoices(Arrays.asList(ContractConsumerLibrary.values()));
+        contractsLibrary.setValueChoices(Arrays.asList(ContractProviderLibrary.values()));
         contractsLibrary.setItemLabelConverter(element -> element.name().toLowerCase());
-        contractsLibrary.setDefaultValue(ContractConsumerLibrary.PACT);
+        contractsLibrary.setDefaultValue(ContractProviderLibrary.PACT);
     }
 
     @Override
     public Result execute(UIExecutionContext context) throws Exception {
+        AlgeronProvider algeronProviderFacet = facetFactory.create(getSelectedProject(context), AlgeronProvider.class);
 
-        AlgeronConsumer algeronConsumerFacet = facetFactory.create(getSelectedProject(context), AlgeronConsumer.class);
+        algeronProviderFacet.setContractLibrary(contractsLibrary.getValue());
+        final String contractDefaultVersion = algeronProviderFacet.getDefaultVersion();
+        algeronProviderFacet.setVersion(contractDefaultVersion);
+        facetFactory.install(getSelectedProject(context), algeronProviderFacet);
 
-        algeronConsumerFacet.setContractLibrary(contractsLibrary.getValue());
-        final String contractDefaultVersion = algeronConsumerFacet.getDefaultVersion();
-        algeronConsumerFacet.setVersion(contractDefaultVersion);
-
-        facetFactory.install(getSelectedProject(context), algeronConsumerFacet);
-        return Results.success("Installed Arquillian Algeron Consumer " + contractsLibrary.getValue().name().toLowerCase() + " and contract library version " + contractDefaultVersion);
+        return Results.success("Installed Arquillian Algeron Provider " + contractsLibrary.getValue().name().toLowerCase() + " and contract library version " + contractDefaultVersion);
     }
 
     @Override
@@ -71,4 +71,5 @@ public class AddAlgeronConsumerDependenciesCommand extends AbstractAlgeronComman
         }
         return parent;
     }
+
 }

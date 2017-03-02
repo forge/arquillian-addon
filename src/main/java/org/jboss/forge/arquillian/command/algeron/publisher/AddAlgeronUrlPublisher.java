@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command.algeron;
+package org.jboss.forge.arquillian.command.algeron.publisher;
 
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.ProjectFactory;
