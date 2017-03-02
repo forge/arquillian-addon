@@ -1,8 +1,7 @@
-package org.jboss.forge.arquillian.testframework.algeron;
+package org.jboss.forge.arquillian.api.algeron;
 
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
 import org.jboss.forge.arquillian.container.model.ContractProviderLibrary;
 
 public class AlgeronProvider extends AlgeronSetupFacet {

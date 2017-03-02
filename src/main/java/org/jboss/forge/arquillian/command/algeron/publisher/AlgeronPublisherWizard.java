@@ -18,7 +18,7 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
-import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
+import org.jboss.forge.arquillian.api.algeron.AlgeronConsumer;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class AlgeronPublisherWizard extends AbstractProjectCommand implements UI
 
     @Inject
     @WithAttributes(shortName = 'p', label = "Publisher", type = InputType.DROPDOWN, required = true)
-    private UISelectOne<AlgeronPublishers> publisher;
+    private UISelectOne<AlgeronPublisher> publisher;
 
     @Inject
     @WithAttributes(shortName = 'l', label = "Publish Contracts")
@@ -62,7 +62,7 @@ public class AlgeronPublisherWizard extends AbstractProjectCommand implements UI
     public void initializeUI(UIBuilder builder) throws Exception {
         builder.add(publisher).add(publishContracts);
 
-        publisher.setValueChoices(Arrays.asList(AlgeronPublishers.values()));
+        publisher.setValueChoices(Arrays.asList(AlgeronPublisher.values()));
         publisher.setItemLabelConverter(element -> element.name().toLowerCase());
 
         publishContracts.setDefaultValue("${env.publishcontracts:false}");

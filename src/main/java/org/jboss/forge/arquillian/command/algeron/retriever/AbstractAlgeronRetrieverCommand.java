@@ -10,7 +10,7 @@ import org.jboss.forge.addon.ui.context.UIExecutionContext;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.arquillian.api.algeron.AlgeronRetrieverFacet;
-import org.jboss.forge.arquillian.testframework.algeron.AlgeronProvider;
+import org.jboss.forge.arquillian.api.algeron.AlgeronProvider;
 
 import javax.inject.Inject;
 import java.util.Map;

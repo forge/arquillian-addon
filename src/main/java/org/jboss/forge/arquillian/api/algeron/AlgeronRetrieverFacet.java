@@ -9,7 +9,6 @@ import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.arquillian.api.ArquillianConfig;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.arquillian.api.YamlGenerator;
-import org.jboss.forge.arquillian.testframework.algeron.AlgeronProvider;
 
 import java.util.Map;
 

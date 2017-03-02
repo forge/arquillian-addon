@@ -23,7 +23,7 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
 import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
-import org.jboss.forge.arquillian.testframework.algeron.AlgeronConsumer;
+import org.jboss.forge.arquillian.api.algeron.AlgeronConsumer;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
