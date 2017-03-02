@@ -18,13 +18,13 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
-import org.jboss.forge.arquillian.api.algeron.AlgeronConsumer;
+import org.jboss.forge.arquillian.api.algeron.AlgeronConsumerFacet;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Map;
 
-@FacetConstraint(AlgeronConsumer.class)
+@FacetConstraint(AlgeronConsumerFacet.class)
 public class AlgeronPublisherWizard extends AbstractProjectCommand implements UIWizard {
 
     static final String PUBLISH_CONTRACTS = "publish-contracts";

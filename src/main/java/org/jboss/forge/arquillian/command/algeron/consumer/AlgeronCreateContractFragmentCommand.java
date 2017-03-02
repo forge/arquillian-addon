@@ -23,7 +23,7 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
 import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
-import org.jboss.forge.arquillian.api.algeron.AlgeronConsumer;
+import org.jboss.forge.arquillian.api.algeron.AlgeronConsumerFacet;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
@@ -126,7 +126,7 @@ public class AlgeronCreateContractFragmentCommand extends AbstractProjectCommand
     public boolean isEnabled(UIContext context) {
         Boolean parent = super.isEnabled(context);
         if (parent) {
-            return getSelectedProject(context).hasFacet(AlgeronConsumer.class);
+            return getSelectedProject(context).hasFacet(AlgeronConsumerFacet.class);
         }
         return parent;
     }

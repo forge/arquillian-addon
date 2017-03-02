@@ -15,7 +15,7 @@ import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 import org.jboss.forge.arquillian.command.algeron.AbstractAlgeronCommand;
 import org.jboss.forge.arquillian.container.model.ContractProviderLibrary;
-import org.jboss.forge.arquillian.api.algeron.AlgeronProvider;
+import org.jboss.forge.arquillian.api.algeron.AlgeronProviderFacet;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -48,7 +48,7 @@ public class AlgeronSetupProvider extends AbstractAlgeronCommand {
 
     @Override
     public Result execute(UIExecutionContext context) throws Exception {
-        AlgeronProvider algeronProviderFacet = facetFactory.create(getSelectedProject(context), AlgeronProvider.class);
+        AlgeronProviderFacet algeronProviderFacet = facetFactory.create(getSelectedProject(context), AlgeronProviderFacet.class);
 
         algeronProviderFacet.setContractLibrary(contractsLibrary.getValue());
         final String contractDefaultVersion = algeronProviderFacet.getDefaultVersion();

@@ -12,7 +12,7 @@ import org.jboss.forge.arquillian.api.YamlGenerator;
 
 import java.util.Map;
 
-@FacetConstraint(AlgeronProvider.class)
+@FacetConstraint(AlgeronProviderFacet.class)
 public class AlgeronRetrieverFacet extends AbstractFacet<Project> implements ProjectFacet {
 
     public static final String RETRIEVER_EXTENSION_NAME = "algeron-provider";

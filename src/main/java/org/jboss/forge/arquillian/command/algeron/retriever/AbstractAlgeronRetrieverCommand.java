@@ -10,7 +10,7 @@ import org.jboss.forge.addon.ui.context.UIExecutionContext;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.arquillian.api.algeron.AlgeronRetrieverFacet;
-import org.jboss.forge.arquillian.api.algeron.AlgeronProvider;
+import org.jboss.forge.arquillian.api.algeron.AlgeronProviderFacet;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -61,7 +61,7 @@ public abstract class AbstractAlgeronRetrieverCommand extends AbstractProjectCom
     public boolean isEnabled(UIContext context) {
         Boolean parent = super.isEnabled(context);
         if (parent) {
-            return getSelectedProject(context).hasFacet(AlgeronProvider.class);
+            return getSelectedProject(context).hasFacet(AlgeronProviderFacet.class);
         }
         return parent;
     }

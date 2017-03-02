@@ -15,7 +15,7 @@ import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 import org.jboss.forge.arquillian.command.algeron.AbstractAlgeronCommand;
 import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
-import org.jboss.forge.arquillian.api.algeron.AlgeronConsumer;
+import org.jboss.forge.arquillian.api.algeron.AlgeronConsumerFacet;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public class AlgeronSetupConsumer extends AbstractAlgeronCommand {
     @Override
     public Result execute(UIExecutionContext context) throws Exception {
 
-        AlgeronConsumer algeronConsumerFacet = facetFactory.create(getSelectedProject(context), AlgeronConsumer.class);
+        AlgeronConsumerFacet algeronConsumerFacet = facetFactory.create(getSelectedProject(context), AlgeronConsumerFacet.class);
 
         algeronConsumerFacet.setContractLibrary(contractsLibrary.getValue());
         final String contractDefaultVersion = algeronConsumerFacet.getDefaultVersion();

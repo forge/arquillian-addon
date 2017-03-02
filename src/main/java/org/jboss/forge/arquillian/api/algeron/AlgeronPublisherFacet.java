@@ -12,7 +12,7 @@ import org.jboss.forge.arquillian.api.YamlGenerator;
 
 import java.util.Map;
 
-@FacetConstraint(AlgeronConsumer.class)
+@FacetConstraint(AlgeronConsumerFacet.class)
 public class AlgeronPublisherFacet extends AbstractFacet<Project> implements ProjectFacet {
 
     public static final String PUBLISHER_EXTENSION_NAME = "algeron-consumer";

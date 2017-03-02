@@ -17,12 +17,12 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
-import org.jboss.forge.arquillian.api.algeron.AlgeronProvider;
+import org.jboss.forge.arquillian.api.algeron.AlgeronProviderFacet;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 
-@FacetConstraint(AlgeronProvider.class)
+@FacetConstraint(AlgeronProviderFacet.class)
 public class AlgeronRetrieverWizard extends AbstractProjectCommand implements UIWizard {
 
     @Inject

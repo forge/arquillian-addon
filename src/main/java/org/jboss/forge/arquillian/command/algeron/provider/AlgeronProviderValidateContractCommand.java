@@ -23,7 +23,7 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
 import org.jboss.forge.arquillian.container.model.ContractProviderLibrary;
-import org.jboss.forge.arquillian.api.algeron.AlgeronProvider;
+import org.jboss.forge.arquillian.api.algeron.AlgeronProviderFacet;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
@@ -130,7 +130,7 @@ public class AlgeronProviderValidateContractCommand extends AbstractProjectComma
     public boolean isEnabled(UIContext context) {
         Boolean parent = super.isEnabled(context);
         if (parent) {
-            return getSelectedProject(context).hasFacet(AlgeronProvider.class);
+            return getSelectedProject(context).hasFacet(AlgeronProviderFacet.class);
         }
         return parent;
     }
