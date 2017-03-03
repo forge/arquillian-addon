@@ -126,12 +126,4 @@ public abstract class AlgeronSetupFacet extends AbstractVersionedFacet {
         return contractType != null && !contractType.isEmpty();
     }
 
-    private boolean hasEffectiveDependency(DependencyBuilder frameworkDependency) {
-        final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
-        return dependencyFacet.hasEffectiveDependency(frameworkDependency);
-    }
-
-    private String wrap(String versionPropertyName) {
-        return "${" + versionPropertyName + "}";
-    }
 }

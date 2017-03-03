@@ -74,11 +74,6 @@ public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
         installFrameworkDependency(createFrameworkDependency());
     }
 
-    private boolean hasEffectiveDependency(DependencyBuilder frameworkDependency) {
-        final DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
-        return dependencyFacet.hasEffectiveDependency(frameworkDependency);
-    }
-
     protected void installArquillianDependency(DependencyBuilder arquillianDependency) {
         if (hasEffectiveDependency(arquillianDependency)) {
             return;
@@ -102,7 +97,4 @@ public abstract class TestFrameworkFacet extends AbstractVersionedFacet {
         dependencyFacet.addDirectDependency(frameworkDependency.setVersion(wrap(getVersionPropertyName())));
     }
 
-    private String wrap(String versionPropertyName) {
-        return "${" + versionPropertyName + "}";
-    }
 }
