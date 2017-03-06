@@ -8,7 +8,7 @@ import org.jboss.forge.addon.ui.input.UISelectOne;
 import org.jboss.forge.arquillian.api.AbstractVersionedFacet;
 import org.jboss.forge.arquillian.api.ArquillianConfig;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.arquillian.container.model.CubeConfiguration;
+import org.jboss.forge.arquillian.model.cube.CubeConfiguration;
 
 import java.util.Arrays;
 import java.util.Map;

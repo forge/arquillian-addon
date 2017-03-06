@@ -24,7 +24,7 @@ import org.jboss.forge.arquillian.api.ArquillianFacet;
 import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 import org.jboss.forge.arquillian.api.YamlGenerator;
 import org.jboss.forge.arquillian.api.cube.CubeSetupFacet;
-import org.jboss.forge.arquillian.container.model.CubeConfiguration;
+import org.jboss.forge.arquillian.model.cube.CubeConfiguration;
 import org.jboss.forge.furnace.util.Strings;
 
 import javax.inject.Inject;

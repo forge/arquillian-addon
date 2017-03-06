@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.container.model;
+package org.jboss.forge.arquillian.model.cube;
 
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;

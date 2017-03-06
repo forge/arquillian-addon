@@ -1,8 +1,7 @@
 package org.jboss.forge.arquillian.api.algeron;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.arquillian.api.algeron.AlgeronSetupFacet;
-import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
+import org.jboss.forge.arquillian.model.algeron.ContractConsumerLibrary;
 
 public class AlgeronConsumerFacet extends AlgeronSetupFacet {
 

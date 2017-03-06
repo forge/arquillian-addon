@@ -9,7 +9,7 @@ import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
-import org.jboss.forge.arquillian.util.MavenCoordinatesUIValidator;
+import org.jboss.forge.arquillian.validator.MavenCoordinatesUIValidator;
 
 import javax.inject.Inject;
 import java.util.LinkedHashMap;

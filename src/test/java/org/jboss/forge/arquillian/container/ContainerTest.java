@@ -8,7 +8,7 @@ package org.jboss.forge.arquillian.container;
 
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.container.model.ContainerType;
-import org.jboss.forge.arquillian.util.Identifier;
+import org.jboss.forge.arquillian.container.model.Identifier;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

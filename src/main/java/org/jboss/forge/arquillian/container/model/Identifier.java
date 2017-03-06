@@ -1,7 +1,5 @@
-package org.jboss.forge.arquillian.util;
+package org.jboss.forge.arquillian.container.model;
 
-
-import org.jboss.forge.arquillian.container.model.Container;
 
 public enum Identifier {
 

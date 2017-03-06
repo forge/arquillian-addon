@@ -27,7 +27,7 @@ import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.util.DependencyUtil;
-import org.jboss.forge.arquillian.util.Identifier;
+import org.jboss.forge.arquillian.container.model.Identifier;
 import org.junit.Test;
 
 import java.util.ArrayList;

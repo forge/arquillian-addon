@@ -14,7 +14,7 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.TestFrameworkFacet;
 import org.jboss.forge.arquillian.command.algeron.AbstractAlgeronCommand;
-import org.jboss.forge.arquillian.container.model.ContractConsumerLibrary;
+import org.jboss.forge.arquillian.model.algeron.ContractConsumerLibrary;
 import org.jboss.forge.arquillian.api.algeron.AlgeronConsumerFacet;
 
 import javax.inject.Inject;

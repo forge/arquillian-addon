@@ -8,7 +8,6 @@ package org.jboss.forge.arquillian.container.model;
 
 import org.arquillian.container.chameleon.spi.model.Target;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.arquillian.util.Identifier;
 
 import java.io.BufferedReader;
 import java.io.IOException;

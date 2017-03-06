@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.util;
+package org.jboss.forge.arquillian.validator;
 
 import org.jboss.forge.addon.ui.context.UIValidationContext;
 import org.jboss.forge.addon.ui.input.InputComponent;
