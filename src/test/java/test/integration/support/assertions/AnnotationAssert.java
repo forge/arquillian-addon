@@ -23,4 +23,11 @@ public class AnnotationAssert extends AbstractAssert<AnnotationAssert, Annotatio
         Assertions.assertThat(actual.getStringValue(entry)).isEqualTo(value);
         return this;
     }
+
+    public AnnotationAssert withPropertyAndValue(String property, String value) {
+
+        Assertions.assertThat(actual.getStringValue(property)).isEqualTo(value);
+
+        return this;
+    }
 }
