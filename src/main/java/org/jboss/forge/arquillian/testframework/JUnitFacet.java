@@ -7,7 +7,7 @@
 package org.jboss.forge.arquillian.testframework;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.arquillian.api.TestFrameworkFacet;
+import org.jboss.forge.arquillian.api.core.TestFrameworkFacet;
 
 /**
  * @author <a href="mailto:bartosz.majsak@gmail.com">Bartosz Majsak</a>

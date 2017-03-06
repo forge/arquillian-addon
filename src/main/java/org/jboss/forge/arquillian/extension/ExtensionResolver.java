@@ -9,7 +9,7 @@ import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.maven.resources.MavenModelResource;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
-import org.jboss.forge.arquillian.api.ArquillianFacet;
+import org.jboss.forge.arquillian.api.core.ArquillianFacet;
 import org.jboss.forge.arquillian.api.Extension;
 
 import javax.inject.Inject;

@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.api;
+package org.jboss.forge.arquillian.api.core;
 
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.Dependency;
@@ -10,6 +10,7 @@ import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.arquillian.api.ArquillianConfig;
 
 @FacetConstraints({
     @FacetConstraint(DependencyFacet.class),

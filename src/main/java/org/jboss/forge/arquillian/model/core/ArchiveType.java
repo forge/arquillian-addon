@@ -5,7 +5,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.jboss.forge.arquillian.command;
+package org.jboss.forge.arquillian.model.core;
 
 import org.jboss.forge.roaster.model.util.Types;
 

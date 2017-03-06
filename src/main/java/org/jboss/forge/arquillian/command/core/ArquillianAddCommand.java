@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command;
+package org.jboss.forge.arquillian.command.core;
 
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.ProjectFactory;
@@ -15,14 +15,11 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
-import org.jboss.forge.arquillian.api.ArquillianExtensionFacet;
-import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.arquillian.api.Extension;
-import org.jboss.forge.arquillian.extension.ExtensionResolver;
+import org.jboss.forge.arquillian.api.core.ArquillianFacet;
 
 import javax.inject.Inject;
 
-public class AddExtensionCommand extends AbstractProjectCommand implements UICommand {
+public class ArquillianAddCommand extends AbstractProjectCommand implements UICommand {
 
     @Inject
     private ProjectFactory projectFactory;
@@ -31,37 +28,33 @@ public class AddExtensionCommand extends AbstractProjectCommand implements UICom
     private FacetFactory facetFactory;
 
     @Inject
-    private ArquillianExtensionFacet facet;
+    private ArquillianFacet facet;
 
     @Inject
-    private ExtensionResolver resolver;
-
-    @Inject
-    @WithAttributes(shortName = 'e', label = "Arquillian Extension", type = InputType.DROPDOWN)
-    private UISelectOne<Extension> arquillianExtension;
+    @WithAttributes(shortName = 'v', label = "Arquillian Universe version", type = InputType.DROPDOWN)
+    private UISelectOne<String> arquillianVersion;
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Arquillian"))
-            .name("Arquillian: Add Extension")
+            .name("Arquillian: Add")
             .description("This addon will help you setup the base Arquillian");
     }
 
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
-        builder.add(arquillianExtension);
+        builder.add(arquillianVersion);
 
-        arquillianExtension.setValueChoices(() -> resolver.getAvailableExtensions(getSelectedProject(builder.getUIContext())));
-        arquillianExtension.setItemLabelConverter(Extension::getName);
+        arquillianVersion.setDefaultValue(() -> facet.getDefaultVersion());
+        arquillianVersion.setValueChoices(() -> facet.getAvailableVersions());
     }
 
     @Override
     public Result execute(UIExecutionContext context) throws Exception {
+        facet.setVersion(arquillianVersion.getValue());
         facetFactory.install(getSelectedProject(context), facet);
-        facet.install(arquillianExtension.getValue());
-
-        return Results.success("Installed Arquillian Extension " + arquillianExtension.getValue());
+        return Results.success("Installed Arquillian Universe " + arquillianVersion.getValue());
     }
 
     @Override
@@ -73,7 +66,7 @@ public class AddExtensionCommand extends AbstractProjectCommand implements UICom
     public boolean isEnabled(UIContext context) {
         Boolean parent = super.isEnabled(context);
         if (parent) {
-            return getSelectedProject(context).hasFacet(ArquillianFacet.class);
+            return !getSelectedProject(context).hasFacet(ArquillianFacet.class);
         }
         return parent;
     }

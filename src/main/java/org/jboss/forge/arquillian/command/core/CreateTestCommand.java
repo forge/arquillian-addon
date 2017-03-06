@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command;
+package org.jboss.forge.arquillian.command.core;
 
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
@@ -29,8 +29,9 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
-import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.arquillian.api.TestFrameworkFacet;
+import org.jboss.forge.arquillian.api.core.ArquillianFacet;
+import org.jboss.forge.arquillian.api.core.TestFrameworkFacet;
+import org.jboss.forge.arquillian.model.core.ArchiveType;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;

@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.api;
+package org.jboss.forge.arquillian.api.core;
 
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.DependencyResolver;

@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command;
+package org.jboss.forge.arquillian.command.core;
 
 import org.jboss.forge.addon.dependencies.DependencyQuery;
 import org.jboss.forge.addon.dependencies.DependencyResolver;
@@ -22,7 +22,7 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizardStep;
 import org.jboss.forge.arquillian.api.ArquillianConfig;
-import org.jboss.forge.arquillian.api.ArquillianFacet;
+import org.jboss.forge.arquillian.api.core.ArquillianFacet;
 import org.jboss.forge.arquillian.api.ContainerInstallEvent;
 import org.jboss.forge.arquillian.container.ContainerInstaller;
 import org.jboss.forge.arquillian.container.DependencyManager;

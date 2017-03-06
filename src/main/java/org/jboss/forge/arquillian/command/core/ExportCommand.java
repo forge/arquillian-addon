@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command;
+package org.jboss.forge.arquillian.command.core;
 
 
 public class ExportCommand {

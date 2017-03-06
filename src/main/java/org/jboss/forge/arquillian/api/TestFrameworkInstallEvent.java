@@ -7,6 +7,8 @@
 package org.jboss.forge.arquillian.api;
 
 
+import org.jboss.forge.arquillian.api.core.TestFrameworkFacet;
+
 /**
  * @Author Paul Bakker - paul.bakker.nl@gmail.com
  */

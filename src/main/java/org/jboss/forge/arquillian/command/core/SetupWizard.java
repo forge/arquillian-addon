@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command;
+package org.jboss.forge.arquillian.command.core;
 
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
@@ -13,7 +13,7 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
-import org.jboss.forge.arquillian.api.ArquillianFacet;
+import org.jboss.forge.arquillian.api.core.ArquillianFacet;
 
 import javax.inject.Inject;
 
