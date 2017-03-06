@@ -1,37 +1,75 @@
 Arquillian Forge Addon
 ========================
 
-image:https://forge.ci.cloudbees.com/job/arquillian-addon/badge/icon["Build Status", link="https://forge.ci.cloudbees.com/job/arquillian-addon/"] 
+image:https://forge.ci.cloudbees.com/job/arquillian-addon/badge/icon["Build Status", link="https://forge.ci.cloudbees.com/job/arquillian-addon/"]
 
-Setting up an Arquillian profile
-================================
+*Setting up an Arquillian profile & Test Framework*
 
 Arquillian supports testing in multiple containers. This is done by using a Maven profile for each container. This makes it possible to have multiple containers configured side-by-side too.
 To add a new profile you use the arquillian setup command:
 
-	arquillian-setup
-	
-This command will prompt which container to use. If  you need to install an additional container profile, run the 
+`arquillian-setup`
 
-	arquillian-add-container 
-	
+This command will prompt for which testframework to use, do you want to use standalone mode, if not then which container to use.
+
+If you need to install an additional container profile, run command:
+
+`arquillian-add-container`
+
+In above command if selected container is supported by https://github.com/arquillian/arquillian-container-chameleon[chameleon] then it is configured using chameleon, otherwise it will add required dependency to setup container.
+
 For managed containers it might make sense to automatically download & install the container during the build to make installation on a build server more easy. This is only supported for AS7 at this moment.
-You can also type --<TAB> to auto-complete with the desired options 
+You can also type --<TAB> to auto-complete with the desired options.
 
-Generating tests
-================
+*Generating tests*
 
 Writing Arquillian tests is trivial, and is documented well: https://docs.jboss.org/author/display/ARQ/Reference+Guide
 
 Forge can help you get started however. 
-	
-	arquillian-create-test --targets demo.CoolBean --archiveType JAR
+
+`arquillian-create-test --targets demo.CoolBean --archiveType JAR`
 	
 Of course you can use the TAB key to navigate to the class that you want to test.
 
 
-For more details please about available commands have a look at integration tests:
+*Arquillian Cube*
 
-  * https://github.com/forge/addon-arquillian/blob/e61fad56cab4a1684eb283345d93adeeb0789741/src/test/java/test/integration/JUnitTestGenerationIntegrationTest.java[JUnit command line tests]
-  * https://github.com/forge/addon-arquillian/blob/e61fad56cab4a1684eb283345d93adeeb0789741/src/test/java/test/integration/TestNGTestGenerationIntegrationTest.java[TestNG command line tests]
+*Setup:*
 
+To add Arquillian Cube dependencies configuration options in arquillian.xml, run command:
+
+`arquillian-cube-setup --type docker-compose --file-path docker-compose.yml`
+
+Before running above command make sure that file provided with file-path is exists.
+
+*Create Test:*
+
+Before running above command you have to create a test class, run command:
+
+`arquillian-create-test --named MyDockerComposeTest --target-package org.arquillian.cube`.
+
+*Test Enricher:*
+
+To enrich a given Arquillian test with respective annotations depending on selected type, run command:
+
+`arquillian-cube-create-test --test-class org.cube.docker.MyDockerComposeTest`
+
+Same way you can create a test for Kubernetes, Docker, Openshift.
+
+*All Available Commands*
+
+[width="80%"]
+|========================================================================================================================
+| Name                               | Usage                                                                            |
+| arquillian-setup                   | To setup container, and add test framework dependency.                           |
+| arquillian-add                     | To add arquillian universe bom dependency                                        |
+| arquillian-add-testframework       | To add testframework dependency.                                                 |
+| arquillian-container-setup         | To add required dependency for container to setup.                               |
+| arquillian-container-configuration | To configure container configuration.                                            |
+| arquillian-create-test             | To create a test inside package.                                                 |
+| arquillian-cube-setup              | To add arquillian cube dependency & updates arquillian configuration.            |
+| arquillian-cube-create-test        | To configure a test with required Test enricher depending on selected type.      |
+|========================================================================================================================
+
+For more details about options have a look into integration tests at:
+https://github.com/forge/arquillian-addon/tree/master/src/test/java/test/integration[integration tests]
