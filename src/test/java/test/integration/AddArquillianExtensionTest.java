@@ -10,8 +10,8 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.test.UITestHarness;
 import org.jboss.forge.arquillian.api.ArquillianExtensionFacet;
 import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.arquillian.command.AddArquillianCommand;
-import org.jboss.forge.arquillian.command.AddArquillianExtensionCommand;
+import org.jboss.forge.arquillian.command.ArquillianAddCommand;
+import org.jboss.forge.arquillian.command.AddExtensionCommand;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +35,7 @@ public class AddArquillianExtensionTest {
 
         Project project = factory.createTempProject();
 
-        try (CommandController addCommandController = testHarness.createCommandController(AddArquillianCommand.class, project.getRoot())) {
+        try (CommandController addCommandController = testHarness.createCommandController(ArquillianAddCommand.class, project.getRoot())) {
             addCommandController.initialize();
             addCommandController.setValueFor("arquillianVersion", "1.0.0.Alpha2");
             Result result = addCommandController.execute();
@@ -43,7 +43,7 @@ public class AddArquillianExtensionTest {
         }
         project = factory.findProject(project.getRoot());
 
-        try (CommandController addCommandController = testHarness.createCommandController(AddArquillianExtensionCommand.class, project.getRoot())) {
+        try (CommandController addCommandController = testHarness.createCommandController(AddExtensionCommand.class, project.getRoot())) {
             addCommandController.initialize();
             addCommandController.setValueFor("arquillianExtension", "arquillian-cube-docker");
             Result result = addCommandController.execute();

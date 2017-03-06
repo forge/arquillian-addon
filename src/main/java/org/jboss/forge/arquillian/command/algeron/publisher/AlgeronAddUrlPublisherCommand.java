@@ -1,5 +1,7 @@
-package org.jboss.forge.arquillian.command.algeron.retriever;
+package org.jboss.forge.arquillian.command.algeron.publisher;
 
+import org.jboss.forge.addon.facets.FacetFactory;
+import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.input.UIInput;
@@ -12,7 +14,17 @@ import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AddAlgeronFolderRetriever extends AbstractAlgeronRetrieverCommand {
+public class AlgeronAddUrlPublisherCommand extends AbstractAlgeronPublisherCommand {
+
+    @Inject
+    private ProjectFactory projectFactory;
+
+    @Inject
+    private FacetFactory facetFactory;
+
+    @Inject
+    @WithAttributes(shortName = 'u', label = "Url to POST", required = true)
+    private UIInput<String> url;
 
     @Inject
     @WithAttributes(shortName = 'c', label = "Contracts Folder")
@@ -22,26 +34,27 @@ public class AddAlgeronFolderRetriever extends AbstractAlgeronRetrieverCommand {
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Algeron"))
-            .name("Arquillian Algeron: Add Folder Retriever")
-            .description("This command registers a Folder Retriever for Algeron");
+            .name("Arquillian Algeron: Add Url Publisher")
+            .description("This command registers a Url Publisher for Algeron");
     }
 
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
-        builder.add(contractFolder);
+        builder.add(url).add(contractFolder);
         contractFolder.setDefaultValue("target/pacts");
     }
 
     @Override
     protected Map<String, String> getParameters() {
         Map<String, String> parameters = new LinkedHashMap<>();
-        parameters.put("provider", "folder");
+        parameters.put("provider", "url");
+        parameters.put("url", url.getValue());
         parameters.put("contractsFolder", contractFolder.getValue());
         return parameters;
     }
 
     @Override
     protected String getName() {
-        return "Folder";
+        return "Url";
     }
 }

@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AlgeronProviderValidateContractCommand extends AbstractProjectCommand implements UICommand {
+public class AlgeronCreateProviderTestCommand extends AbstractProjectCommand implements UICommand {
 
     @Inject
     private ProjectFactory projectFactory;

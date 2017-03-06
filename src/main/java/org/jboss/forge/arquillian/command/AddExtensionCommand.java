@@ -22,7 +22,7 @@ import org.jboss.forge.arquillian.extension.ExtensionResolver;
 
 import javax.inject.Inject;
 
-public class AddArquillianExtensionCommand extends AbstractProjectCommand implements UICommand {
+public class AddExtensionCommand extends AbstractProjectCommand implements UICommand {
 
     @Inject
     private ProjectFactory projectFactory;

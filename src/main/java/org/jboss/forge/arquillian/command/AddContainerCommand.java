@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddContainerDependencyStep extends AbstractProjectCommand implements UIWizardStep {
+public class AddContainerCommand extends AbstractProjectCommand implements UIWizardStep {
 
     private final Map<Dependency, InputComponent<?, String>> dependencyVersions = new HashMap<>();
     @Inject

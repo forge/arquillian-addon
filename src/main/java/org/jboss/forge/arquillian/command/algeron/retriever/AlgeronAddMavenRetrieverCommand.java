@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AddAlgeronMavenRetriever extends AbstractAlgeronRetrieverCommand {
+public class AlgeronAddMavenRetrieverCommand extends AbstractAlgeronRetrieverCommand {
 
     @Inject
     @WithAttributes(shortName = 'c', label = "Maven Coordinates", required = true)

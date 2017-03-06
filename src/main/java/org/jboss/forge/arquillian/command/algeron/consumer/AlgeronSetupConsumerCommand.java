@@ -20,7 +20,7 @@ import org.jboss.forge.arquillian.api.algeron.AlgeronConsumerFacet;
 import javax.inject.Inject;
 import java.util.Arrays;
 
-public class AlgeronSetupConsumer extends AbstractAlgeronCommand {
+public class AlgeronSetupConsumerCommand extends AbstractAlgeronCommand {
 
     @Inject
     private FacetFactory facetFactory;

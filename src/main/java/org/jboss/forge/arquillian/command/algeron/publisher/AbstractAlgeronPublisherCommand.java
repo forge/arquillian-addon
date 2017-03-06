@@ -73,7 +73,7 @@ public abstract class AbstractAlgeronPublisherCommand extends AbstractProjectCom
         final Project selectedProject = getSelectedProject(context);
 
         final Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
-        final String publishContracts = (String) ctx.get(AlgeronPublisherWizard.PUBLISH_CONTRACTS);
+        final String publishContracts = (String) ctx.get(AlgeronSetupPublisherWizard.PUBLISH_CONTRACTS);
         final AlgeronPublisherFacet algeronPublisherFacet = facetFactory.create(selectedProject, AlgeronPublisherFacet.class);
         algeronPublisherFacet.setConfigurationParameters(getParameters());
         algeronPublisherFacet.setPublishContracts(publishContracts);

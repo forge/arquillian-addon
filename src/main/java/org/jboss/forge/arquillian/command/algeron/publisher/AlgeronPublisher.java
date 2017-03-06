@@ -4,7 +4,7 @@ import org.jboss.forge.addon.ui.command.UICommand;
 
 enum AlgeronPublisher {
 
-    FOLDER(AddAlgeronFolderPublisher.class), URL(AddAlgeronUrlPublisher.class), GIT(AddAlgeronGitPublisher.class);
+    FOLDER(AlgeronAddFolderPublisherCommand.class), URL(AlgeronAddUrlPublisherCommand.class), GIT(AlgeronAddGitPublisherCommand.class);
 
     private Class<? extends UICommand> implementingCommand;
 

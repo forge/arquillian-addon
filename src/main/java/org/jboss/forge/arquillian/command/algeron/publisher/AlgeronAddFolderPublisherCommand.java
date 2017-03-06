@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AddAlgeronFolderPublisher extends AbstractAlgeronPublisherCommand {
+public class AlgeronAddFolderPublisherCommand extends AbstractAlgeronPublisherCommand {
 
     @Inject
     @WithAttributes(shortName = 'o', label = "Output Folder", required = true)

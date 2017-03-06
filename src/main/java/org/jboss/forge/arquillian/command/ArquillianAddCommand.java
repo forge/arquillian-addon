@@ -19,7 +19,7 @@ import org.jboss.forge.arquillian.api.ArquillianFacet;
 
 import javax.inject.Inject;
 
-public class AddArquillianCommand extends AbstractProjectCommand implements UICommand {
+public class ArquillianAddCommand extends AbstractProjectCommand implements UICommand {
 
     @Inject
     private ProjectFactory projectFactory;

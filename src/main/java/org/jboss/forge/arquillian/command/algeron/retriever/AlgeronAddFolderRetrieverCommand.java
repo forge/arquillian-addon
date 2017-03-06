@@ -7,42 +7,41 @@ import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
-import org.jboss.forge.arquillian.util.URLUIValidator;
 
 import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AddAlgeronUrlRetriever extends AbstractAlgeronRetrieverCommand {
+public class AlgeronAddFolderRetrieverCommand extends AbstractAlgeronRetrieverCommand {
+
     @Inject
-    @WithAttributes(shortName = 'u', label = "Url to GET", required = true)
-    private UIInput<String> url;
+    @WithAttributes(shortName = 'c', label = "Contracts Folder")
+    private UIInput<String> contractFolder;
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Algeron"))
-            .name("Arquillian Algeron: Add Url Retriever")
-            .description("This command registers a Url Retriever for Algeron");
+            .name("Arquillian Algeron: Add Folder Retriever")
+            .description("This command registers a Folder Retriever for Algeron");
     }
 
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
-        url.addValidator(new URLUIValidator());
-        builder.add(url);
+        builder.add(contractFolder);
+        contractFolder.setDefaultValue("target/pacts");
     }
 
     @Override
     protected Map<String, String> getParameters() {
         Map<String, String> parameters = new LinkedHashMap<>();
-        parameters.put("provider", "url");
-        parameters.put("url", url.getValue());
+        parameters.put("provider", "folder");
+        parameters.put("contractsFolder", contractFolder.getValue());
         return parameters;
     }
 
     @Override
     protected String getName() {
-        return "Url";
+        return "Folder";
     }
-
 }

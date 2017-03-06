@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AddAlgeronPactBrokerRetriever extends AbstractAlgeronRetrieverCommand {
+public class AlgeronAddPactBrokerRetrieverCommand extends AbstractAlgeronRetrieverCommand {
 
     @Inject
     @WithAttributes(shortName = 'h', label = "Host", required = true)

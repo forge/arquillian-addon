@@ -1,8 +1,6 @@
-package org.jboss.forge.arquillian.command.algeron.publisher;
+package org.jboss.forge.arquillian.command.algeron.retriever;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.addon.facets.FacetFactory;
-import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.hints.InputType;
@@ -11,26 +9,17 @@ import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
+import org.jboss.forge.arquillian.util.URLUIValidator;
 
 import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AddAlgeronGitPublisher extends AbstractAlgeronPublisherCommand {
-
-    @Inject
-    private ProjectFactory projectFactory;
-
-    @Inject
-    private FacetFactory facetFactory;
+public class AlgeronAddGitRetrieverCommand extends AbstractAlgeronRetrieverCommand {
 
     @Inject
     @WithAttributes(shortName = 'u', label = "Git Url", required = true)
     private UIInput<String> url;
-
-    @Inject
-    @WithAttributes(shortName = 'm', label = "Comment", required = true)
-    private UIInput<String> comment;
 
     @Inject
     @WithAttributes(shortName = 's', label = "Username")
@@ -49,10 +38,6 @@ public class AddAlgeronGitPublisher extends AbstractAlgeronPublisherCommand {
     private UIInput<String> key;
 
     @Inject
-    @WithAttributes(shortName = 'r', label = "Remote", type = InputType.FILE_PICKER)
-    private UIInput<String> remote;
-
-    @Inject
     @WithAttributes(shortName = 'o', label = "Repository")
     private UIInput<String> repository;
 
@@ -68,39 +53,29 @@ public class AddAlgeronGitPublisher extends AbstractAlgeronPublisherCommand {
     @WithAttributes(shortName = 'b', label = "Branch")
     private UIInput<String> branch;
 
-    @Inject
-    @WithAttributes(shortName = 'e', label = "Email")
-    private UIInput<String> email;
-
-    @Inject
-    @WithAttributes(shortName = 'c', label = "Contracts Folder")
-    private UIInput<String> contractFolder;
-
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Algeron"))
-            .name("Arquillian Algeron: Add Git Publisher")
-            .description("This command registers a Git Publisher for Algeron");
+            .name("Arquillian Algeron: Add Git Retriever")
+            .description("This command registers a Git Retriever for Algeron");
     }
 
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
-        builder.add(url).add(contractFolder)
-            .add(comment).add(username)
+        url.addValidator(new URLUIValidator());
+        builder.add(url)
+            .add(username)
             .add(password).add(passphrase)
-            .add(key).add(remote)
+            .add(key)
             .add(repository).add(contractGitDirectory)
-            .add(tag).add(branch)
-            .add(email);
-        contractFolder.setDefaultValue("target/pacts");
-        remote.setDefaultValue("origin");
+            .add(tag).add(branch);
     }
 
     @Override
-    protected DependencyBuilder getPublisherDependency() {
+    protected DependencyBuilder getRetrieverDependency() {
         return DependencyBuilder.create().setGroupId("org.arquillian.universe")
-            .setArtifactId("arquillian-algeron-git-publisher").setPackaging("pom").setScopeType("test");
+            .setArtifactId("arquillian-algeron-git-retriever").setPackaging("pom").setScopeType("test");
     }
 
     @Override
@@ -108,9 +83,6 @@ public class AddAlgeronGitPublisher extends AbstractAlgeronPublisherCommand {
         final Map<String, String> parameters = new LinkedHashMap<>();
         parameters.put("provider", "git");
         parameters.put("url", url.getValue());
-        parameters.put("comment", comment.getValue());
-        parameters.put("remote", remote.getValue());
-        parameters.put("contractsFolder", contractFolder.getValue());
 
         if (username.hasValue()) {
             parameters.put("username", username.getValue());
@@ -144,10 +116,6 @@ public class AddAlgeronGitPublisher extends AbstractAlgeronPublisherCommand {
             parameters.put("branch", branch.getValue());
         }
 
-        if (email.hasValue()) {
-            parameters.put("email", email.getValue());
-        }
-
         return parameters;
     }
 
@@ -155,4 +123,5 @@ public class AddAlgeronGitPublisher extends AbstractAlgeronPublisherCommand {
     protected String getName() {
         return "Git";
     }
+
 }

@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.command.algeron.retriever;
+package org.jboss.forge.arquillian.command.algeron.publisher;
 
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.ProjectFactory;
@@ -8,6 +8,7 @@ import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
 import org.jboss.forge.addon.ui.context.UINavigationContext;
 import org.jboss.forge.addon.ui.hints.InputType;
+import org.jboss.forge.addon.ui.input.UIInput;
 import org.jboss.forge.addon.ui.input.UISelectOne;
 import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
@@ -17,28 +18,34 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
-import org.jboss.forge.arquillian.api.algeron.AlgeronProviderFacet;
+import org.jboss.forge.arquillian.api.algeron.AlgeronConsumerFacet;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Map;
 
-@FacetConstraint(AlgeronProviderFacet.class)
-public class AlgeronRetrieverWizard extends AbstractProjectCommand implements UIWizard {
+@FacetConstraint(AlgeronConsumerFacet.class)
+public class AlgeronSetupPublisherWizard extends AbstractProjectCommand implements UIWizard {
+
+    static final String PUBLISH_CONTRACTS = "publish-contracts";
 
     @Inject
     private ProjectFactory projectFactory;
 
     @Inject
-    @WithAttributes(shortName = 'p', label = "Retriever", type = InputType.DROPDOWN, required = true)
-    private UISelectOne<AlgeronRetriever> retriever;
+    @WithAttributes(shortName = 'p', label = "Publisher", type = InputType.DROPDOWN, required = true)
+    private UISelectOne<AlgeronPublisher> publisher;
 
+    @Inject
+    @WithAttributes(shortName = 'l', label = "Publish Contracts")
+    private UIInput<String> publishContracts;
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Algeron"))
-            .name("Arquillian Algeron: Setup Retriever")
-            .description("This wizard registers a Retriever for Algeron");
+            .name("Arquillian Algeron: Setup Publisher")
+            .description("This wizard registers a Publisher for Algeron");
     }
 
     @Override
@@ -53,20 +60,24 @@ public class AlgeronRetrieverWizard extends AbstractProjectCommand implements UI
 
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
-        builder.add(retriever);
+        builder.add(publisher).add(publishContracts);
 
-        retriever.setValueChoices(Arrays.asList(AlgeronRetriever.values()));
-        retriever.setItemLabelConverter(element -> element.name().toLowerCase());
+        publisher.setValueChoices(Arrays.asList(AlgeronPublisher.values()));
+        publisher.setItemLabelConverter(element -> element.name().toLowerCase());
+
+        publishContracts.setDefaultValue("${env.publishcontracts:false}");
+
     }
 
     @Override
     public Result execute(UIExecutionContext context) throws Exception {
-        return Results.success("Installed Algeron Retriever.");
+        return Results.success("Installed Algeron Publisher.");
     }
 
     @Override
     public NavigationResult next(UINavigationContext context) throws Exception {
-        return Results.navigateTo(retriever.getValue().getImplementingCommand());
+        Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
+        ctx.put(PUBLISH_CONTRACTS, publishContracts.getValue());
+        return Results.navigateTo(publisher.getValue().getImplementingCommand());
     }
-
 }

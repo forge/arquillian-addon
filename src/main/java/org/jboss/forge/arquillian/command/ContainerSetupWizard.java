@@ -123,7 +123,7 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
         Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
         ctx.put(ContainerSetupWizard.CTX_CONTAINER, containerAdapter.getValue());
         ctx.put(ContainerSetupWizard.CTX_CONTAINER_VERSION, containerAdapterVersion.getValue());
-        return Results.navigateTo(AddContainerDependencyStep.class);
+        return Results.navigateTo(AddContainerCommand.class);
     }
 
     @Override

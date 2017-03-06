@@ -4,8 +4,8 @@ import org.jboss.forge.addon.ui.command.UICommand;
 
 enum AlgeronRetriever {
 
-    FOLDER(AddAlgeronFolderRetriever.class), URL(AddAlgeronUrlRetriever.class), GIT(AddAlgeronGitRetriever.class),
-    MAVEN(AddAlgeronMavenRetriever.class), PACT_BROKER(AddAlgeronPactBrokerRetriever.class);
+    FOLDER(AlgeronAddFolderRetrieverCommand.class), URL(AlgeronAddUrlRetrieverCommand.class), GIT(AlgeronAddGitRetrieverCommand.class),
+    MAVEN(AlgeronAddMavenRetrieverCommand.class), PACT_BROKER(AlgeronAddPactBrokerRetrieverCommand.class);
 
     private Class<? extends UICommand> implementingCommand;
 
