@@ -24,11 +24,9 @@ public class AnnotationAssert extends AbstractAssert<AnnotationAssert, Annotatio
         return this;
     }
 
-    public AnnotationAssert withPropertyAndValues(String... keyValues) {
-        for (String keyValue : keyValues) {
-            final String[] split = keyValue.split(":");
-            Assertions.assertThat(actual.getStringValue(split[0])).isEqualTo(split[1]);
-        }
+    public AnnotationAssert withPropertyAndValue(String property, String value) {
+
+        Assertions.assertThat(actual.getStringValue(property)).isEqualTo(value);
 
         return this;
     }

@@ -52,7 +52,7 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate {
 
         assertThat(testClass).hasMethod("dockerUrlShouldNotBeNull");
         assertThat(testClass).hasField("url").annotatedWith(ArquillianResource.class).ofType("java.net.URL");
-        assertThat(testClass).hasField("url").hasAnnotation("DockerUrl").withPropertyAndValues("containerName:hello-world", "exposedPort:8080");
+        assertThat(testClass).hasField("url").hasAnnotation("DockerUrl").withPropertyAndValue("containerName", "hello-world").withPropertyAndValue("exposedPort","8080");
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate {
 
         assertThat(testClass).hasMethod("dockerUrlShouldNotBeNull");
         assertThat(testClass).hasField("url").annotatedWith(ArquillianResource.class).ofType("java.net.URL");
-        assertThat(testClass).hasField("url").hasAnnotation("DockerUrl").withPropertyAndValues("containerName:hello-world", "exposedPort:8080");
+        assertThat(testClass).hasField("url").hasAnnotation("DockerUrl").withPropertyAndValue("containerName", "hello-world").withPropertyAndValue("exposedPort", "8080");
     }
 
     @Test
