@@ -8,6 +8,12 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 public class KubernetesCubeTestSetup implements CubeTestSetup {
 
+    private String serviceName;
+
+    public KubernetesCubeTestSetup(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
     @Override
     public JavaClassSource updateTest(JavaClassSource test) {
 
@@ -46,7 +52,6 @@ public class KubernetesCubeTestSetup implements CubeTestSetup {
             .setPrivate()
             .addAnnotation(ArquillianResource.class);
 
-        test.getField("service").addAnnotation("Named").setStringValue("my-service");
-
+        test.getField("service").addAnnotation("Named").setStringValue(serviceName);
     }
 }

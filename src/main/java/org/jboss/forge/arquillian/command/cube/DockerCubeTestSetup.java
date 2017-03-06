@@ -8,6 +8,14 @@ import java.net.URL;
 
 public class DockerCubeTestSetup implements CubeTestSetup {
 
+    private String containerName;
+    private String exposedPort;
+
+    public DockerCubeTestSetup(String containerName, String exposedPort) {
+        this.containerName = containerName;
+        this.exposedPort = exposedPort;
+    }
+
     @Override
     public JavaClassSource updateTest(JavaClassSource test) {
         addImports(test);
@@ -44,7 +52,7 @@ public class DockerCubeTestSetup implements CubeTestSetup {
             .addAnnotation(ArquillianResource.class);
 
         test.getField("url").addAnnotation("org.arquillian.cube.DockerUrl")
-            .setStringValue("containerName", "your_container_name")
-            .setLiteralValue("exposedPort", "0");
+            .setStringValue("containerName", containerName)
+            .setLiteralValue("exposedPort", exposedPort);
     }
 }

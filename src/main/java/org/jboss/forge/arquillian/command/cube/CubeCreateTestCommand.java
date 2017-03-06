@@ -13,6 +13,7 @@ import org.jboss.forge.addon.ui.command.UICommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
+import org.jboss.forge.addon.ui.input.UIInput;
 import org.jboss.forge.addon.ui.input.UISelectOne;
 import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
@@ -43,6 +44,18 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
     @WithAttributes(shortName = 'c', label = "Test Class", required = true)
     private UISelectOne<JavaClassSource> testClass;
 
+    @Inject
+    @WithAttributes(shortName = 'n', label = "Container Name", required = true)
+    private UIInput<String> containerName;
+
+    @Inject
+    @WithAttributes(shortName = 'p', label = "Exposed Port", required = true)
+    private UIInput<String> exposedPort;
+
+    @Inject
+    @WithAttributes(shortName = 's', label = "Service Name", required = true)
+    private UIInput<String> serviceName;
+
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
         builder.add(testClass);
@@ -60,13 +73,22 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
                         sources.add((JavaClassSource) javaType);
                     }
                 } catch (FileNotFoundException e) {
-                    logger.log(Level.SEVERE,"an exception was thrown", e);
+                    logger.log(Level.SEVERE, "an exception was thrown", e);
                 }
             }
         });
 
         this.testClass.setValueChoices(sources);
         this.testClass.setItemLabelConverter(JavaClassSource::getQualifiedName);
+
+        if (isDocker(project)) {
+            builder.add(containerName);
+            builder.add(exposedPort);
+        }
+
+        if (isKubernetes(project) || isOpenshift(project)) {
+            builder.add(serviceName);
+        }
     }
 
     @Override
@@ -86,9 +108,9 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
 
             CubeTestSetup cubeTestSetup = null;
             if (isKubernetes(project) || isOpenshift(project)) {
-                cubeTestSetup = new KubernetesCubeTestSetup();
+                cubeTestSetup = new KubernetesCubeTestSetup(serviceName.getValue());
             } else if (isDocker(project)) {
-                cubeTestSetup = new DockerCubeTestSetup();
+                cubeTestSetup = new DockerCubeTestSetup(containerName.getValue(), exposedPort.getValue());
             }
             if (cubeTestSetup == null) {
                 return Results.fail("Could not find arquillian-cube-docker OR arquillian-cube-kubernetes OR arquillian-cube-openshift dependency in pom.xml. Please install it using `arquillian-cube-setup` command");
@@ -114,6 +136,12 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
         final DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
 
         return dependencyFacet.hasEffectiveDependency(Target.KUBERNETES.getDependencyBuilder());
+    }
+
+    private boolean isOpenshift(Project project) {
+        final DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
+
+        return dependencyFacet.hasEffectiveDependency(Target.OPENSHIFT.getDependencyBuilder());
     }
 
     private boolean isStandalone(Project project) {
@@ -153,9 +181,4 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
         return projectFactory;
     }
 
-    public boolean isOpenshift(Project project) {
-        final DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
-
-        return dependencyFacet.hasEffectiveDependency(Target.OPENSHIFT.getDependencyBuilder());
-    }
 }

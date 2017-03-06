@@ -29,6 +29,14 @@ public class FieldAssert extends AbstractAssert<FieldAssert, FieldSource<JavaCla
         return this;
     }
 
+    public AnnotationAssert hasAnnotation(final String annotation) {
+
+        final AnnotationSource<JavaClassSource> annotationSource = actual.getAnnotation(annotation);
+        Assertions.assertThat(annotationSource).isNotNull();
+
+        return new AnnotationAssert(annotationSource);
+    }
+
     public FieldAssert annotatedWithStringValue(final String annotation, final String value) {
         final AnnotationSource<JavaClassSource> actualAnnotation = actual.getAnnotation(annotation);
         Assertions.assertThat(actualAnnotation).isNotNull();
@@ -36,6 +44,4 @@ public class FieldAssert extends AbstractAssert<FieldAssert, FieldSource<JavaCla
 
         return this;
     }
-
-
 }
