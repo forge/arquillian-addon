@@ -10,7 +10,7 @@ import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.arquillian.api.ArquillianConfig;
+import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 
 @FacetConstraints({
     @FacetConstraint(DependencyFacet.class),

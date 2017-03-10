@@ -6,7 +6,7 @@ import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.ui.input.UISelectOne;
 import org.jboss.forge.arquillian.api.core.AbstractVersionedFacet;
-import org.jboss.forge.arquillian.api.ArquillianConfig;
+import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 import org.jboss.forge.arquillian.api.core.ArquillianFacet;
 import org.jboss.forge.arquillian.model.cube.CubeConfiguration;
 

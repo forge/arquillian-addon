@@ -19,8 +19,8 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
 import org.jboss.forge.arquillian.api.core.ArquillianFacet;
-import org.jboss.forge.arquillian.api.core.TestFrameworkFacet;
-import org.jboss.forge.arquillian.api.TestFrameworkInstallEvent;
+import org.jboss.forge.arquillian.api.core.testframework.TestFrameworkFacet;
+import org.jboss.forge.arquillian.api.core.testframework.TestFrameworkInstallEvent;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;

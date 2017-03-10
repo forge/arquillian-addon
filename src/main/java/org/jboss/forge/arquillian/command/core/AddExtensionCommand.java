@@ -17,7 +17,7 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.core.ArquillianExtensionFacet;
 import org.jboss.forge.arquillian.api.core.ArquillianFacet;
-import org.jboss.forge.arquillian.api.Extension;
+import org.jboss.forge.arquillian.extension.Extension;
 import org.jboss.forge.arquillian.extension.ExtensionResolver;
 
 import javax.inject.Inject;

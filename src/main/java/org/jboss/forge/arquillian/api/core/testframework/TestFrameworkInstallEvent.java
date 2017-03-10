@@ -4,10 +4,8 @@
  * Licensed under the Eclipse Public License version 1.0, available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.jboss.forge.arquillian.api;
+package org.jboss.forge.arquillian.api.core.testframework;
 
-
-import org.jboss.forge.arquillian.api.core.TestFrameworkFacet;
 
 /**
  * @Author Paul Bakker - paul.bakker.nl@gmail.com

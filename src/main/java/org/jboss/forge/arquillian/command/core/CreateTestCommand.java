@@ -30,7 +30,7 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.core.ArquillianFacet;
-import org.jboss.forge.arquillian.api.core.TestFrameworkFacet;
+import org.jboss.forge.arquillian.api.core.testframework.TestFrameworkFacet;
 import org.jboss.forge.arquillian.model.core.ArchiveType;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.JavaType;

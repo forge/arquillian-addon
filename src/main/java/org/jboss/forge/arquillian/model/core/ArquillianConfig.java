@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.api;
+package org.jboss.forge.arquillian.model.core;
 
 import org.jboss.forge.parser.xml.Node;
 import org.jboss.forge.parser.xml.XMLParser;

@@ -20,7 +20,7 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizard;
 import org.jboss.forge.arquillian.api.core.ArquillianFacet;
-import org.jboss.forge.arquillian.api.ContainerInstallEvent;
+import org.jboss.forge.arquillian.container.ContainerInstallEvent;
 import org.jboss.forge.arquillian.container.ContainerResolver;
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.container.model.ContainerType;

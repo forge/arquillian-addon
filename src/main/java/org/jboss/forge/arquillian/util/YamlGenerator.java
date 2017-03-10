@@ -1,4 +1,4 @@
-package org.jboss.forge.arquillian.api;
+package org.jboss.forge.arquillian.util;
 
 import org.yaml.snakeyaml.Yaml;
 

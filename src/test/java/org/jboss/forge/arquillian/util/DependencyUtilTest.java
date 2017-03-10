@@ -21,7 +21,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.forge.arquillian;
+package org.jboss.forge.arquillian.util;
 
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;

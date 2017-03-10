@@ -4,40 +4,40 @@
  * Licensed under the Eclipse Public License version 1.0, available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.jboss.forge.arquillian.testframework;
+package org.jboss.forge.arquillian.api.core.testframework;
 
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-import org.jboss.forge.arquillian.api.core.TestFrameworkFacet;
 
 /**
  * @author <a href="mailto:bartosz.majsak@gmail.com">Bartosz Majsak</a>
  */
-public class JUnitFacet extends TestFrameworkFacet {
+public class TestNGFacet extends TestFrameworkFacet {
     @Override
     public String getFrameworkName() {
-        return "junit";
+        return "testng";
     }
 
     @Override
     public String getTemplateLocation() {
-        return "/JUnitTest.ftl";
+        return "/TestNGTest.ftl";
     }
 
     @Override
     public String getTemplateStandaloneLocation() {
-        return "/JUnitStandaloneTest.ftl";
+        return "/TestNGStandaloneTest.ftl";
     }
 
     @Override
     public String getVersionPropertyName() {
-        return "version.junit";
+        return "version.testng";
     }
+
 
     @Override
     public DependencyBuilder createFrameworkDependency() {
         return DependencyBuilder.create()
-            .setGroupId("junit")
-            .setArtifactId("junit")
+            .setGroupId("org.testng")
+            .setArtifactId("testng")
             .setScopeType("test");
     }
 
@@ -45,7 +45,7 @@ public class JUnitFacet extends TestFrameworkFacet {
     public DependencyBuilder createArquillianDependency() {
         return DependencyBuilder.create()
             .setGroupId("org.arquillian.universe")
-            .setArtifactId("arquillian-junit")
+            .setArtifactId("arquillian-testng")
             .setScopeType("test")
             .setPackaging("pom");
     }
@@ -54,7 +54,7 @@ public class JUnitFacet extends TestFrameworkFacet {
     public DependencyBuilder createArquillianStandaloneDependency() {
         return DependencyBuilder.create()
             .setGroupId("org.arquillian.universe")
-            .setArtifactId("arquillian-junit-standalone")
+            .setArtifactId("arquillian-testng-standalone")
             .setScopeType("test")
             .setPackaging("pom");
     }
