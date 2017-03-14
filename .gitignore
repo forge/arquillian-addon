@@ -36,3 +36,6 @@ infinitest.filters
 
 atlassian-ide-plugin.xml
 .forge_settings
+
+# Ignore floo workspace settings
+.floo

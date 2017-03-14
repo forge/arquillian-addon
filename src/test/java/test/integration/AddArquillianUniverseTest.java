@@ -7,8 +7,8 @@ import org.jboss.forge.addon.ui.controller.CommandController;
 import org.jboss.forge.addon.ui.result.Failed;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.test.UITestHarness;
-import org.jboss.forge.arquillian.api.ArquillianFacet;
-import org.jboss.forge.arquillian.command.AddArquillianCommand;
+import org.jboss.forge.arquillian.api.core.ArquillianFacet;
+import org.jboss.forge.arquillian.command.core.ArquillianAddCommand;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,7 @@ public class AddArquillianUniverseTest {
     public void shouldAddUniverseBOM() throws Exception {
         Project project = factory.createTempProject();
 
-        try (CommandController addCommandController = testHarness.createCommandController(AddArquillianCommand.class, project.getRoot())) {
+        try (CommandController addCommandController = testHarness.createCommandController(ArquillianAddCommand.class, project.getRoot())) {
             addCommandController.initialize();
             addCommandController.setValueFor("arquillianVersion", "1.0.0.Alpha2");
             Result result = addCommandController.execute();

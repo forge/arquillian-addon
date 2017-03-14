@@ -22,7 +22,7 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.arquillian.api.cube.CubeSetupFacet;
-import org.jboss.forge.arquillian.container.model.Target;
+import org.jboss.forge.arquillian.model.cube.Target;
 import org.jboss.forge.roaster.model.JavaType;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 

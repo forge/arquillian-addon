@@ -3,7 +3,7 @@ package test.integration.support.assertions;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
-import org.jboss.forge.arquillian.api.ArquillianConfig;
+import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 import org.jboss.forge.parser.xml.Node;
 
 import java.util.Arrays;

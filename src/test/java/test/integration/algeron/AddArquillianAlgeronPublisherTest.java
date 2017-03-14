@@ -2,7 +2,7 @@ package test.integration.algeron;
 
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.arquillian.api.ArquillianConfig;
+import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import test.integration.extension.AddPackage;

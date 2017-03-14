@@ -6,7 +6,7 @@
  */
 package org.jboss.forge.arquillian.container;
 
-import org.jboss.forge.arquillian.container.index.ContainerDirectoryParser;
+import org.jboss.forge.arquillian.container.provider.ContainerDirectoryParser;
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.container.model.ContainerType;
 

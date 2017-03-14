@@ -7,8 +7,8 @@ import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
-import org.jboss.forge.arquillian.api.AbstractVersionedFacet;
-import org.jboss.forge.arquillian.api.ArquillianFacet;
+import org.jboss.forge.arquillian.api.core.AbstractVersionedFacet;
+import org.jboss.forge.arquillian.api.core.ArquillianFacet;
 
 @FacetConstraint(ArquillianFacet.class)
 @FacetConstraint(ConfigurationFacet.class)

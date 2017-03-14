@@ -7,7 +7,7 @@ import org.jboss.forge.addon.configuration.facets.ConfigurationFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.arquillian.api.ArquillianConfig;
+import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 
 public class ProjectAssert extends AbstractAssert<ProjectAssert, Project> {
 
