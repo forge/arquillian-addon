@@ -8,7 +8,7 @@ public enum CubeConfiguration {
     DOCKER(Target.DOCKER.getDependencyBuilder(), "docker", "Docker", "dockerContainers"),
     DOCKER_COMPOSE(Target.DOCKER.getDependencyBuilder(), "docker", "Docker Compose", "dockerContainersFile"),
     KUBERNETES(Target.KUBERNETES.getDependencyBuilder(), "kubernetes", "Kubernetes", "env.config.url"),
-    OPENSHIFT(Target.OPENSHIFT.getDependencyBuilder(), "openshift", "Openshift", "definitionsFile");
+    OPENSHIFT(Target.OPENSHIFT.getDependencyBuilder(), "openshift", "Openshift", "env.config.url");
 
     final private DependencyBuilder dependency;
 
