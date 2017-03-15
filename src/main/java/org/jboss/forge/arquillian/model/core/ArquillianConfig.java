@@ -94,15 +94,30 @@ public class ArquillianConfig {
         return container;
     }
 
-    public Node getNode(String qualifier) {
+    public Node getExtensionNode(String qualifier) {
         return xml.get(EXTENSION).stream()
             .filter(node -> node.getAttribute(QUALIFIER).equals(qualifier))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Extension with qualifier: " + qualifier + " not found."));
     }
 
+    public Node getContainerNode(String qualifier) {
+        return xml.get(CONTAINER).stream()
+            .filter(node -> node.getAttribute(QUALIFIER).equals(qualifier))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Container with qualifier: " + qualifier + " not found."));
+    }
+
     public boolean isExtensionRegistered(String qualifier) {
         return xml.get(EXTENSION)
+            .stream()
+            .map(n -> n.getAttribute(QUALIFIER))
+            .filter(qualifier::equals)
+            .findAny().isPresent();
+    }
+
+    public boolean isContainerRegistered(String qualifier) {
+        return xml.get(CONTAINER)
             .stream()
             .map(n -> n.getAttribute(QUALIFIER))
             .filter(qualifier::equals)

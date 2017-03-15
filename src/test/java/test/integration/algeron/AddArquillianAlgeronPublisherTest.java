@@ -1,17 +1,14 @@
 package test.integration.algeron;
 
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
-import test.integration.support.assertions.ForgeAssertions;
 
 import java.util.concurrent.TimeoutException;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
 @AddPackage(containing = ShellTestTemplate.class)
@@ -23,15 +20,8 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate {
             .execute("arquillian-algeron-setup-consumer --contracts-library pact")
             .execute("arquillian-algeron-setup-publisher --publisher folder --output-folder /tmp/pacts");
 
-        final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
-        assertThat(arquillianXml.exists()).isTrue();
-
-        final ArquillianConfig arquillianConfig = new ArquillianConfig(arquillianXml.getResourceInputStream());
-        assertThat(arquillianConfig.isExtensionRegistered("algeron-consumer")).isTrue();
-        final String configuration = arquillianConfig.getContentOfNode("extension@qualifier=algeron-consumer/property@name=publishConfiguration");
-        assertThat(configuration).isNotNull();
-        assertThat(configuration)
-            .contains("provider: folder", "outputFolder: /tmp/pacts");
+        assertThat(project).hasArquillianConfig().withExtension("algeron-consumer")
+            .withProperty("publishConfiguration").containsExactly("provider: folder", "outputFolder: /tmp/pacts", "contractsFolder: target/pacts");
     }
 
     @Test
@@ -40,16 +30,8 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate {
             .execute("arquillian-algeron-setup-consumer --contracts-library pact")
             .execute("arquillian-algeron-setup-publisher --publisher url --url http://localhost");
 
-        final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
-        assertThat(arquillianXml.exists()).isTrue();
-
-        final ArquillianConfig arquillianConfig = new ArquillianConfig(arquillianXml.getResourceInputStream());
-        assertThat(arquillianConfig.isExtensionRegistered("algeron-consumer")).isTrue();
-        final String configuration = arquillianConfig.getContentOfNode("extension@qualifier=algeron-consumer/property@name=publishConfiguration");
-        assertThat(configuration).isNotNull();
-
-        assertThat(configuration)
-            .contains("provider: url", "url: http://localhost");
+        assertThat(project).hasArquillianConfig().withExtension("algeron-consumer")
+            .withProperty("publishConfiguration").containsExactly("provider: url", "url: http://localhost", "contractsFolder: target/pacts");
     }
 
     @Test
@@ -58,19 +40,10 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate {
             .execute("arquillian-algeron-setup-consumer --contracts-library pact")
             .execute("arquillian-algeron-setup-publisher --publisher git --url http://localhost --comment newcomment");
 
-        final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
-        assertThat(arquillianXml.exists()).isTrue();
 
-        final ArquillianConfig arquillianConfig = new ArquillianConfig(arquillianXml.getResourceInputStream());
-        assertThat(arquillianConfig.isExtensionRegistered("algeron-consumer")).isTrue();
-        final String configuration = arquillianConfig.getContentOfNode("extension@qualifier=algeron-consumer/property@name=publishConfiguration");
-        assertThat(configuration).isNotNull();
-
-        assertThat(configuration)
-            .contains("provider: git", "url: http://localhost", "comment: newcomment");
-
-        ForgeAssertions.assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-git-publisher").withType("pom").withScope("test");
-
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-git-publisher").withType("pom").withScope("test");
+        assertThat(project).hasArquillianConfig().withExtension("algeron-consumer")
+            .withProperty("publishConfiguration").containsExactly("provider: git", "url: http://localhost", "comment: newcomment", "remote: origin", "contractsFolder: target/pacts");
     }
 
     @Test
@@ -81,16 +54,8 @@ public class AddArquillianAlgeronPublisherTest extends ShellTestTemplate {
 
         shell().execute("arquillian-algeron-setup-publisher --publisher folder --output-folder /tmp/pacts");
 
-        final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
-        assertThat(arquillianXml.exists()).isTrue();
-
-        final ArquillianConfig arquillianConfig = new ArquillianConfig(arquillianXml.getResourceInputStream());
-        assertThat(arquillianConfig.isExtensionRegistered("algeron-consumer")).isTrue();
-        final String configuration = arquillianConfig.getContentOfNode("extension@qualifier=algeron-consumer/property@name=publishContracts");
-        assertThat(configuration).isNotNull();
-
-        assertThat(configuration)
-            .contains("env.publishcontracts:false");
+        assertThat(project).hasArquillianConfig().withExtension("algeron-consumer")
+            .withProperty("publishContracts", "${env.publishcontracts:false}");
     }
 
 }

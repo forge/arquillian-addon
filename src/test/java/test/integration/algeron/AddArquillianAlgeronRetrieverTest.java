@@ -1,17 +1,14 @@
 package test.integration.algeron;
 
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import test.integration.extension.AddPackage;
 import test.integration.support.ShellTestTemplate;
-import test.integration.support.assertions.ForgeAssertions;
 
 import java.util.concurrent.TimeoutException;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
 @AddPackage(containing = ShellTestTemplate.class)
@@ -23,15 +20,8 @@ public class AddArquillianAlgeronRetrieverTest extends ShellTestTemplate {
             .execute("arquillian-algeron-setup-provider --contracts-library pact")
             .execute("arquillian-algeron-setup-retriever --retriever folder --contract-folder /tmp");
 
-        final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
-        assertThat(arquillianXml.exists()).isTrue();
-
-        final ArquillianConfig arquillianConfig = new ArquillianConfig(arquillianXml.getResourceInputStream());
-        assertThat(arquillianConfig.isExtensionRegistered("algeron-provider")).isTrue();
-        final String configuration = arquillianConfig.getContentOfNode("extension@qualifier=algeron-provider/property@name=retrieverConfiguration");
-        assertThat(configuration).isNotNull();
-        assertThat(configuration)
-            .contains("provider: folder", "contractsFolder: /tmp");
+        assertThat(project).hasArquillianConfig().withExtension("algeron-provider")
+            .withProperty("retrieverConfiguration").containsExactly("provider: folder", "contractsFolder: /tmp");
     }
 
     @Test
@@ -40,19 +30,10 @@ public class AddArquillianAlgeronRetrieverTest extends ShellTestTemplate {
             .execute("arquillian-algeron-setup-provider --contracts-library pact")
             .execute("arquillian-algeron-setup-retriever --retriever git --url http://localhost");
 
-        final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
-        assertThat(arquillianXml.exists()).isTrue();
+        assertThat(project).hasArquillianConfig().withExtension("algeron-provider")
+            .withProperty("retrieverConfiguration").containsExactly("provider: git", "url: http://localhost");
 
-        final ArquillianConfig arquillianConfig = new ArquillianConfig(arquillianXml.getResourceInputStream());
-        assertThat(arquillianConfig.isExtensionRegistered("algeron-provider")).isTrue();
-        final String configuration = arquillianConfig.getContentOfNode("extension@qualifier=algeron-provider/property@name=retrieverConfiguration");
-        assertThat(configuration).isNotNull();
-
-        assertThat(configuration)
-            .contains("provider: git", "url: http://localhost");
-
-        ForgeAssertions.assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-git-retriever").withType("pom").withScope("test");
-
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-git-retriever").withType("pom").withScope("test");
     }
 
     @Test
@@ -61,19 +42,10 @@ public class AddArquillianAlgeronRetrieverTest extends ShellTestTemplate {
             .execute("arquillian-algeron-setup-provider --contracts-library pact")
             .execute("arquillian-algeron-setup-retriever --retriever maven --maven-coordinates org.superbiz:foo:1.0.0");
 
-        final FileResource<?> arquillianXml = extractTestResource(project, "arquillian.xml");
-        assertThat(arquillianXml.exists()).isTrue();
+        assertThat(project).hasArquillianConfig().withExtension("algeron-provider")
+            .withProperty("retrieverConfiguration").containsExactly("provider: maven", "coordinates: org.superbiz:foo:1.0.0");
 
-        final ArquillianConfig arquillianConfig = new ArquillianConfig(arquillianXml.getResourceInputStream());
-        assertThat(arquillianConfig.isExtensionRegistered("algeron-provider")).isTrue();
-        final String configuration = arquillianConfig.getContentOfNode("extension@qualifier=algeron-provider/property@name=retrieverConfiguration");
-        assertThat(configuration).isNotNull();
-
-        assertThat(configuration)
-            .contains("provider: maven", "coordinates: org.superbiz:foo:1.0.0");
-
-        ForgeAssertions.assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-maven-retriever").withType("pom").withScope("test");
-
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-algeron-maven-retriever").withType("pom").withScope("test");
     }
 
 }
