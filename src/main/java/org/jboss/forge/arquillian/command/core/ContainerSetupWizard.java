@@ -53,7 +53,7 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
     private Event<ContainerInstallEvent> installEvent;
 
     @Inject
-    @WithAttributes(shortName = 'f', label = "Container Adapter Type", type = InputType.DROPDOWN, required = false)
+    @WithAttributes(shortName = 'f', label = "Container Adapter Type", type = InputType.DROPDOWN)
     private UISelectOne<ContainerType> containerAdapterType;
 
     @Inject
