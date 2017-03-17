@@ -18,6 +18,7 @@ public class PactAlgeronProviderTestSetup implements AlgeronProviderTestSetup {
         annotateTestClass(test, provider);
         createEnrichments(test);
         createTestMethod(test, testBody);
+        removeTestMethod("should_be_deployed", test);
 
         return test;
     }

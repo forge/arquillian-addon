@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CubeCreateTestCommand extends AbstractProjectCommand implements UICommand {
+public class CubeAddTestCommand extends AbstractProjectCommand implements UICommand {
 
-    private static final Logger logger = Logger.getLogger(CubeCreateTestCommand.class.getName());
+    private static final Logger logger = Logger.getLogger(CubeAddTestCommand.class.getName());
 
     @Inject
     private ProjectFactory projectFactory;
@@ -95,7 +95,7 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Cube"))
-            .name("Arquillian Cube: Create Test")
+            .name("Arquillian Cube: Add Test")
             .description("This command creates skeleton for cube on given test class.");
     }
 
@@ -104,7 +104,7 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
         final Project project = getSelectedProject(context);
         if (isStandalone(project)) {
             final JavaSourceFacet java = project.getFacet(JavaSourceFacet.class);
-            JavaClassSource updatedTest = this.testClass.getValue();
+            JavaClassSource classSource = this.testClass.getValue();
 
             CubeTestSetup cubeTestSetup = null;
             if (isKubernetes(project) || isOpenshift(project)) {
@@ -116,8 +116,8 @@ public class CubeCreateTestCommand extends AbstractProjectCommand implements UIC
                 return Results.fail("Could not find arquillian-cube-docker OR arquillian-cube-kubernetes OR arquillian-cube-openshift dependency in pom.xml. Please install it using `arquillian-cube-setup` command");
             }
 
-            cubeTestSetup.updateTest(updatedTest);
-            java.saveTestJavaSource(updatedTest);
+            cubeTestSetup.updateTest(classSource);
+            java.saveTestJavaSource(classSource);
 
             return Results.success("Test set up for cube has been done successfully.");
         } else {

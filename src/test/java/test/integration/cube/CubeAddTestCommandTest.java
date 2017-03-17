@@ -15,7 +15,7 @@ import static test.integration.support.assertions.ForgeAssertions.assertThat;
 
 @RunWith(Arquillian.class)
 @AddPackage(ShellTestTemplate.PACKAGE_NAME)
-public class CubeCreateTestCommandTest extends ShellTestTemplate {
+public class CubeAddTestCommandTest extends ShellTestTemplate {
 
     @Test
     public void should_create_test_for_kubernetes() throws TimeoutException, FileNotFoundException {
@@ -25,7 +25,7 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate {
             .execute("arquillian-cube-setup --type kubernetes --file-path src/test/resources/kubernetes.yml");
 
         shell().execute("arquillian-create-test --named MyKubernetesTest --target-package org.cube.kubernetes")
-            .execute("arquillian-cube-create-test --test-class org.cube.kubernetes.MyKubernetesTest --service-name my-service");
+            .execute("arquillian-cube-add-test --test-class org.cube.kubernetes.MyKubernetesTest --service-name my-service");
 
         final JavaClassSource testClass = extractClass(project, "org.cube.kubernetes.MyKubernetesTest");
 
@@ -44,7 +44,7 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate {
             .execute("arquillian-cube-setup --type docker --file-path src/test/resources/Dockerfile");
 
         shell().execute("arquillian-create-test --named MyDockerTest --target-package org.cube.docker")
-            .execute("arquillian-cube-create-test --test-class org.cube.docker.MyDockerTest --exposed-port 8080 --container-name hello-world");
+            .execute("arquillian-cube-add-test --test-class org.cube.docker.MyDockerTest --exposed-port 8080 --container-name hello-world");
 
         final JavaClassSource testClass = extractClass(project, "org.cube.docker.MyDockerTest");
 
@@ -63,7 +63,7 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate {
             .execute("arquillian-cube-setup --type docker-compose --file-path docker-compose.yml");
 
         shell().execute("arquillian-create-test --named MyDockerComposeTest --target-package org.cube.docker")
-            .execute("arquillian-cube-create-test --test-class org.cube.docker.MyDockerComposeTest  --exposed-port 8080 --container-name hello-world");
+            .execute("arquillian-cube-add-test --test-class org.cube.docker.MyDockerComposeTest  --exposed-port 8080 --container-name hello-world");
 
         final JavaClassSource testClass = extractClass(project, "org.cube.docker.MyDockerComposeTest");
 
@@ -82,7 +82,7 @@ public class CubeCreateTestCommandTest extends ShellTestTemplate {
             .execute("arquillian-cube-setup --type kubernetes --file-path src/test/resources/hello-pod.yml");
 
         shell().execute("arquillian-create-test --named MyOpenshiftTest --target-package org.cube.openshift")
-            .execute("arquillian-cube-create-test --service-name my-service --test-class org.cube.openshift.MyOpenshiftTest --service-name my-service");
+            .execute("arquillian-cube-add-test --service-name my-service --test-class org.cube.openshift.MyOpenshiftTest --service-name my-service");
 
         final JavaClassSource testClass = extractClass(project, "org.cube.openshift.MyOpenshiftTest");
 

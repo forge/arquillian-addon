@@ -21,6 +21,7 @@ public class DockerCubeTestSetup implements CubeTestSetup {
         addImports(test);
         createEnrichments(test);
         createTestMethod(test);
+        removeTestMethod("should_be_deployed", test);
 
         return test;
     }

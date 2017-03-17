@@ -1,5 +1,6 @@
 package org.jboss.forge.arquillian.command.algeron.provider;
 
+import org.jboss.forge.arquillian.command.TestSetUp;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 import java.util.function.Function;
@@ -7,7 +8,7 @@ import java.util.function.Function;
 /**
  * Algeron Provider contract to modify given test to be a contract provider test.
  */
-public interface AlgeronProviderTestSetup {
+public interface AlgeronProviderTestSetup extends TestSetUp {
 
     /**
      * updates test with provider code.

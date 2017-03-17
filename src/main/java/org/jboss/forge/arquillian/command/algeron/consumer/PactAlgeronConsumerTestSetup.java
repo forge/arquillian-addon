@@ -33,6 +33,7 @@ public class PactAlgeronConsumerTestSetup implements AlgeronConsumerTestSetup {
         annotateTestClass(test, consumer, provider);
         createContractFragment(test, fragmentName);
         createTestMethod(test, consumer, provider, fragmentName);
+        removeTestMethod("should_be_deployed", test);
 
         return test;
     }

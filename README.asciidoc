@@ -44,15 +44,15 @@ Before running above command make sure that file provided with file-path is exis
 
 *Create Test:*
 
-Before running above command you have to create a test class, run command:
+To create a test class, run command:
 
 `arquillian-create-test --named MyDockerComposeTest --target-package org.arquillian.cube`.
 
-*Test Enricher:*
+*Add Cube Test & Enrichers:*
 
 To enrich a given Arquillian test with respective annotations depending on selected type, run command:
 
-`arquillian-cube-create-test --test-class org.cube.docker.MyDockerComposeTest`
+`arquillian-cube-add-test --test-class org.cube.docker.MyDockerComposeTest`
 
 Same way you can create a test for Kubernetes, Docker, Openshift.
 
@@ -68,7 +68,7 @@ Same way you can create a test for Kubernetes, Docker, Openshift.
 | arquillian-container-configuration | To configure container configuration.                                            |
 | arquillian-create-test             | To create a test inside package.                                                 |
 | arquillian-cube-setup              | To add arquillian cube dependency & updates arquillian configuration.            |
-| arquillian-cube-create-test        | To configure a test with required Test enricher depending on selected type.      |
+| arquillian-cube-add-test           | To configure a test with required Test enricher depending on selected type.      |
 |========================================================================================================================
 
 For more details about options have a look into integration tests at:
