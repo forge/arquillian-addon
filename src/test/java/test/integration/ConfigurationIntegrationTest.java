@@ -18,9 +18,7 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
     public void should_configure_container() throws Exception {
         shell().execute("arquillian-setup --container-adapter tomcat-embedded-6 --test-framework junit");
 
-        final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
-        FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
-        assertThat(arquillianXML.getContents()).contains("<container qualifier=\"arquillian-tomcat-embedded-6\"/>");
+        assertThat(project).hasArquillianConfig().withContainer("arquillian-tomcat-embedded-6");
     }
 
     @Test
@@ -29,9 +27,8 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
 
-        final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
-        FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
-        assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">${chameleon.target}</property>");
+        assertThat(project).hasArquillianConfig().withContainer("arquillian-wildfly-remote").hasConfiguration()
+            .withProperty("chameleonTarget","${chameleon.target}");
     }
 
     @Test
@@ -40,13 +37,14 @@ public class ConfigurationIntegrationTest extends ShellTestTemplate {
 
         assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
 
-        final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
-        FileResource<?> arquillianXML = facet.getTestResource("arquillian.xml");
-
-        assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">${chameleon.target}</property>");
+        assertThat(project).hasArquillianConfig().withContainer("arquillian-wildfly-remote").hasConfiguration()
+            .withProperty("chameleonTarget","${chameleon.target}");
 
         shell().execute("arquillian-container-setup --container-adapter wildfly-managed");
-        assertThat(arquillianXML.getContents()).contains("<property name=\"chameleonTarget\">${chameleon.target}</property>");
+
+        assertThat(project).hasArquillianConfig().withContainer("arquillian-wildfly-managed").hasConfiguration()
+            .withProperty("chameleonTarget","${chameleon.target}");
+
     }
 
 
