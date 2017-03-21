@@ -6,6 +6,8 @@
  */
 package org.jboss.forge.arquillian.container.provider;
 
+import org.arquillian.container.chameleon.Loader;
+import org.arquillian.container.chameleon.spi.model.Target;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.PropertyNamingStrategy;
 import org.codehaus.jackson.type.TypeReference;
@@ -20,12 +22,15 @@ import java.util.List;
  * @Author Paul Bakker - paul.bakker.nl@gmail.com
  */
 public class ContainerDirectoryParser {
-    private static List<Container> containers;
 
     @Inject
-    private ContainerIndexLocationProvider containerDirectoryLocationProvider;
+    ContainerIndexLocationProvider containerDirectoryLocationProvider;
 
-    void createContainers() {
+    public List<Container> getContainers() throws IOException {
+           return mapContainersFromConfigutaionFile();
+    }
+
+    private List<Container> mapContainersFromConfigutaionFile() {
         try {
             final ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setPropertyNamingStrategy(
@@ -35,15 +40,23 @@ public class ContainerDirectoryParser {
                 new TypeReference<List<Container>>() {
                 });
 
-            containers = Collections.unmodifiableList(parsedContainers);
+            Loader loader = new Loader();
+            final org.arquillian.container.chameleon.spi.model.Container[] containers = loader.loadContainers(Target.class.getClassLoader().getResourceAsStream("chameleon/default/containers.yaml"));
+
+            parsedContainers.stream()
+                .filter(container -> container.getGroupId() == null && container.getArtifactId() == null)
+                .forEach(container -> {
+                    try {
+                        container.setGroupIdAndArtifactIdFromChameleonConfiguration(containers);
+                    } catch (Exception e) {
+                        throw new IllegalStateException("Couldn't set Group Id & Artifact Id for container" + container.getName());
+                    }
+                });
+
+            return Collections.unmodifiableList(parsedContainers);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<Container> getContainers() throws IOException {
-        if (containers == null)
-            createContainers();
-        return containers;
-    }
 }

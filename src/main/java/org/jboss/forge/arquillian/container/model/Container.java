@@ -6,18 +6,17 @@
  */
 package org.jboss.forge.arquillian.container.model;
 
+import org.arquillian.container.chameleon.spi.model.Dist;
 import org.arquillian.container.chameleon.spi.model.Target;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Author Paul Bakker - paul.bakker.nl@gmail.com
@@ -164,7 +163,10 @@ public class Container implements Comparable<Container> {
 
     @Override
     public String toString() {
-        return getDisplayName();
+        final String name = getName().toLowerCase().replaceAll("arquillian (?:container )?", "");
+
+        return name.replace(" ", "_").toUpperCase();
+
     }
 
     public boolean shouldIncludeDirectDependency() {
@@ -195,50 +197,41 @@ public class Container implements Comparable<Container> {
         return false;
     }
 
-    // This is work around as method written in chameleon-model is
-    // not working if called from initializeUI of Command AddContainerDependecyStep.
+    public void setGroupIdAndArtifactIdFromChameleonConfiguration(org.arquillian.container.chameleon.spi.model.Container... containers) throws Exception {
+        String pattern = "(?<=arquillian container).*(?=remote|managed|embedded)";
 
-    public boolean isVersionMatches(String version) throws Exception {
-        InputStream inputStream = Target.class.getClassLoader().getResourceAsStream("chameleon/default/containers.yaml");
-        Map<String, List<String>> map = parseNameAndVersionExpressions(inputStream);
-        final String containerName = Identifier.getNameForChameleon(this);
-        if (map.get(containerName) != null) {
-            for (String versionExp : map.get(containerName)) {
-                if (version.matches(versionExp)) {
-                    return true;
-                }
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(this.getName().toLowerCase());
+
+        if (m.find()) {
+            Optional<String> containerName = Optional.ofNullable(m.group(0));
+            if (containerName.isPresent()) {
+                String finalContainerName = containerName.get().trim();
+                Arrays.stream(containers)
+                    .filter(container -> {
+                        final boolean matched = Arrays.stream(container.getAdapters())
+                            .anyMatch(adapter -> adapter.getType().equalsIgnoreCase(this.containerType.toString()));
+
+                        return matched && container.getName().equalsIgnoreCase(finalContainerName);
+                    })
+                    .forEach(container -> {
+                        final Dist dist = container.getDist();
+                        final String[] split = dist.coordinates().split(":");
+                        if (split.length >= 2) {
+                            this.setGroupId(split[0]);
+                            this.setArtifactId(split[1]);
+                        } else {
+                            throw new IllegalStateException("Group Id or Artifact Id is missing in distribution of chameleon configuration for container: " + container.getName());
+                        }
+                    });
             }
         }
-
-        return false;
     }
 
-    private Map<String, List<String>> parseNameAndVersionExpressions(InputStream input) throws IOException {
-        Map<String, List<String>> map = new HashMap<>();
-        final String nameToMatch = "- name:";
-        final String versionExprtoMatch = "versionExpression:";
 
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
-            List<String> namesAndExpsLines = buffer.lines().
-                filter(s -> s.contains(nameToMatch) || s.contains(versionExprtoMatch)).
-                collect(Collectors.toList());
-            String name = null;
-            for (String line : namesAndExpsLines) {
-                if (line.contains(nameToMatch)) {
-                    name = line.split(":")[1].trim().toLowerCase();
-                } else if (line.contains(versionExprtoMatch) && name != null) {
-                    String version = line.split(":")[1].trim().toLowerCase();
-                    if (map.containsKey(name)) {
-                        map.get(name).add(version);
-                    } else {
-                        List<String> versionExps = new ArrayList<>();
-                        versionExps.add(version);
-                        map.put(name, versionExps);
-                    }
-                }
-            }
-        }
+    public boolean isVersionMatches(String version) throws Exception {
+        final String chameleonTarget = getChameleonTarget(version);
 
-        return map;
+        return Target.from(chameleonTarget).isVersionSupported();
     }
 }

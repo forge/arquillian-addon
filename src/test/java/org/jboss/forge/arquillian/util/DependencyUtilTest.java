@@ -26,7 +26,7 @@ package org.jboss.forge.arquillian.util;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.arquillian.container.model.Container;
-import org.jboss.forge.arquillian.util.DependencyUtil;
+import org.jboss.forge.arquillian.container.model.ContainerType;
 import org.jboss.forge.arquillian.container.model.Identifier;
 import org.junit.Test;
 
@@ -64,7 +64,7 @@ public class DependencyUtilTest {
         deps.add(DependencyBuilder.create().setVersion("1.0-SNAPSHOT").getCoordinate());
 
         List<String> dep = DependencyUtil.toVersionString(deps,
-            createContainer(Identifier.TOMCAT.getArtifactID(), Identifier.TOMCAT.getName()));
+            createContainer("tomcat", Identifier.TOMCAT.getArtifactID(), Identifier.TOMCAT.getName()));
 
         assertThat(dep).doesNotContain("2.1", "4.1");
         assertThat(dep).contains("7.1");
@@ -77,7 +77,7 @@ public class DependencyUtilTest {
         deps.add(DependencyBuilder.create().setVersion("7.1").getCoordinate());
 
         List<String> dep = DependencyUtil.toVersionString(deps,
-            createContainer("arquillian-jbossas-managed-4.2", "JBoss As"));
+            createContainer("org.jboss.as", "arquillian-jbossas-managed-4.2", "JBoss As"));
 
         assertThat(dep).contains("4.1", "7.1");
     }
@@ -100,10 +100,12 @@ public class DependencyUtilTest {
         assertThat(dep).isNull();
     }
 
-    private Container createContainer(String artifactId, String name) {
+    private Container createContainer(String groupId, String artifactId, String name) {
         Container container = new Container();
+        container.setGroupId(groupId);
         container.setArtifactId(artifactId);
         container.setName(name);
+        container.setContainerType(ContainerType.MANAGED);
 
         return container;
     }
