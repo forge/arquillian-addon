@@ -1,17 +1,18 @@
 package org.jboss.forge.arquillian.container;
 
-import org.apache.maven.model.Activation;
-import org.apache.maven.model.BuildBase;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.model.Profile;
+import org.apache.maven.model.*;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.maven.dependencies.MavenDependencyAdapter;
+import org.jboss.forge.addon.maven.plugins.ConfigurationBuilder;
+import org.jboss.forge.addon.maven.plugins.ExecutionBuilder;
+import org.jboss.forge.addon.maven.plugins.MavenPluginAdapter;
+import org.jboss.forge.addon.maven.plugins.MavenPluginBuilder;
 import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.projects.Project;
+import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.arquillian.container.model.Container;
 
 import javax.inject.Inject;
@@ -68,6 +69,51 @@ public class ProfileManager {
 
         Model pom = checkForExistingProfileAndGetPom(facet, container, profile);
         facet.setModel(pom);
+    }
+
+    public void installContainer(Container container, Project project, String version) {
+        MavenFacet mavenCoreFacet = project.getFacet(MavenFacet.class);
+        DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
+        Model pom = mavenCoreFacet.getModel();
+
+        Profile containerProfile = findProfileById(container.getProfileId(), pom);
+        if (containerProfile == null) {
+            containerProfile = findProfileById(container.getId(), pom);
+        }
+        if (containerProfile == null) {
+            throw new RuntimeException("Container profile with id " + container.getId() + " or "
+                + container.getProfileId() + " not found");
+        }
+
+        ConfigurationBuilder configuration = ConfigurationBuilder.create();
+        configuration.createConfigurationElement("artifactItems")
+            .createConfigurationElement("artifactItem")
+            .addChild("groupId").setText(container.getDownload().getGroupId()).getParentElement()
+            .addChild("artifactId").setText(container.getDownload().getArtifactId()).getParentElement()
+            .addChild("version").setText(version).getParentElement()
+            .addChild("type").setText("zip").getParentElement()
+            .addChild("overWrite").setText("false").getParentElement()
+            .addChild("outputDirectory")
+            .setText("${project.basedir}/target" + container.getId());
+
+        MavenPluginBuilder pluginBuilder = MavenPluginBuilder
+            .create()
+            .setCoordinate(DependencyBuilder.create("org.apache.maven.plugins:maven-dependency-plugin").getCoordinate())
+            .addExecution(
+                ExecutionBuilder.create().setId("unpack").setPhase("process-test-classes").addGoal("unpack")
+                    .setConfig(configuration));
+
+        BuildBase build = containerProfile.getBuild();
+        if (build == null) {
+            build = new BuildBase();
+        }
+
+        build.addPlugin(new MavenPluginAdapter(pluginBuilder));
+        containerProfile.setBuild(build);
+        pom.removeProfile(containerProfile);
+        pom.addProfile(containerProfile);
+
+        mavenCoreFacet.setModel(pom);
     }
 
     private Model checkForExistingProfileAndGetPom(MavenFacet facet, Container container, Profile profile) {
