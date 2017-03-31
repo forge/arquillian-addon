@@ -16,10 +16,11 @@ If you need to install an additional container profile, run command:
 
 `arquillian-add-container`
 
-In above command if selected container is supported by https://github.com/arquillian/arquillian-container-chameleon[chameleon] then it is configured using chameleon, otherwise it will add required dependency to setup container.
+In above command if selected container is supported by https://github.com/arquillian/arquillian-container-chameleon[chameleon] then it is configured using chameleon, otherwise it will add required container adapter to setup container.
 
-For managed containers it might make sense to automatically download & install the container during the build to make installation on a build server more easy. This is only supported for AS7 at this moment.
-You can also type --<TAB> to auto-complete with the desired options.
+If container is not supported by chameleon, you have to install container manually.
+
+Note: We are no longer supporting container prior to JBoss AS 7 in forge.
 
 *Generating tests*
 
