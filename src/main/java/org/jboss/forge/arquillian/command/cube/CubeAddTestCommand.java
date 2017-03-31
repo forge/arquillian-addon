@@ -115,7 +115,6 @@ public class CubeAddTestCommand extends AbstractProjectCommand implements UIComm
             if (cubeTestSetup == null) {
                 return Results.fail("Could not find arquillian-cube-docker OR arquillian-cube-kubernetes OR arquillian-cube-openshift dependency in pom.xml. Please install it using `arquillian-cube-setup` command");
             }
-
             cubeTestSetup.updateTest(classSource);
             java.saveTestJavaSource(classSource);
 

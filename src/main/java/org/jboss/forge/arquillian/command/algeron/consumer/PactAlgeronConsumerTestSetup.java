@@ -33,9 +33,16 @@ public class PactAlgeronConsumerTestSetup implements AlgeronConsumerTestSetup {
         annotateTestClass(test, consumer, provider);
         createContractFragment(test, fragmentName);
         createTestMethod(test, consumer, provider, fragmentName);
-        removeTestMethod("should_be_deployed", test);
+        removeShouldBeDeployedMethod(test);
 
         return test;
+    }
+
+    private void removeShouldBeDeployedMethod(JavaClassSource test) {
+        final MethodSource<JavaClassSource> should_be_deployed = test.getMethod("should_be_deployed");
+        if (test.hasMethod(should_be_deployed)) {
+            test.removeMethod(should_be_deployed);
+        }
     }
 
     private void createTestMethod(JavaClassSource test, String consumer, String provider, String fragmentName) {

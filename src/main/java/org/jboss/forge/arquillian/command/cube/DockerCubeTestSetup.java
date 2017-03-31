@@ -3,6 +3,7 @@ package org.jboss.forge.arquillian.command.cube;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.MethodSource;
 
 import java.net.URL;
 
@@ -21,20 +22,27 @@ public class DockerCubeTestSetup implements CubeTestSetup {
         addImports(test);
         createEnrichments(test);
         createTestMethod(test);
-        removeTestMethod("should_be_deployed", test);
+        removeShouldBeDeployedMethod(test);
 
         return test;
     }
 
+    private void removeShouldBeDeployedMethod(JavaClassSource test) {
+        final MethodSource<JavaClassSource> should_be_deployed = test.getMethod("should_be_deployed");
+        if (test.hasMethod(should_be_deployed)) {
+            test.removeMethod(should_be_deployed);
+        }
+    }
+
     private void createTestMethod(JavaClassSource test) {
-        if (!test.hasMethodSignature("public dockerUrlShouldNotBeNull() : void")) {
+        if (!test.hasMethodSignature("public docker_url_should_not_be_null() : void")) {
             test.addMethod()
-                .setName("dockerUrlShouldNotBeNull")
+                .setName("docker_url_should_not_be_null")
                 .setPublic()
                 .setReturnTypeVoid();
         }
 
-        test.getMethod("dockerUrlShouldNotBeNull")
+        test.getMethod("docker_url_should_not_be_null")
             .setBody("assertNotNull(url);")
             .addAnnotation("Test");
     }

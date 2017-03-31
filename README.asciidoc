@@ -59,17 +59,17 @@ Same way you can create a test for Kubernetes, Docker, Openshift.
 *All Available Commands*
 
 [width="80%"]
-|========================================================================================================================
-| Name                               | Usage                                                                            |
-| arquillian-setup                   | To setup container, and add test framework dependency.                           |
-| arquillian-add                     | To add arquillian universe bom dependency                                        |
-| arquillian-add-testframework       | To add testframework dependency.                                                 |
-| arquillian-container-setup         | To add required dependency for container to setup.                               |
-| arquillian-container-configuration | To configure container configuration.                                            |
-| arquillian-create-test             | To create a test inside package.                                                 |
-| arquillian-cube-setup              | To add arquillian cube dependency & updates arquillian configuration.            |
-| arquillian-cube-add-test           | To configure a test with required Test enricher depending on selected type.      |
-|========================================================================================================================
+|====================================================================================================================================
+| Name                               | Usage                                                                                         |
+| arquillian-setup                   | To setup container, and add test framework dependency.                                        |
+| arquillian-add                     | To add arquillian universe bom dependency                                                     |
+| arquillian-add-testframework       | To add testframework dependency.                                                              |
+| arquillian-container-setup         | To add required dependency for container to setup.                                            |
+| arquillian-container-configuration | To configure container configuration.                                                         |
+| arquillian-create-test             | To create a test inside package.                                                              |
+| arquillian-cube-setup              | To add arquillian cube dependency & updates arquillian configuration.                         |
+| arquillian-cube-add-test           | To add a test method in selected class with required test enricher depending on selected type.|
+|====================================================================================================================================
 
 For more details about options have a look into integration tests at:
 https://github.com/forge/arquillian-addon/tree/master/src/test/java/test/integration[integration tests]

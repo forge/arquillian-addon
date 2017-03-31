@@ -5,6 +5,7 @@ import org.arquillian.algeron.pact.provider.spi.Target;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.MethodSource;
 
 import java.net.URL;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class PactAlgeronProviderTestSetup implements AlgeronProviderTestSetup {
         annotateTestClass(test, provider);
         createEnrichments(test);
         createTestMethod(test, testBody);
-        removeTestMethod("should_be_deployed", test);
+        removeShouldBeDeployedMethod(test);
 
         return test;
     }
@@ -30,6 +31,13 @@ public class PactAlgeronProviderTestSetup implements AlgeronProviderTestSetup {
             .setName("should_verify_contract")
             .setBody(getTestMethodBody(test, testBody))
             .addAnnotation("Test");
+    }
+
+    private void removeShouldBeDeployedMethod(JavaClassSource test) {
+        final MethodSource<JavaClassSource> should_be_deployed = test.getMethod("should_be_deployed");
+        if (test.hasMethod(should_be_deployed)) {
+            test.removeMethod(should_be_deployed);
+        }
     }
 
     private String getTestMethodBody(JavaClassSource test, Function<JavaClassSource, String> testBody) {

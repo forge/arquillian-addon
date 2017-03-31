@@ -35,6 +35,7 @@ public class AddArquillianAlgeronCreateProviderTest extends ShellTestTemplate {
         assertThat(testClass).hasAnnotation(Provider.class).withValue("myprovider");
 
         assertThat(testClass).hasMethod("should_verify_contract");
+        assertThat(testClass).doesNotHaveMethod("should_be_deployed");
         assertThat(testClass).hasField("target").annotatedWith(ArquillianResource.class);
 
     }
