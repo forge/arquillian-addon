@@ -202,7 +202,7 @@ public class CubeSetupCommand extends AbstractProjectCommand implements UIComman
             if (cubeSetupFacet.isDocker(type)) {
                 addDockerParameters(parameters, context);
             } else {
-                if (cubeSetupFacet.isKubernetes(type)) {
+                if (cubeSetupFacet.isKubernetes(type) || cubeSetupFacet.isOpenshift(type)) {
                     addKubernetesParameters(parameters, context);
                 } else {
                     parameters.put(this.cubeSetupFacet.getCubeConfiguration().getKeyForFileLocation(), filePath.getValue());
