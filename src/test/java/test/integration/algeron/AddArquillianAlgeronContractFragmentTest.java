@@ -35,7 +35,6 @@ public class AddArquillianAlgeronContractFragmentTest extends ShellTestTemplate 
         assertThat(testClass).hasAnnotation(Pact.class).withEntry("consumer", "myconsumer")
             .withEntry("provider", "myprovider");
 
-        assertThat(testClass).doesNotHaveMethod("should_be_deployed");
         assertThat(testClass).hasMethod("myFragment", PactDslWithProvider.class);
         assertThat(testClass).hasMethod("should_my_Fragment_between_myconsumer_and_myprovider")
             .withAnnotation(PactVerification.class).withEntry("fragment", "myFragment");

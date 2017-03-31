@@ -32,7 +32,6 @@ public class CubeAddTestCommandTest extends ShellTestTemplate {
         assertThat(testClass).hasAnnotation(RunWith.class).withValue("org.jboss.arquillian.junit.Arquillian");
 
         assertThat(testClass).hasMethod("service_instance_should_not_be_null");
-        assertThat(testClass).doesNotHaveMethod("should_be_deployed");
         assertThat(testClass).hasField("service").annotatedWith(ArquillianResource.class).ofType("io.fabric8.kubernetes.api.model.Service");
         assertThat(testClass).hasField("service").annotatedWithStringValue("Named", "my-service");
     }
@@ -52,7 +51,6 @@ public class CubeAddTestCommandTest extends ShellTestTemplate {
         assertThat(testClass).hasAnnotation(RunWith.class).withValue("org.jboss.arquillian.junit.Arquillian");
 
         assertThat(testClass).hasMethod("docker_url_should_not_be_null");
-        assertThat(testClass).doesNotHaveMethod("should_be_deployed");
         assertThat(testClass).hasField("url").annotatedWith(ArquillianResource.class).ofType("java.net.URL");
         assertThat(testClass).hasField("url").hasAnnotation("DockerUrl").withPropertyAndValue("containerName", "hello-world").withPropertyAndValue("exposedPort","8080");
     }
@@ -72,7 +70,6 @@ public class CubeAddTestCommandTest extends ShellTestTemplate {
         assertThat(testClass).hasAnnotation(RunWith.class).withValue("org.jboss.arquillian.junit.Arquillian");
 
         assertThat(testClass).hasMethod("docker_url_should_not_be_null");
-        assertThat(testClass).doesNotHaveMethod("should_be_deployed");
         assertThat(testClass).hasField("url").annotatedWith(ArquillianResource.class).ofType("java.net.URL");
         assertThat(testClass).hasField("url").hasAnnotation("DockerUrl").withPropertyAndValue("containerName", "hello-world").withPropertyAndValue("exposedPort", "8080");
     }
@@ -92,7 +89,6 @@ public class CubeAddTestCommandTest extends ShellTestTemplate {
         assertThat(testClass).hasAnnotation(RunWith.class).withValue("org.jboss.arquillian.junit.Arquillian");
 
         assertThat(testClass).hasMethod("service_instance_should_not_be_null");
-        assertThat(testClass).doesNotHaveMethod("should_be_deployed");
         assertThat(testClass).hasField("service").annotatedWith(ArquillianResource.class).ofType("io.fabric8.kubernetes.api.model.Service");
         assertThat(testClass).hasField("service").annotatedWithStringValue("Named", "my-service");
     }

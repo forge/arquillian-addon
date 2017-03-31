@@ -4,7 +4,6 @@ package org.jboss.forge.arquillian.command.cube;
 import io.fabric8.kubernetes.api.model.Service;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.MethodSource;
 
 
 public class KubernetesCubeTestSetup implements CubeTestSetup {
@@ -21,16 +20,8 @@ public class KubernetesCubeTestSetup implements CubeTestSetup {
         addImports(test);
         createEnrichments(test);
         createTestMethod(test);
-        removeShouldBeDeployedMethod(test);
 
         return test;
-    }
-
-    private void removeShouldBeDeployedMethod(JavaClassSource test) {
-        final MethodSource<JavaClassSource> should_be_deployed = test.getMethod("should_be_deployed");
-        if (test.hasMethod(should_be_deployed)) {
-            test.removeMethod(should_be_deployed);
-        }
     }
 
     private void createTestMethod(JavaClassSource test) {
