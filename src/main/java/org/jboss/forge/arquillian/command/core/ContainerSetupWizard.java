@@ -28,6 +28,7 @@ import org.jboss.forge.arquillian.api.core.ArquillianFacet;
 import org.jboss.forge.arquillian.container.ContainerResolver;
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.container.model.ContainerType;
+import org.jboss.forge.arquillian.container.model.Dependency;
 import org.jboss.forge.arquillian.util.DependencyUtil;
 
 import javax.inject.Inject;
@@ -124,17 +125,12 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
             return null;
         });
 
-        installContainer.setEnabled(() -> containerAdapter.hasValue() && containerAdapter.getValue().getDownload() != null);
-        installContainer.setDefaultValue(() -> {
-            if (installContainer.isEnabled()) {
-                return false;
-            }
-            return null;
-        });
+        installContainer.setEnabled(() -> containerAdapter.hasValue() && containerAdapter.getValue().getDownload() != null && isDownloadCoordinateORUrlExists(containerAdapter.getValue().getDownload()));
+        installContainer.setDefaultValue(() -> false);
 
         final Project project = getSelectedProject(builder);
 
-        containerVersion.setEnabled(() -> containerAdapter.hasValue() && installContainer.hasValue() && installContainer.getValue());
+        containerVersion.setEnabled(() -> containerAdapter.hasValue() && installContainer.hasValue() && isDownloadCoordinateExists(containerAdapter.getValue().getDownload()));
         containerVersion.setValueChoices(() -> {
             if (containerAdapter.hasValue() && containerVersion.isEnabled()) {
                 return getAvailableVersions(containerAdapter.getValue(), project);
@@ -142,11 +138,19 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
             return Collections.emptyList();
         });
         containerVersion.setDefaultValue(() -> {
-            if (containerAdapter.hasValue()) {
+            if (containerAdapter.hasValue() && containerVersion.isEnabled()) {
                return DependencyUtil.getLatestNonSnapshotVersion(getAvailableVersions(containerAdapter.getValue(), project));
             }
             return null;
         });
+    }
+
+    private boolean isDownloadCoordinateORUrlExists(Dependency dependency) {
+        return dependency.getUrl() != null || isDownloadCoordinateExists(dependency);
+    }
+
+    private boolean isDownloadCoordinateExists(Dependency dependency) {
+        return dependency.getArtifactId() != null && dependency.getGroupId() != null;
     }
 
     @Override
@@ -159,7 +163,7 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
         Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
         ctx.put(ContainerSetupWizard.CTX_CONTAINER, containerAdapter.getValue());
         ctx.put(ContainerSetupWizard.CTX_CONTAINER_VERSION, containerAdapterVersion.getValue());
-        if (installContainer.hasValue()) {
+        if (installContainer.isEnabled() && installContainer.hasValue()) {
             ctx.put(ContainerSetupWizard.INSTALL_CONTAINER, installContainer.getValue());
             ctx.put(ContainerSetupWizard.CONTAINER_VERSION, containerVersion.getValue());
         }
@@ -176,7 +180,9 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
         return projectFactory;
     }
 
+
     private List<String> getAvailableVersions(Container container, Project project) {
+
         if (container != null) {
             final DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
 

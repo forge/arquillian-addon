@@ -1,6 +1,10 @@
 package org.jboss.forge.arquillian.container;
 
-import org.apache.maven.model.*;
+import org.apache.maven.model.Activation;
+import org.apache.maven.model.BuildBase;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.Profile;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.jboss.forge.addon.dependencies.Dependency;
@@ -12,7 +16,6 @@ import org.jboss.forge.addon.maven.plugins.MavenPluginAdapter;
 import org.jboss.forge.addon.maven.plugins.MavenPluginBuilder;
 import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.projects.facets.DependencyFacet;
 import org.jboss.forge.arquillian.container.model.Container;
 
 import javax.inject.Inject;
@@ -40,7 +43,7 @@ public class ProfileManager {
 
     public boolean isAnyProfileRegistered(Project project) {
         MavenFacet mavenCoreFacet = project.getFacet(MavenFacet.class);
-        return ! mavenCoreFacet.getModel().getProfiles().isEmpty();
+        return !mavenCoreFacet.getModel().getProfiles().isEmpty();
     }
 
     public void addProfile(Project project, Container container, boolean activatedByDefault, List<Dependency> dependencies) {
@@ -71,9 +74,8 @@ public class ProfileManager {
         facet.setModel(pom);
     }
 
-    public void installContainer(Container container, Project project, String version) {
+    public void addContainerConfiguration(Container container, Project project, String version) {
         MavenFacet mavenCoreFacet = project.getFacet(MavenFacet.class);
-        DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
         Model pom = mavenCoreFacet.getModel();
 
         Profile containerProfile = findProfileById(container.getProfileId(), pom);
@@ -85,23 +87,35 @@ public class ProfileManager {
                 + container.getProfileId() + " not found");
         }
 
-        ConfigurationBuilder configuration = ConfigurationBuilder.create();
-        configuration.createConfigurationElement("artifactItems")
-            .createConfigurationElement("artifactItem")
-            .addChild("groupId").setText(container.getDownload().getGroupId()).getParentElement()
-            .addChild("artifactId").setText(container.getDownload().getArtifactId()).getParentElement()
-            .addChild("version").setText(version).getParentElement()
-            .addChild("type").setText("zip").getParentElement()
-            .addChild("overWrite").setText("false").getParentElement()
-            .addChild("outputDirectory")
-            .setText("${project.basedir}/target" + container.getId());
+        MavenPluginBuilder pluginBuilder = MavenPluginBuilder.create();
+        String downloadUrl = container.getDownload().getUrl();
 
-        MavenPluginBuilder pluginBuilder = MavenPluginBuilder
-            .create()
-            .setCoordinate(DependencyBuilder.create("org.apache.maven.plugins:maven-dependency-plugin").getCoordinate())
-            .addExecution(
-                ExecutionBuilder.create().setId("unpack").setPhase("process-test-classes").addGoal("unpack")
-                    .setConfig(configuration));
+        if (downloadUrl != null) {
+            ConfigurationBuilder configurationBuilder = ConfigurationBuilder.create();
+            configurationBuilder.createConfigurationElement("url").setText(downloadUrl);
+            configurationBuilder.createConfigurationElement("unpack").setText("true");
+            configurationBuilder.createConfigurationElement("overwrite").setText("false");
+            configurationBuilder.createConfigurationElement("outputDirectory").setText("${project.basedir}/target/");
+
+            pluginBuilder
+                .setCoordinate(DependencyBuilder.create("com.googlecode.maven-download-plugin:download-maven-plugin").getCoordinate())
+                .addExecution(getExecutionBuilderWithConfiguration(configurationBuilder, "wget"));
+        } else if (container.getDownload().getArtifactId() != null && container.getDownload().getGroupId() != null) {
+            ConfigurationBuilder configurationBuilder = ConfigurationBuilder.create();
+            configurationBuilder.createConfigurationElement("artifactItems")
+                .createConfigurationElement("artifactItem")
+                .addChild("groupId").setText(container.getDownload().getGroupId()).getParentElement()
+                .addChild("artifactId").setText(container.getDownload().getArtifactId()).getParentElement()
+                .addChild("version").setText(version).getParentElement()
+                .addChild("type").setText("zip").getParentElement()
+                .addChild("overWrite").setText("false").getParentElement()
+                .addChild("outputDirectory")
+                .setText("${project.basedir}/target/");
+
+            pluginBuilder
+                .setCoordinate(DependencyBuilder.create("org.apache.maven.plugins:maven-dependency-plugin").getCoordinate())
+                .addExecution(getExecutionBuilderWithConfiguration(configurationBuilder, "unpack"));
+        }
 
         BuildBase build = containerProfile.getBuild();
         if (build == null) {
@@ -114,6 +128,11 @@ public class ProfileManager {
         pom.addProfile(containerProfile);
 
         mavenCoreFacet.setModel(pom);
+    }
+
+    private ExecutionBuilder getExecutionBuilderWithConfiguration(org.jboss.forge.addon.maven.plugins.Configuration configuration, String goal) {
+        return ExecutionBuilder.create().setId("unpack").setPhase("process-test-classes").addGoal(goal)
+            .setConfig(configuration);
     }
 
     private Model checkForExistingProfileAndGetPom(MavenFacet facet, Container container, Profile profile) {

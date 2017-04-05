@@ -25,8 +25,8 @@ public class ContainerInstaller {
     private ProfileManager profileManager;
 
     public void installContainer(Project project, Container container, String version, Map<Dependency, String> dependencies) throws Exception {
-        boolean activatedByDefault = profileManager.isAnyProfileRegistered(project) ? false : true;
-        if (container.isSupportedByChameleon(version)) {
+        boolean activatedByDefault = !profileManager.isAnyProfileRegistered(project);
+        if (container.isSupportedByChameleon(version) && !container.isPayaraORGlassFishEmbedded()) {
             profileManager.addProfile(project, container, version, activatedByDefault);
         } else {
 

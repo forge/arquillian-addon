@@ -167,6 +167,12 @@ public class Container implements Comparable<Container> {
         return getDisplayName();
     }
 
+    public boolean isPayaraORGlassFishEmbedded() {
+        final String displayName = this.getDisplayName();
+
+        return displayName.equals("PAYARA_EMBEDDED") || displayName.equals("GLASSFISH_EMBEDDED");
+    }
+
     public String getChameleonTarget(String version) {
         return Identifier.getNameForChameleon(this) + ":" + version + ":" + getContainerType();
     }

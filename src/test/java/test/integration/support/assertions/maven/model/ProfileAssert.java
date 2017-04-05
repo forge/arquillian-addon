@@ -1,9 +1,12 @@
 package test.integration.support.assertions.maven.model;
 
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
+
+import java.util.List;
 
 
 public class ProfileAssert extends AbstractAssert<ProfileAssert, Profile> {
@@ -22,35 +25,28 @@ public class ProfileAssert extends AbstractAssert<ProfileAssert, Profile> {
         return this;
     }
 
-    public DependencyAssert hasDependency(String gav) {
-        return new DependencyAssert(createDependency(gav));
+    public DependencyAssert hasDependency(String ga) {
+        final List<Dependency> dependencies = actual.getDependencies();
+        final String[] split = ga.split(":");
+        final Dependency atualDependency = dependencies.stream()
+            .filter(dependency -> dependency.getGroupId().equals(split[0]) && dependency.getArtifactId().equals(split[1]))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("No dependency found with groupId: " + split[0] + " artifactId: " + split[1] + " in profile: " + actual.getId()));
+
+        return new DependencyAssert(atualDependency);
     }
 
-    private Dependency createDependency(String identifier) {
-        Dependency dependency = new Dependency();
-        if (identifier != null) {
-            String[] split = identifier.split(":");
-            if (split.length > 0) {
-                dependency.setGroupId(split[0].trim());
-            }
+    public ProfileAssert hasBuild() {
+        Assertions.assertThat(actual.getBuild()).isNotNull();
 
-            if (split.length > 1) {
-                dependency.setArtifactId(split[1].trim());
-            }
-
-            if (split.length > 2) {
-                dependency.setVersion(split[2].trim());
-            }
-
-            if (split.length > 3) {
-                dependency.setScope(split[3].trim());
-            }
-
-            if (split.length > 4) {
-                dependency.setType(split[4].trim());
-            }
-        }
-
-        return dependency;
+        return this;
     }
+
+    public ProfileAssert hasPluginSize(Integer size) {
+        final List<Plugin> pluginList = actual.getBuild().getPlugins();
+        Assertions.assertThat(pluginList).hasSize(size);
+
+        return this;
+    }
+
 }

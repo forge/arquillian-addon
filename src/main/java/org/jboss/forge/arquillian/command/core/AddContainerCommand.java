@@ -103,7 +103,7 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
         ArquillianConfig config = arquillian.getConfig();
         final String profileId = container.getProfileId();
         final boolean supportedByChameleon = container.isSupportedByChameleon(version);
-        if (supportedByChameleon) {
+        if (supportedByChameleon && !container.isPayaraORGlassFishEmbedded()) {
             dependencyManager.addChameleonDependency(project);
             if (config.containsDefaultContainer()) {
                 config.addContainer(profileId);
@@ -124,8 +124,8 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
             version,
             getVersionedDependenciesMap());
 
-        if (installContainer && !supportedByChameleon) {
-            profileManager.installContainer(container, project, containerVersion);
+        if (installContainer != null && installContainer) {
+            profileManager.addContainerConfiguration(container, project, containerVersion);
         }
 
         return Results.success("Installed " + container.getName() + " dependencies");

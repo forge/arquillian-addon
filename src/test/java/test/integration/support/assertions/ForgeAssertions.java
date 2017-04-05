@@ -1,11 +1,13 @@
 package test.integration.support.assertions;
 
+import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;
 import org.assertj.core.api.Assertions;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import test.integration.support.assertions.maven.model.PluginAssert;
 import test.integration.support.assertions.maven.model.ProfileAssert;
 
 public class ForgeAssertions extends Assertions {
@@ -28,5 +30,9 @@ public class ForgeAssertions extends Assertions {
 
     public static ProfileAssert assertThat(Profile profile) {
         return new ProfileAssert(profile);
+    }
+
+    public static PluginAssert assertThat(Plugin plugin) {
+        return new PluginAssert(plugin);
     }
 }
