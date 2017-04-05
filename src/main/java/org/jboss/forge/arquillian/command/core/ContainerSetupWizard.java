@@ -125,7 +125,7 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
             return null;
         });
 
-        installContainer.setEnabled(() -> containerAdapter.hasValue() && containerAdapter.getValue().getDownload() != null && isDownloadCoordinateORUrlExists(containerAdapter.getValue().getDownload()));
+        installContainer.setEnabled(() -> containerAdapter.hasValue() && containerAdapter.getValue().getDownload() != null && isDownloadCoordinateOrUrlExists(containerAdapter.getValue().getDownload()));
         installContainer.setDefaultValue(() -> false);
 
         final Project project = getSelectedProject(builder);
@@ -145,7 +145,7 @@ public class ContainerSetupWizard extends AbstractProjectCommand implements UIWi
         });
     }
 
-    private boolean isDownloadCoordinateORUrlExists(Dependency dependency) {
+    private boolean isDownloadCoordinateOrUrlExists(Dependency dependency) {
         return dependency.getUrl() != null || isDownloadCoordinateExists(dependency);
     }
 

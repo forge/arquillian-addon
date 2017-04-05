@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 public class ProfileManager {
 
@@ -87,9 +88,26 @@ public class ProfileManager {
                 + container.getProfileId() + " not found");
         }
 
-        MavenPluginBuilder pluginBuilder = MavenPluginBuilder.create();
-        String downloadUrl = container.getDownload().getUrl();
+        containerProfile.addProperty("version.container", version);
 
+        MavenPluginBuilder pluginBuilder = MavenPluginBuilder.create();
+        addPluginConfiguration(container, pluginBuilder, version);
+
+        BuildBase build = containerProfile.getBuild();
+        if (build == null) {
+            build = new BuildBase();
+        }
+
+        build.addPlugin(new MavenPluginAdapter(pluginBuilder));
+        containerProfile.setBuild(build);
+        pom.removeProfile(containerProfile);
+        pom.addProfile(containerProfile);
+
+        mavenCoreFacet.setModel(pom);
+    }
+
+    private void addPluginConfiguration(Container container, MavenPluginBuilder pluginBuilder, String version) {
+        final String downloadUrl = container.getDownload().getUrl();
         if (downloadUrl != null) {
             ConfigurationBuilder configurationBuilder = ConfigurationBuilder.create();
             configurationBuilder.createConfigurationElement("url").setText(downloadUrl);
@@ -106,7 +124,7 @@ public class ProfileManager {
                 .createConfigurationElement("artifactItem")
                 .addChild("groupId").setText(container.getDownload().getGroupId()).getParentElement()
                 .addChild("artifactId").setText(container.getDownload().getArtifactId()).getParentElement()
-                .addChild("version").setText(version).getParentElement()
+                .addChild("version").setText("${version.container}").getParentElement()
                 .addChild("type").setText("zip").getParentElement()
                 .addChild("overWrite").setText("false").getParentElement()
                 .addChild("outputDirectory")
@@ -116,18 +134,6 @@ public class ProfileManager {
                 .setCoordinate(DependencyBuilder.create("org.apache.maven.plugins:maven-dependency-plugin").getCoordinate())
                 .addExecution(getExecutionBuilderWithConfiguration(configurationBuilder, "unpack"));
         }
-
-        BuildBase build = containerProfile.getBuild();
-        if (build == null) {
-            build = new BuildBase();
-        }
-
-        build.addPlugin(new MavenPluginAdapter(pluginBuilder));
-        containerProfile.setBuild(build);
-        pom.removeProfile(containerProfile);
-        pom.addProfile(containerProfile);
-
-        mavenCoreFacet.setModel(pom);
     }
 
     private ExecutionBuilder getExecutionBuilderWithConfiguration(org.jboss.forge.addon.maven.plugins.Configuration configuration, String goal) {

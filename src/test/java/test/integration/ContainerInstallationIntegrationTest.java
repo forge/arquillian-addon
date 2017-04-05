@@ -42,7 +42,8 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
 
     @Test
     public void should_install_glass_fish_embedded_container() throws Exception {
-        installContainerAssertProfileAndDependencies("glassfish-embedded");
+        installContainerAssertProfileAndDependencies("glassfish-embedded",
+            "org.glassfish.main.extras:glassfish-embedded-all", "org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1");
     }
 
     @Test
@@ -57,7 +58,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
 
     @Test
     public void should_install_payara_embedded_container() throws Exception {
-        installContainerAssertProfileAndDependencies("payara-embedded");
+        installContainerAssertProfileAndDependencies("payara-embedded", "fish.payara.extras:payara-embedded-all", "org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1");
     }
 
     @Test
@@ -259,7 +260,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
             .hasGoals("wget")
             .hasConfigurarion(
                 "<configuration>\n" +
-                    "  <url>http://archive.apache.org/dist/tomcat/tomcat-5/v5.5.36/bin/apache-tomcat-5.5.36.zip</url>\n" +
+                    "  <url>http://archive.apache.org/dist/tomcat/tomcat-5/v${version.container}/bin/apache-tomcat-${version.container}.zip</url>\n" +
                     "  <unpack>true</unpack>\n" +
                     "  <overwrite>false</overwrite>\n" +
                     "  <outputDirectory>${project.basedir}/target/</outputDirectory>\n" +
@@ -300,7 +301,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     }
 
     private void executeCmd(String container) throws TimeoutException {
-        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 15);
+        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 30);
     }
 
     private Profile getFirstProfile() {

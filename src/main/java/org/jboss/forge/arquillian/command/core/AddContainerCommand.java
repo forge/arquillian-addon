@@ -95,15 +95,13 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
         Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
         Container container = (Container) ctx.get(ContainerSetupWizard.CTX_CONTAINER);
         String version = (String) ctx.get(ContainerSetupWizard.CTX_CONTAINER_VERSION);
-        Boolean installContainer = (Boolean) ctx.get(ContainerSetupWizard.INSTALL_CONTAINER);
-        String containerVersion = (String) ctx.get(ContainerSetupWizard.CONTAINER_VERSION);
 
         Project project = getSelectedProject(context);
         ArquillianFacet arquillian = project.getFacet(ArquillianFacet.class);
         ArquillianConfig config = arquillian.getConfig();
         final String profileId = container.getProfileId();
         final boolean supportedByChameleon = container.isSupportedByChameleon(version);
-        if (supportedByChameleon && !container.isPayaraORGlassFishEmbedded()) {
+        if (supportedByChameleon) {
             dependencyManager.addChameleonDependency(project);
             if (config.containsDefaultContainer()) {
                 config.addContainer(profileId);
@@ -124,8 +122,15 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
             version,
             getVersionedDependenciesMap());
 
-        if (installContainer != null && installContainer) {
-            profileManager.addContainerConfiguration(container, project, containerVersion);
+        final Object containerInstall = ctx.get(ContainerSetupWizard.INSTALL_CONTAINER);
+
+        if ( containerInstall != null) {
+            boolean installContainer = (Boolean) containerInstall;
+            String containerVersion = (String) ctx.get(ContainerSetupWizard.CONTAINER_VERSION);
+
+            if (installContainer) {
+                profileManager.addContainerConfiguration(container, project, containerVersion);
+            }
         }
 
         return Results.success("Installed " + container.getName() + " dependencies");

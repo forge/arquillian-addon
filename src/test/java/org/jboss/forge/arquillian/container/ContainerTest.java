@@ -6,10 +6,15 @@
  */
 package org.jboss.forge.arquillian.container;
 
+import org.apache.maven.model.Model;
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.container.model.ContainerType;
 import org.jboss.forge.arquillian.container.model.Identifier;
 import org.junit.Test;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,6 +25,7 @@ public class ContainerTest {
 
     private static final String JBOSS_EAP_7_REMOTE = "Arquillian Container JBoss EAP Remote 7.x";
     private static final String JBOSS_AS_7_REMOTE = "Arquillian Container JBoss AS Remote 7.x";
+    private static final String PAYARA_EMBEDDED = "Arquillian Container Payara Embedded";
     private static final String FOO = "foo";
     private static final String JBOSS_AS_7_DOMAIN_REMOTE = "Arquillian Container JBoss AS Domain Remote 7.x";
 
@@ -173,6 +179,16 @@ public class ContainerTest {
 
         assertThat(container.isSupportedByChameleon(version)).isFalse();
         assertThat(container.isVersionMatches(version)).isFalse();
+    }
+
+    @Test
+    public void should_not_support_by_chameleon_for_payara_embedded() throws Exception {
+        final Container container = createContainerWithType(Identifier.PAYARA.getArtifactID(),
+            PAYARA_EMBEDDED, ContainerType.EMBEDDED);
+
+        final String version = "4.2.0";
+
+        assertThat(container.isSupportedByChameleon(version)).isFalse();
     }
 
     private Container createContainerWithArtifactId(String artifactId) {
