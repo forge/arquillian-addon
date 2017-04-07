@@ -1,10 +1,9 @@
 package org.jboss.forge.arquillian.command.cube;
 
 
+import java.net.URL;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-
-import java.net.URL;
 
 public class DockerCubeTestSetup implements CubeTestSetup {
 
@@ -26,14 +25,14 @@ public class DockerCubeTestSetup implements CubeTestSetup {
     }
 
     private void createTestMethod(JavaClassSource test) {
-        if (!test.hasMethodSignature("public dockerUrlShouldNotBeNull() : void")) {
+        if (!test.hasMethodSignature("public docker_url_should_not_be_null() : void")) {
             test.addMethod()
-                .setName("dockerUrlShouldNotBeNull")
+                .setName("docker_url_should_not_be_null")
                 .setPublic()
                 .setReturnTypeVoid();
         }
 
-        test.getMethod("dockerUrlShouldNotBeNull")
+        test.getMethod("docker_url_should_not_be_null")
             .setBody("assertNotNull(url);")
             .addAnnotation("Test");
     }

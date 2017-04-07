@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AlgeronCreateProviderTestCommand extends AbstractProjectCommand implements UICommand {
+public class AlgeronAddProviderTestCommand extends AbstractProjectCommand implements UICommand {
 
     @Inject
     private ProjectFactory projectFactory;
@@ -54,7 +54,7 @@ public class AlgeronCreateProviderTestCommand extends AbstractProjectCommand imp
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.from(super.getMetadata(context), getClass())
             .category(Categories.create("Algeron"))
-            .name("Arquillian Algeron: Create Provider Test")
+            .name("Arquillian Algeron: Add Provider Test")
             .description("This command creates skeleton for validating provider on given test");
     }
 

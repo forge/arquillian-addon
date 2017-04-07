@@ -1,14 +1,13 @@
 package org.jboss.forge.arquillian.command.algeron.provider;
 
+import java.net.URL;
+import java.util.Optional;
+import java.util.function.Function;
 import org.arquillian.algeron.pact.provider.spi.Provider;
 import org.arquillian.algeron.pact.provider.spi.Target;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-
-import java.net.URL;
-import java.util.Optional;
-import java.util.function.Function;
 
 public class PactAlgeronProviderTestSetup implements AlgeronProviderTestSetup {
 

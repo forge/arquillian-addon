@@ -25,14 +25,14 @@ public class KubernetesCubeTestSetup implements CubeTestSetup {
     }
 
     private void createTestMethod(JavaClassSource test) {
-        if (!test.hasMethodSignature("public serviceInstanceShouldNotBeNull() : void")) {
+        if (!test.hasMethodSignature("public service_instance_should_not_be_null() : void")) {
             test.addMethod()
-                .setName("serviceInstanceShouldNotBeNull")
+                .setName("service_instance_should_not_be_null")
                 .setPublic()
                 .setReturnTypeVoid();
         }
 
-        test.getMethod("serviceInstanceShouldNotBeNull")
+        test.getMethod("service_instance_should_not_be_null")
             .setBody("assertNotNull(service);")
             .addAnnotation("Test");
     }

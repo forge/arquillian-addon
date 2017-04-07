@@ -27,7 +27,7 @@ public class AddArquillianAlgeronCreateProviderTest extends ShellTestTemplate {
             .execute("arquillian-algeron-setup-provider --contracts-library pact");
 
         shell().execute("arquillian-create-test --named MyContractTest --target-package org.superbiz")
-            .execute("arquillian-algeron-create-provider-test --provider myprovider --test-class org.superbiz.MyContractTest");
+            .execute("arquillian-algeron-add-provider-test --provider myprovider --test-class org.superbiz.MyContractTest");
 
         final JavaClassSource testClass = extractClass(project, "org.superbiz.MyContractTest");
 
