@@ -142,7 +142,7 @@ public class ContainerTest {
         final Container container = createContainerWithType(Identifier.JBOSS_AS.getArtifactID(),
             JBOSS_AS_7_REMOTE, ContainerType.MANAGED);
 
-        final String version = "7.2.0.Final";
+        final String version = "7.1.1.Final";
 
         assertThat(container.isSupportedByChameleon(version)).isTrue();
         assertThat(container.isVersionMatches(version)).isTrue();
@@ -153,7 +153,7 @@ public class ContainerTest {
         final Container container = createContainerWithType(Identifier.JBOSS_AS.getArtifactID(),
             JBOSS_AS_7_DOMAIN_REMOTE, ContainerType.MANAGED);
 
-        final String version = "7.2.0.Final";
+        final String version = "7.1.1.Final";
 
         assertThat(container.isSupportedByChameleon(version)).isTrue();
         assertThat(container.isVersionMatches(version)).isTrue();

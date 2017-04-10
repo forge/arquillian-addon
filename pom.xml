@@ -21,7 +21,7 @@
     <version.arquillian.algeron>1.0.0.Alpha6</version.arquillian.algeron>
     <version.kubernetes_client>2.0.7</version.kubernetes_client>
     <version.pact>3.5.0-beta.3</version.pact>
-    <version.chameleon.container.model>1.0.0.Final-SNAPSHOT</version.chameleon.container.model>
+    <version.chameleon.container.model>1.0.0.Beta2</version.chameleon.container.model>
   </properties>
   <dependencyManagement>
     <dependencies>
