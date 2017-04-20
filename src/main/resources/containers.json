@@ -1158,8 +1158,8 @@
     ],
     "dependencies": [
       {
-        "artifact_id": "payara-embedded-all",
-        "group_id": "fish.payara.extras"
+        "artifact_id": "glassfish-embedded-all",
+        "group_id": "org.glassfish.main.extras"
       },
       {
         "artifact_id": "arquillian-glassfish-embedded-3.1",
@@ -1366,8 +1366,8 @@
     ],
     "dependencies": [
       {
-        "artifact_id": "glassfish-embedded-all",
-        "group_id": "org.glassfish.main.extras"
+        "artifact_id": "payara-embedded-all",
+        "group_id": "fish.payara.extras"
       },
       {
         "artifact_id": "arquillian-glassfish-embedded-3.1",
