@@ -1,12 +1,23 @@
 package org.jboss.forge.arquillian.command.core;
 
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.inject.Inject;
 import org.jboss.forge.addon.dependencies.DependencyQuery;
 import org.jboss.forge.addon.dependencies.DependencyResolver;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
+import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
+import org.jboss.forge.addon.resource.FileResource;
+import org.jboss.forge.addon.resource.Resource;
+import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
@@ -30,11 +41,9 @@ import org.jboss.forge.arquillian.container.model.Dependency;
 import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 import org.jboss.forge.arquillian.util.DependencyUtil;
 
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-
 public class AddContainerCommand extends AbstractProjectCommand implements UIWizardStep {
+
+    public static final Logger logger = Logger.getLogger(AddContainerCommand.class.getName());
 
     private final Map<Dependency, InputComponent<?, String>> dependencyVersions = new HashMap<>();
 
@@ -51,6 +60,8 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
     private ProfileManager profileManager;
 
     @Inject
+    private ResourceFactory resourceFactory;
+    @Inject
     private DependencyManager dependencyManager;
 
     @Inject
@@ -66,12 +77,14 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
 
     @Override
     public void initializeUI(final UIBuilder builder) throws Exception {
-        Container selectedContainer = (Container) builder.getUIContext().getAttributeMap().get(ContainerSetupWizard.CTX_CONTAINER);
+        Container selectedContainer =
+            (Container) builder.getUIContext().getAttributeMap().get(ContainerSetupWizard.CTX_CONTAINER);
         if (selectedContainer == null || selectedContainer.getDependencies() == null) {
             return;
         }
         for (final Dependency dependency : selectedContainer.getDependencies()) {
-            UISelectOne<String> dependencyVersion = inputFactory.createSelectOne(dependency.getArtifactId() + "-version", String.class);
+            UISelectOne<String> dependencyVersion =
+                inputFactory.createSelectOne(dependency.getArtifactId() + "-version", String.class);
             builder.add(dependencyVersion);
             dependencyVersions.put(dependency, dependencyVersion);
 
@@ -86,7 +99,6 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
                 resolver.resolveVersions(dependencyCoordinate)));
             dependencyVersion.setDefaultValue(() -> DependencyUtil.getLatestNonSnapshotVersionCoordinate(
                 resolver.resolveVersions(dependencyCoordinate)));
-
         }
     }
 
@@ -110,6 +122,9 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
             }
 
             config.addContainerProperty(profileId, "chameleonTarget", "${chameleon.target}");
+            if ("Arquillian Container Tomcat Managed".equals(container.getName())) {
+                addTomcatConfiguration(project, config, version, profileId);
+            }
         } else {
             config.addContainer(profileId);
         }
@@ -124,7 +139,7 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
 
         final Object containerInstall = ctx.get(ContainerSetupWizard.INSTALL_CONTAINER);
 
-        if ( containerInstall != null) {
+        if (containerInstall != null) {
             boolean installContainer = (Boolean) containerInstall;
             String containerVersion = (String) ctx.get(ContainerSetupWizard.CONTAINER_VERSION);
 
@@ -134,6 +149,25 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
         }
 
         return Results.success("Installed " + container.getName() + " dependencies");
+    }
+
+    private void addTomcatConfiguration(Project project, ArquillianConfig config, String version, String profileId) {
+
+        Pattern pattern = Pattern.compile("^\\d+");
+        Matcher matcher = pattern.matcher(version);
+
+        if (matcher.find()) {
+            final String versionPrefix = matcher.group(0);
+            final String resourceName = "tomcat" + versionPrefix + "-server.xml";
+
+            setResourcesContentForTomcat(project, resourceName);
+            setResourcesContentForTomcat(project, "tomcat-users.xml");
+
+            config.addContainerProperty(profileId, "user", "arquillian");
+            config.addContainerProperty(profileId, "pass", "arquillian");
+            config.addContainerProperty(profileId, "serverConfig",
+                "../../../../../src/test/resources/" + resourceName);
+        }
     }
 
     @Override
@@ -169,5 +203,17 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
     @Override
     public NavigationResult next(UINavigationContext context) throws Exception {
         return null;
+    }
+
+    private void setResourcesContentForTomcat(Project project, String resourceName) {
+        final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
+        final FileResource<?> testResource = facet.getTestResource(resourceName);
+
+        final Resource<URL> resource = resourceFactory.create(getClass().getClassLoader().getResource(resourceName));
+        if (resource.exists()) {
+            testResource.setContents(resource.getContents());
+        } else {
+            logger.severe("resource with name: " + resourceName + " does not exists in classpath.");
+        }
     }
 }

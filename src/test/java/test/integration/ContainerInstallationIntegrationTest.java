@@ -43,7 +43,8 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     @Test
     public void should_install_glass_fish_embedded_container() throws Exception {
         installContainerAssertProfileAndDependencies("glassfish-embedded",
-            "org.glassfish.main.extras:glassfish-embedded-all", "org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1");
+            "org.glassfish.main.extras:glassfish-embedded-all",
+            "org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1");
     }
 
     @Test
@@ -58,7 +59,8 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
 
     @Test
     public void should_install_payara_embedded_container() throws Exception {
-        installContainerAssertProfileAndDependencies("payara-embedded", "fish.payara.extras:payara-embedded-all", "org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1");
+        installContainerAssertProfileAndDependencies("payara-embedded", "fish.payara.extras:payara-embedded-all",
+            "org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1");
     }
 
     @Test
@@ -213,6 +215,29 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     }
 
     @Test
+    public void should_install_tomcat_managed_container_with_server_configuration() throws Exception {
+        final String container = "tomcat-managed";
+        shell().execute("arquillian-setup --test-framework junit --container-adapter "
+            + container
+            + " --container-adapter-version 8.0.43");
+
+        Profile profile = getFirstProfile();
+        final String profileId = "arquillian-" + container;
+
+        assertThat(profile).hasId(profileId);
+        assertJunitAndUniverseDependency();
+
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon")
+            .withType("pom").withScope("test");
+        assertThat(project).hasArquillianConfig()
+            .withContainer(profileId)
+            .hasConfiguration()
+            .withProperties("chameleonTarget:${chameleon.target}", "user:arquillian", "pass:arquillian",
+                "serverConfig:../../../../../src/test/resources/tomcat8-server.xml");
+        assertThat(project).hasTestResources("tomcat8-server.xml", "tomcat-users.xml");
+    }
+
+    @Test
     public void should_install_weld_ee_embedded_container() throws Exception {
         installContainerAssertProfileAndDependencies("weld-ee-embedded-1.1",
             "org.jboss.arquillian.container:arquillian-weld-ee-embedded-1.1");
@@ -238,7 +263,8 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
 
     @Test
     public void should_install_tomcat_managed_5_5_with_install_container() throws TimeoutException {
-        shell().execute("arquillian-setup --container-adapter tomcat-managed-5.5 --test-framework junit --install-container", 15);
+        shell().execute(
+            "arquillian-setup --container-adapter tomcat-managed-5.5 --test-framework junit --install-container", 15);
 
         final Profile profile = getFirstProfile();
         final String profileId = "arquillian-tomcat-managed-5.5";
@@ -259,22 +285,27 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
             .hasPhase("process-test-classes")
             .hasGoals("wget")
             .hasConfigurarion(
-                "<configuration>\n" +
-                    "  <url>http://archive.apache.org/dist/tomcat/tomcat-5/v${version.container}/bin/apache-tomcat-${version.container}.zip</url>\n" +
-                    "  <unpack>true</unpack>\n" +
-                    "  <overwrite>false</overwrite>\n" +
-                    "  <outputDirectory>${project.basedir}/target/</outputDirectory>\n" +
+                "<configuration>\n"
+                    +
+                    "  <url>http://archive.apache.org/dist/tomcat/tomcat-5/v${version.container}/bin/apache-tomcat-${version.container}.zip</url>\n"
+                    +
+                    "  <unpack>true</unpack>\n"
+                    +
+                    "  <overwrite>false</overwrite>\n"
+                    +
+                    "  <outputDirectory>${project.basedir}/target/</outputDirectory>\n"
+                    +
                     "</configuration>");
     }
 
-    private void installContainerAssertProfileAndDependencies(final String container, String... dependencies) throws Exception {
+    private void installContainerAssertProfileAndDependencies(final String container, String... dependencies)
+        throws Exception {
         executeCmd(container);
 
         final Profile profile = getFirstProfile();
         final String profileId = "arquillian-" + container;
 
         assertThat(profile).hasId(profileId);
-
 
         for (String dependency : dependencies) {
             String[] gav = dependency.split(":");
@@ -294,7 +325,9 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
         assertThat(profile).hasId(profileId);
         assertJunitAndUniverseDependency();
 
-        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon").withType("pom").withScope("test");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-chameleon")
+            .withType("pom")
+            .withScope("test");
         assertContainerOrPropertyFromArquillianConfig(
             "<container default=\"true\" qualifier=\"" + profileId + "\">",
             "<property name=\"chameleonTarget\">${chameleon.target}</property>");
@@ -317,8 +350,12 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     }
 
     private void assertJunitAndUniverseDependency() {
-        assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe").withType("pom").withScope("import");
-        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit").withType("pom").withScope("test");
+        assertThat(project).hasDirectManagedDependency("org.arquillian:arquillian-universe")
+            .withType("pom")
+            .withScope("import");
+        assertThat(project).hasDirectDependency("org.arquillian.universe:arquillian-junit")
+            .withType("pom")
+            .withScope("test");
         assertThat(project).hasEffectiveDependency("junit:junit").withType("jar").withScope("test");
     }
 }

@@ -45,7 +45,6 @@ public class ArquillianConfigAssert extends AbstractAssert<ArquillianConfigAsser
             final List<Node> nodes = actual.getChildren();
             final Node configuration = nodes.stream()
                 .filter(node -> node.getName().equals("configuration"))
-                .map(Function.identity())
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("Node with configuration not found."));
 
