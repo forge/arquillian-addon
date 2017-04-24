@@ -22,6 +22,12 @@ If container is not supported by chameleon, Forge will download it for you. Ther
 
 Note: We are no longer supporting container prior to JBoss AS 7 in forge.
 
+*Tomcat Container Configuration*
+
+In case of Tomcat container, if you are trying to set it up in managed mode. Forge will create custom server.xml depending on tomcat version, tomcat-users.xml which contains users with `manager-script` role. So after successful execution of command, chameleon is configured with required resources & properties, Tomcat is ready to use. No worries about configuration.
+
+It will only work if `catalina.home` is nested in the target folder.(For chameleon default download folder for container distributions is `target/` for Maven).
+
 *Generating tests*
 
 Writing Arquillian tests is trivial, and is documented well: https://docs.jboss.org/author/display/ARQ/Reference+Guide

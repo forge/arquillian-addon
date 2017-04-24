@@ -1,11 +1,9 @@
 package org.jboss.forge.arquillian.command.core;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 import org.jboss.forge.addon.dependencies.DependencyQuery;
 import org.jboss.forge.addon.dependencies.DependencyResolver;
@@ -13,10 +11,7 @@ import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.projects.facets.ResourcesFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
-import org.jboss.forge.addon.resource.FileResource;
-import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFactory;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
@@ -36,6 +31,7 @@ import org.jboss.forge.arquillian.api.core.ArquillianFacet;
 import org.jboss.forge.arquillian.container.ContainerInstaller;
 import org.jboss.forge.arquillian.container.DependencyManager;
 import org.jboss.forge.arquillian.container.ProfileManager;
+import org.jboss.forge.arquillian.container.TomcatConfiguration;
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.container.model.Dependency;
 import org.jboss.forge.arquillian.model.core.ArquillianConfig;
@@ -66,6 +62,8 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
 
     @Inject
     private DependencyResolver resolver;
+    @Inject
+    private TomcatConfiguration tomcatConfiguration;
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
@@ -123,7 +121,7 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
 
             config.addContainerProperty(profileId, "chameleonTarget", "${chameleon.target}");
             if ("Arquillian Container Tomcat Managed".equals(container.getName())) {
-                addTomcatConfiguration(project, config, version, profileId);
+                tomcatConfiguration.addContainerConfigurationAndSetResourcesContent(project, config, version, profileId);
             }
         } else {
             config.addContainer(profileId);
@@ -149,25 +147,6 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
         }
 
         return Results.success("Installed " + container.getName() + " dependencies");
-    }
-
-    private void addTomcatConfiguration(Project project, ArquillianConfig config, String version, String profileId) {
-
-        Pattern pattern = Pattern.compile("^\\d+");
-        Matcher matcher = pattern.matcher(version);
-
-        if (matcher.find()) {
-            final String versionPrefix = matcher.group(0);
-            final String resourceName = "tomcat" + versionPrefix + "-server.xml";
-
-            setResourcesContentForTomcat(project, resourceName);
-            setResourcesContentForTomcat(project, "tomcat-users.xml");
-
-            config.addContainerProperty(profileId, "user", "arquillian");
-            config.addContainerProperty(profileId, "pass", "arquillian");
-            config.addContainerProperty(profileId, "serverConfig",
-                "../../../../../src/test/resources/" + resourceName);
-        }
     }
 
     @Override
@@ -203,17 +182,5 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
     @Override
     public NavigationResult next(UINavigationContext context) throws Exception {
         return null;
-    }
-
-    private void setResourcesContentForTomcat(Project project, String resourceName) {
-        final ResourcesFacet facet = project.getFacet(ResourcesFacet.class);
-        final FileResource<?> testResource = facet.getTestResource(resourceName);
-
-        final Resource<URL> resource = resourceFactory.create(getClass().getClassLoader().getResource(resourceName));
-        if (resource.exists()) {
-            testResource.setContents(resource.getContents());
-        } else {
-            logger.severe("resource with name: " + resourceName + " does not exists in classpath.");
-        }
     }
 }
