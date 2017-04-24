@@ -2,7 +2,9 @@
   {
     "artifact_id": "arquillian-tomcat-managed-5.5",
     "download": {
-      "url": "http://archive.apache.org/dist/tomcat/tomcat-5/v${version.org.apache.tomcat}/bin/apache-tomcat-${version.org.apache.tomcat}.zip"
+      "url": "http://archive.apache.org/dist/tomcat/tomcat-5/v${version.container}/bin/apache-tomcat-${version.container}.zip",
+      "group_id": "tomcat",
+      "artifact_id": "catalina"
     },
     "group_id": "org.jboss.arquillian.container",
     "container_type": "MANAGED",
@@ -1153,6 +1155,16 @@
         "name": "sunResourcesXml",
         "default": ""
       }
+    ],
+    "dependencies": [
+      {
+        "artifact_id": "glassfish-embedded-all",
+        "group_id": "org.glassfish.main.extras"
+      },
+      {
+        "artifact_id": "arquillian-glassfish-embedded-3.1",
+        "group_id": "org.jboss.arquillian.container"
+      }
     ]
   },
   {
@@ -1350,6 +1362,16 @@
         "description": "The relative or absolute path to the sun-resources.xml file that will be used to add resources to the instance using the add-resources asadmin command.",
         "name": "sunResourcesXml",
         "default": ""
+      }
+    ],
+    "dependencies": [
+      {
+        "artifact_id": "payara-embedded-all",
+        "group_id": "fish.payara.extras"
+      },
+      {
+        "artifact_id": "arquillian-glassfish-embedded-3.1",
+        "group_id": "org.jboss.arquillian.container"
       }
     ]
   },

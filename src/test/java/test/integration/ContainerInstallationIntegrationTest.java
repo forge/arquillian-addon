@@ -6,6 +6,7 @@
  */
 package test.integration;
 
+import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.maven.projects.MavenFacet;
@@ -41,7 +42,8 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
 
     @Test
     public void should_install_glass_fish_embedded_container() throws Exception {
-        installContainerAssertProfileAndDependencies("glassfish-embedded");
+        installContainerAssertProfileAndDependencies("glassfish-embedded",
+            "org.glassfish.main.extras:glassfish-embedded-all", "org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1");
     }
 
     @Test
@@ -56,7 +58,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
 
     @Test
     public void should_install_payara_embedded_container() throws Exception {
-        installContainerAssertProfileAndDependencies("payara-embedded");
+        installContainerAssertProfileAndDependencies("payara-embedded", "fish.payara.extras:payara-embedded-all", "org.jboss.arquillian.container:arquillian-glassfish-embedded-3.1");
     }
 
     @Test
@@ -234,6 +236,37 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
             "org.jboss.arquillian.container:arquillian-wls-remote-10.3");
     }
 
+    @Test
+    public void should_install_tomcat_managed_5_5_with_install_container() throws TimeoutException {
+        shell().execute("arquillian-setup --container-adapter tomcat-managed-5.5 --test-framework junit --install-container", 15);
+
+        final Profile profile = getFirstProfile();
+        final String profileId = "arquillian-tomcat-managed-5.5";
+
+        assertThat(profile)
+            .hasId(profileId)
+            .hasBuild().hasPluginSize(2)
+            .hasDependency("org.jboss.arquillian.container:arquillian-tomcat-managed-5.5")
+            .withGroupId("org.jboss.arquillian.container")
+            .withArtifactId("arquillian-tomcat-managed-5.5")
+            .withScope("test");
+
+        final Plugin plugin = profile.getBuild().getPlugins().get(1);
+        assertThat(plugin)
+            .hasGroupId("com.googlecode.maven-download-plugin")
+            .hasArtifactId("download-maven-plugin")
+            .hasExecutionWithId("unpack")
+            .hasPhase("process-test-classes")
+            .hasGoals("wget")
+            .hasConfigurarion(
+                "<configuration>\n" +
+                    "  <url>http://archive.apache.org/dist/tomcat/tomcat-5/v${version.container}/bin/apache-tomcat-${version.container}.zip</url>\n" +
+                    "  <unpack>true</unpack>\n" +
+                    "  <overwrite>false</overwrite>\n" +
+                    "  <outputDirectory>${project.basedir}/target/</outputDirectory>\n" +
+                    "</configuration>");
+    }
+
     private void installContainerAssertProfileAndDependencies(final String container, String... dependencies) throws Exception {
         executeCmd(container);
 
@@ -268,7 +301,7 @@ public class ContainerInstallationIntegrationTest extends ShellTestTemplate {
     }
 
     private void executeCmd(String container) throws TimeoutException {
-        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 300);
+        shell().execute("arquillian-setup --container-adapter " + container + " --test-framework junit", 30);
     }
 
     private Profile getFirstProfile() {

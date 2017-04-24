@@ -18,7 +18,7 @@ If you need to install an additional container profile, run command:
 
 In above command if selected container is supported by https://github.com/arquillian/arquillian-container-chameleon[chameleon] then it is configured using chameleon, otherwise it will add required container adapter to setup container.
 
-If container is not supported by chameleon, you have to install container manually.
+If container is not supported by chameleon, Forge will download it for you. There is no need to download container manually.
 
 Note: We are no longer supporting container prior to JBoss AS 7 in forge.
 

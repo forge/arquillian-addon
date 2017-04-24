@@ -25,17 +25,18 @@ public class ContainerInstaller {
     private ProfileManager profileManager;
 
     public void installContainer(Project project, Container container, String version, Map<Dependency, String> dependencies) throws Exception {
-        boolean activatedByDefault = profileManager.isAnyProfileRegistered(project) ? false : true;
+        boolean activatedByDefault = !profileManager.isAnyProfileRegistered(project);
         if (container.isSupportedByChameleon(version)) {
             profileManager.addProfile(project, container, version, activatedByDefault);
         } else {
 
             List<org.jboss.forge.addon.dependencies.Dependency> allDependencies = new ArrayList<>();
-
-            DependencyBuilder containerDependency = container.asDependency()
-                .setVersion(version)
-                .setScopeType("test");
-            allDependencies.add(containerDependency);
+            if (!container.shouldIncludeDirectDependency()) {
+                DependencyBuilder containerDependency = container.asDependency()
+                    .setVersion(version)
+                    .setScopeType("test");
+                allDependencies.add(containerDependency);
+            }
 
             if (dependencies != null) {
                 for (Map.Entry<Dependency, String> dependencyEntry : dependencies.entrySet()) {

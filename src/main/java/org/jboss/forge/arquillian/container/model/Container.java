@@ -167,11 +167,25 @@ public class Container implements Comparable<Container> {
         return getDisplayName();
     }
 
+    public boolean shouldIncludeDirectDependency() {
+        final String displayName = this.getDisplayName();
+
+        return displayName.equals("PAYARA_EMBEDDED") || displayName.equals("GLASSFISH_EMBEDDED");
+    }
+
     public String getChameleonTarget(String version) {
         return Identifier.getNameForChameleon(this) + ":" + version + ":" + getContainerType();
     }
 
     public boolean isSupportedByChameleon(String version) throws Exception {
+        // We have issue with chameleon for Payara & Glassfish - Embedded for classloading
+        // as it's running in the same JVM.
+
+        final boolean isProblemWithChameleon = shouldIncludeDirectDependency();
+        if (isProblemWithChameleon) {
+            return !isProblemWithChameleon;
+        }
+
         String containerName = Identifier.getNameForChameleon(this);
         if (!containerName.isEmpty()) {
             String chameleonTarget = getChameleonTarget(version);

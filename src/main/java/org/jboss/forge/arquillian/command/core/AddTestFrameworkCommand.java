@@ -104,7 +104,6 @@ public class AddTestFrameworkCommand extends AbstractProjectCommand implements U
             selectedTestFramework.setStandalone(standalone.getValue());
             selectedTestFramework.setVersion(testFrameworkVersion.getValue());
             facetFactory.install(getSelectedProject(context), selectedTestFramework);
-            installEvent.fire(new TestFrameworkInstallEvent(selectedTestFramework));
 
             return Results.success("Installed " + selectedTestFramework.getFrameworkName());
         } catch (Exception e) {

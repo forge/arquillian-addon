@@ -21,17 +21,15 @@ import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.forge.addon.ui.wizard.UIWizardStep;
-import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 import org.jboss.forge.arquillian.api.core.ArquillianFacet;
-import org.jboss.forge.arquillian.container.ContainerInstallEvent;
 import org.jboss.forge.arquillian.container.ContainerInstaller;
 import org.jboss.forge.arquillian.container.DependencyManager;
+import org.jboss.forge.arquillian.container.ProfileManager;
 import org.jboss.forge.arquillian.container.model.Container;
 import org.jboss.forge.arquillian.container.model.Dependency;
+import org.jboss.forge.arquillian.model.core.ArquillianConfig;
 import org.jboss.forge.arquillian.util.DependencyUtil;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,19 +37,24 @@ import java.util.Map;
 public class AddContainerCommand extends AbstractProjectCommand implements UIWizardStep {
 
     private final Map<Dependency, InputComponent<?, String>> dependencyVersions = new HashMap<>();
+
     @Inject
     private InputComponentFactory inputFactory;
+
     @Inject
     private ProjectFactory projectFactory;
+
     @Inject
     private ContainerInstaller containerInstaller;
+
+    @Inject
+    private ProfileManager profileManager;
+
     @Inject
     private DependencyManager dependencyManager;
+
     @Inject
     private DependencyResolver resolver;
-    @Inject
-    @Any
-    private Event<ContainerInstallEvent> installEvent;
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
@@ -63,7 +66,6 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
 
     @Override
     public void initializeUI(final UIBuilder builder) throws Exception {
-
         Container selectedContainer = (Container) builder.getUIContext().getAttributeMap().get(ContainerSetupWizard.CTX_CONTAINER);
         if (selectedContainer == null || selectedContainer.getDependencies() == null) {
             return;
@@ -93,13 +95,13 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
         Map<Object, Object> ctx = context.getUIContext().getAttributeMap();
         Container container = (Container) ctx.get(ContainerSetupWizard.CTX_CONTAINER);
         String version = (String) ctx.get(ContainerSetupWizard.CTX_CONTAINER_VERSION);
+
         Project project = getSelectedProject(context);
         ArquillianFacet arquillian = project.getFacet(ArquillianFacet.class);
         ArquillianConfig config = arquillian.getConfig();
-
         final String profileId = container.getProfileId();
-
-        if (container.isSupportedByChameleon(version)) {
+        final boolean supportedByChameleon = container.isSupportedByChameleon(version);
+        if (supportedByChameleon) {
             dependencyManager.addChameleonDependency(project);
             if (config.containsDefaultContainer()) {
                 config.addContainer(profileId);
@@ -120,7 +122,16 @@ public class AddContainerCommand extends AbstractProjectCommand implements UIWiz
             version,
             getVersionedDependenciesMap());
 
-        installEvent.fire(new ContainerInstallEvent(container));
+        final Object containerInstall = ctx.get(ContainerSetupWizard.INSTALL_CONTAINER);
+
+        if ( containerInstall != null) {
+            boolean installContainer = (Boolean) containerInstall;
+            String containerVersion = (String) ctx.get(ContainerSetupWizard.CONTAINER_VERSION);
+
+            if (installContainer) {
+                profileManager.addContainerConfiguration(container, project, containerVersion);
+            }
+        }
 
         return Results.success("Installed " + container.getName() + " dependencies");
     }
