@@ -112,25 +112,21 @@ public class ArquillianConfig {
         return xml.get(EXTENSION)
             .stream()
             .map(n -> n.getAttribute(QUALIFIER))
-            .filter(qualifier::equals)
-            .findAny().isPresent();
+            .anyMatch(qualifier::equals);
     }
 
     public boolean isContainerRegistered(String qualifier) {
         return xml.get(CONTAINER)
             .stream()
             .map(n -> n.getAttribute(QUALIFIER))
-            .filter(qualifier::equals)
-            .findAny().isPresent();
+            .anyMatch(qualifier::equals);
     }
 
     public boolean containsDefaultContainer() {
         return xml.get(CONTAINER)
             .stream()
             .map(n -> n.getAttribute("default"))
-            .filter(v -> v.equals("true"))
-            .findAny()
-            .isPresent();
+            .anyMatch(v -> v.equals("true"));
     }
 
     public String getContentOfNode(String node) {

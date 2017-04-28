@@ -1,5 +1,6 @@
 package org.jboss.forge.arquillian.command.core;
 
+import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
 import org.jboss.forge.addon.parser.java.resources.JavaResource;
@@ -14,6 +15,7 @@ import org.jboss.forge.addon.resource.visit.VisitContext;
 import org.jboss.forge.addon.templates.Template;
 import org.jboss.forge.addon.templates.TemplateFactory;
 import org.jboss.forge.addon.templates.freemarker.FreemarkerTemplate;
+import org.jboss.forge.addon.templates.freemarker.ResourceTemplateLoader;
 import org.jboss.forge.addon.text.Inflector;
 import org.jboss.forge.addon.ui.command.UICommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
@@ -208,6 +210,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
 
     private Template getTemplateFor(String name) {
         final Resource<URL> resource = resourceFactory.create(getClass().getResource(name));
+
         return templateFactory.create(resource, FreemarkerTemplate.class);
     }
 
@@ -215,7 +218,7 @@ public class CreateTestCommand extends AbstractProjectCommand implements UIComma
         final DependencyFacet dependencyFacet = project.getFacet(DependencyFacet.class);
 
         return dependencyFacet.getDependencies().stream()
-            .map(dependency -> dependency.getCoordinate())
+            .map(Dependency::getCoordinate)
             .anyMatch(coordinate ->
                 "org.arquillian.universe".equals(coordinate.getGroupId()) &&
                     coordinate.getArtifactId().contains("standalone"));
