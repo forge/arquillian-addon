@@ -6,17 +6,11 @@
  */
 package org.jboss.forge.arquillian.container.model;
 
-import org.arquillian.container.chameleon.spi.model.Dist;
-import org.arquillian.container.chameleon.spi.model.Target;
-import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
-
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.arquillian.container.chameleon.spi.model.Target;
+import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 
 /**
  * @Author Paul Bakker - paul.bakker.nl@gmail.com
@@ -166,7 +160,6 @@ public class Container implements Comparable<Container> {
         final String name = getName().toLowerCase().replaceAll("arquillian (?:container )?", "");
 
         return name.replace(" ", "_").toUpperCase();
-
     }
 
     public boolean shouldIncludeDirectDependency() {
@@ -196,38 +189,6 @@ public class Container implements Comparable<Container> {
 
         return false;
     }
-
-    public void setGroupIdAndArtifactIdFromChameleonConfiguration(org.arquillian.container.chameleon.spi.model.Container... containers) throws Exception {
-        String pattern = "(?<=arquillian container).*(?=remote|managed|embedded)";
-
-        Pattern r = Pattern.compile(pattern);
-        Matcher m = r.matcher(this.getName().toLowerCase());
-
-        if (m.find()) {
-            Optional<String> containerName = Optional.ofNullable(m.group(0));
-            if (containerName.isPresent()) {
-                String finalContainerName = containerName.get().trim();
-                Arrays.stream(containers)
-                    .filter(container -> {
-                        final boolean matched = Arrays.stream(container.getAdapters())
-                            .anyMatch(adapter -> adapter.getType().equalsIgnoreCase(this.containerType.toString()));
-
-                        return matched && container.getName().equalsIgnoreCase(finalContainerName);
-                    })
-                    .forEach(container -> {
-                        final Dist dist = container.getDist();
-                        final String[] split = dist.coordinates().split(":");
-                        if (split.length >= 2) {
-                            this.setGroupId(split[0]);
-                            this.setArtifactId(split[1]);
-                        } else {
-                            throw new IllegalStateException("Group Id or Artifact Id is missing in distribution of chameleon configuration for container: " + container.getName());
-                        }
-                    });
-            }
-        }
-    }
-
 
     public boolean isVersionMatches(String version) throws Exception {
         final String chameleonTarget = getChameleonTarget(version);
