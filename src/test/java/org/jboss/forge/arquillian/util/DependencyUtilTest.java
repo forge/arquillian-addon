@@ -26,7 +26,7 @@ package org.jboss.forge.arquillian.util;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.arquillian.container.model.Container;
-import org.jboss.forge.arquillian.util.DependencyUtil;
+import org.jboss.forge.arquillian.container.model.ContainerType;
 import org.jboss.forge.arquillian.container.model.Identifier;
 import org.junit.Test;
 
@@ -57,29 +57,38 @@ public class DependencyUtilTest {
 
     @Test
     public void should_get_versions_only_supported_by_chameleon() throws Exception {
+        final Container container =
+            createContainer("container", Identifier.TOMCAT.getArtifactID(), Identifier.TOMCAT.getName());
+        final String groupId = container.getGroupId();
+        final String artifactId = container.getArtifactId();
+
+        // Assume following dependencies are getting after calling dependencyFacet.resolveAvailableVersions
         List<Coordinate> deps = new ArrayList<>();
-        deps.add(DependencyBuilder.create().setVersion("4.1").getCoordinate());
-        deps.add(DependencyBuilder.create().setVersion("2.1").getCoordinate());
-        deps.add(DependencyBuilder.create().setVersion("7.1").getCoordinate());
-        deps.add(DependencyBuilder.create().setVersion("1.0-SNAPSHOT").getCoordinate());
+        deps.add(DependencyBuilder.create().setGroupId(groupId).setArtifactId(artifactId).setVersion("4.1").getCoordinate());
+        deps.add(DependencyBuilder.create().setGroupId(groupId).setArtifactId(artifactId).setVersion("2.1").getCoordinate());
+        deps.add(DependencyBuilder.create().setGroupId(groupId).setArtifactId(artifactId).setVersion("7.1").getCoordinate());
+        deps.add(DependencyBuilder.create().setGroupId(groupId).setArtifactId(artifactId).setVersion("1.0-SNAPSHOT").getCoordinate());
 
-        List<String> dep = DependencyUtil.toVersionString(deps,
-            createContainer(Identifier.TOMCAT.getArtifactID(), Identifier.TOMCAT.getName()));
+        List<String> dependenciesToEndUser = DependencyUtil.toVersionString(deps, container);
 
-        assertThat(dep).doesNotContain("2.1", "4.1");
-        assertThat(dep).contains("7.1");
+        assertThat(dependenciesToEndUser).doesNotContain("2.1", "4.1");
+        assertThat(dependenciesToEndUser).contains("7.1");
     }
 
     @Test
     public void should_get_all_available_versions_if_not_supported_by_chameleon() throws Exception {
-        List<Coordinate> deps = new ArrayList<>();
-        deps.add(DependencyBuilder.create().setVersion("4.1").getCoordinate());
-        deps.add(DependencyBuilder.create().setVersion("7.1").getCoordinate());
+        final Container container = createContainer("org.apache.openejb", "arquillian-openejb-embedded-4", "Arquillian Container OpenEJB Embedded 4");
+        final String groupId = container.getGroupId();
+        final String artifactId = container.getArtifactId();
 
-        List<String> dep = DependencyUtil.toVersionString(deps,
-            createContainer("arquillian-jbossas-managed-4.2", "JBoss As"));
+        // Assume following dependencies are getting after calling dependencyFacet.resolveAvailableVersions
+        final List<Coordinate> deps = new ArrayList<>();
+        deps.add(DependencyBuilder.create().setGroupId(groupId).setArtifactId(artifactId).setVersion("4.7.4").getCoordinate());
+        deps.add(DependencyBuilder.create().setGroupId(groupId).setArtifactId(artifactId).setVersion("4.5.0").getCoordinate());
 
-        assertThat(dep).contains("4.1", "7.1");
+        List<String> dependenciesToEndUser = DependencyUtil.toVersionString(deps, container);
+
+        assertThat(dependenciesToEndUser).contains("4.7.4", "4.5.0");
     }
 
     @Test
@@ -100,10 +109,12 @@ public class DependencyUtilTest {
         assertThat(dep).isNull();
     }
 
-    private Container createContainer(String artifactId, String name) {
+    private Container createContainer(String groupId, String artifactId, String name) {
         Container container = new Container();
+        container.setGroupId(groupId);
         container.setArtifactId(artifactId);
         container.setName(name);
+        container.setContainerType(ContainerType.MANAGED);
 
         return container;
     }
