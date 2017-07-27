@@ -14,7 +14,7 @@
   <name>Arquillian Forge Addon</name>
   <properties>
     <version.arquillian_core>1.1.12.Final</version.arquillian_core>
-    <version.forge>3.5.1.Final</version.forge>
+    <version.forge>3.7.2.Final</version.forge>
     <version.jackson>1.9.1</version.jackson>
     <version.junit>4.12</version.junit>
     <version.shrinkwrap-maven-resolver>2.2.5</version.shrinkwrap-maven-resolver>
@@ -105,15 +105,8 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.forge.addon</groupId>
-      <artifactId>shell</artifactId>
-      <classifier>forge-addon</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.forge.addon</groupId>
       <artifactId>ui</artifactId>
       <classifier>forge-addon</classifier>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.forge.addon</groupId>
@@ -125,7 +118,6 @@
       <groupId>org.jboss.forge.addon</groupId>
       <artifactId>projects</artifactId>
       <classifier>forge-addon</classifier>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.forge.addon</groupId>
